@@ -1,0 +1,4 @@
+name: Ml
+version: '${project.version}'
+main: org.shrigorevich.ml.Ml
+api-version: 1.19
