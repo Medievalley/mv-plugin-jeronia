@@ -1,21 +1,22 @@
 package org.shrigorevich.ml;
 
-import org.bukkit.ChatColor;
-import org.bukkit.configuration.serialization.ConfigurationSerialization;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.shrigorevich.ml.config.Configuration;
-import org.shrigorevich.ml.config.Database;
 import org.shrigorevich.ml.db.DataSourceCreator;
+import org.shrigorevich.ml.db.contexts.IUserContext;
+import org.shrigorevich.ml.db.contexts.UserContext;
+import org.shrigorevich.ml.domain.IUserService;
+import org.shrigorevich.ml.domain.UserService;
+import org.shrigorevich.ml.listeners.PreLogin;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 
 public final class Ml extends JavaPlugin {
-    Configuration config;
-    DataSource dataSource;
+    private Configuration config;
+    private DataSource dataSource;
+    private IUserService userService;
     @Override
     public void onLoad() {
         saveDefaultConfig();
@@ -23,15 +24,23 @@ public final class Ml extends JavaPlugin {
         saveConfig();
         config = new Configuration(this);
         dataSource = DataSourceCreator.createDataSource(config);
+
+        IUserContext userContext = new UserContext(this, dataSource);
+        userService = new UserService(userContext);
     }
     @Override
     public void onEnable() {
-
+        setupListeners();
     }
 
     @Override
     public void onDisable() {
         // Plugin shutdown logic
         System.out.println("DISABLED");
+    }
+
+    public void setupListeners() {
+        PluginManager pm = getServer().getPluginManager();
+        pm.registerEvents(new PreLogin(userService), this);
     }
 }
