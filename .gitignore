@@ -1,6 +1,7 @@
 # User-specific stuff
 .idea/
 src/main/resources/config.yml
+docker.env/postgres-data
 
 *.iml
 *.ipr

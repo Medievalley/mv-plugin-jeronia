@@ -7,24 +7,19 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.shrigorevich.ml.db.callbacks.IFindOneCallback;
-import org.shrigorevich.ml.db.models.User;
+import org.shrigorevich.ml.domain.models.User;
 
 import javax.sql.DataSource;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
 
 public class UserContext implements IUserContext {
 
     private final Plugin plugin;
     private final DataSource dataSource;
-    private final Map<String, User> users;
 
     public UserContext(Plugin plugin, DataSource dataSource) {
         this.plugin = plugin;
         this.dataSource = dataSource;
-        this.users = new HashMap<>();
     }
 
     public void getByNameAsync(String name, IFindOneCallback<User> callback) {
@@ -64,13 +59,5 @@ public class UserContext implements IUserContext {
             plugin.getLogger().severe(ex.toString());
         }
         return null;
-    }
-
-    public User getByNameInMemory(String name) {
-        return users.get(name);
-    }
-
-    public void addInMemory(User user) {
-        users.put(user.getName(), user);
     }
 }

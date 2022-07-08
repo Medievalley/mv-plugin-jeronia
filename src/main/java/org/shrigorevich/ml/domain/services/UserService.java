@@ -1,16 +1,20 @@
-package org.shrigorevich.ml.domain;
+package org.shrigorevich.ml.domain.services;
 
 import org.shrigorevich.ml.db.callbacks.IAccessCheckCallback;
 import org.shrigorevich.ml.db.contexts.IUserContext;
-import org.shrigorevich.ml.db.models.User;
+import org.shrigorevich.ml.domain.models.User;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
-public class UserService implements IUserService{
+public class UserService implements IUserService {
 
+    private final Map<String, User> onlineList;
     IUserContext userContext;
     public UserService(IUserContext userContext) {
         this.userContext = userContext;
+        this.onlineList = new HashMap<>();
     }
     public void accessCheck(String userName, String ip, IAccessCheckCallback cb) {
         String nameMsg = "Player with the same name is already on the server!",
@@ -34,7 +38,7 @@ public class UserService implements IUserService{
         else if (user.getLivesNumber() <= 0){
             cb.onСheck(false, livesNumberMsg);
         }
-        else if (getByNameInMemory(userName).isPresent()) {
+        else if (getFromOnlineList(userName).isPresent()) {
             cb.onСheck(false, nameMsg);
         }
         else {
@@ -42,12 +46,12 @@ public class UserService implements IUserService{
         }
     }
 
-    public Optional<User> getByNameInMemory(String name) {
-        User user = userContext.getByNameInMemory(name);
+    public Optional<User> getFromOnlineList(String name) {
+        User user = onlineList.get(name);
         return user != null ? Optional.of(user) : Optional.empty();
     }
 
     public void addInMemory(User user) {
-        userContext.addInMemory(user);
+        onlineList.put(user.getName(), user);
     }
 }

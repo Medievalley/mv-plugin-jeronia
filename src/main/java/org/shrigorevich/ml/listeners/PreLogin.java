@@ -1,12 +1,11 @@
 package org.shrigorevich.ml.listeners;
 
 import net.kyori.adventure.text.Component;
-import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
-import org.shrigorevich.ml.domain.IUserService;
+import org.shrigorevich.ml.domain.services.IUserService;
 
 public class PreLogin implements Listener {
 

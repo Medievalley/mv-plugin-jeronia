@@ -1,14 +1,13 @@
 package org.shrigorevich.ml;
 
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.shrigorevich.ml.config.Configuration;
 import org.shrigorevich.ml.db.DataSourceCreator;
 import org.shrigorevich.ml.db.contexts.IUserContext;
 import org.shrigorevich.ml.db.contexts.UserContext;
-import org.shrigorevich.ml.domain.IUserService;
-import org.shrigorevich.ml.domain.UserService;
+import org.shrigorevich.ml.domain.services.IUserService;
+import org.shrigorevich.ml.domain.services.UserService;
 import org.shrigorevich.ml.listeners.PreLogin;
 
 import javax.sql.DataSource;

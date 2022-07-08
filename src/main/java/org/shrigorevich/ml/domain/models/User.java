@@ -1,4 +1,4 @@
-package org.shrigorevich.ml.db.models;
+package org.shrigorevich.ml.domain.models;
 
 public class User {
     private String name;
