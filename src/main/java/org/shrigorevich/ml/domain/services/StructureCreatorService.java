@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class StructureCreatorService {
+public class StructureCreatorService implements IStructureCreatorService{
     private final Map<String, ArrayList<Location>> structCorners;
     private final IStructureContext structureContext;
     private Map<String, CreateStructModel> structs;
@@ -20,7 +20,7 @@ public class StructureCreatorService {
         this.structCorners = new HashMap<>();
     }
 
-    private void applyLocation(CreateStructModel m, Location l1, Location l2) {
+    public void applyLocation(CreateStructModel m, Location l1, Location l2) {
 
         m.x1 = Math.min(l1.getBlockX(), l2.getBlockX());
         m.y1 = Math.min(l1.getBlockY(), l2.getBlockY());
@@ -41,11 +41,6 @@ public class StructureCreatorService {
 
     public ArrayList<Location> getStructCorners(String key) {
         return structCorners.get(key);
-    }
-
-    public void setType(CreateStructModel m, StructureType type) {
-        if(m == null) m = new CreateStructModel();
-        m.typeId = type.getTypeId();
     }
 
     public void saveStruct(CreateStructModel m, ICreateOneCallback cb) {

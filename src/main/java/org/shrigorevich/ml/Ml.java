@@ -4,9 +4,13 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.shrigorevich.ml.config.Configuration;
 import org.shrigorevich.ml.db.DataSourceCreator;
+import org.shrigorevich.ml.db.contexts.IStructureContext;
 import org.shrigorevich.ml.db.contexts.IUserContext;
+import org.shrigorevich.ml.db.contexts.StructureContext;
 import org.shrigorevich.ml.db.contexts.UserContext;
+import org.shrigorevich.ml.domain.services.IStructureCreatorService;
 import org.shrigorevich.ml.domain.services.IUserService;
+import org.shrigorevich.ml.domain.services.StructureCreatorService;
 import org.shrigorevich.ml.domain.services.UserService;
 import org.shrigorevich.ml.listeners.PreLogin;
 
@@ -16,6 +20,7 @@ public final class Ml extends JavaPlugin {
     private Configuration config;
     private DataSource dataSource;
     private IUserService userService;
+    private IStructureCreatorService structCreator;
     @Override
     public void onLoad() {
         saveDefaultConfig();
@@ -25,7 +30,9 @@ public final class Ml extends JavaPlugin {
         dataSource = DataSourceCreator.createDataSource(config);
 
         IUserContext userContext = new UserContext(this, dataSource);
+        IStructureContext structureContext = new StructureContext(this, dataSource);
         userService = new UserService(userContext);
+        structCreator = new StructureCreatorService(structureContext);
     }
     @Override
     public void onEnable() {

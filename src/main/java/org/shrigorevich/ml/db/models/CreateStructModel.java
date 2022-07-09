@@ -2,6 +2,7 @@ package org.shrigorevich.ml.db.models;
 
 public class CreateStructModel {
 
+    public String name;
     public int ownerId;
     public String world;
     public boolean destructible;
