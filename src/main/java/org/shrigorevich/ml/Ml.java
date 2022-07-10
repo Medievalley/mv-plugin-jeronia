@@ -12,6 +12,7 @@ import org.shrigorevich.ml.domain.services.IStructureCreatorService;
 import org.shrigorevich.ml.domain.services.IUserService;
 import org.shrigorevich.ml.domain.services.StructureCreatorService;
 import org.shrigorevich.ml.domain.services.UserService;
+import org.shrigorevich.ml.listeners.PlayerInteract;
 import org.shrigorevich.ml.listeners.PreLogin;
 
 import javax.sql.DataSource;
@@ -47,6 +48,7 @@ public final class Ml extends JavaPlugin {
 
     public void setupListeners() {
         PluginManager pm = getServer().getPluginManager();
-        pm.registerEvents(new PreLogin(userService), this);
+        //pm.registerEvents(new PreLogin(userService), this);
+        pm.registerEvents(new PlayerInteract(structCreator), this);
     }
 }

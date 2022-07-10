@@ -32,11 +32,14 @@ public class StructureCreatorService implements IStructureCreatorService{
 
     public void setCorner(String key, Location l) {
         ArrayList<Location> corners = structCorners.get(key);
-        if (corners == null) corners = new ArrayList<>();
-
+        if (corners == null) {
+            corners = new ArrayList<>();
+            structCorners.put(key, corners);
+        }
         if (corners.size() == 2)
             corners.remove(0);
         corners.add(l);
+
     }
 
     public ArrayList<Location> getStructCorners(String key) {
