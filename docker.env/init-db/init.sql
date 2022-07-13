@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS struct_types (
 
 CREATE TABLE IF NOT EXISTS structures (
     id SERIAL PRIMARY KEY,
+    name varchar(100) NOT NULL,
     ownerid INTEGER references users(id) ON DELETE SET NULL,
     typeid INTEGER references struct_types(id) ON DELETE SET NULL ON UPDATE CASCADE,
     destructible BOOLEAN DEFAULT false NOT NULL,

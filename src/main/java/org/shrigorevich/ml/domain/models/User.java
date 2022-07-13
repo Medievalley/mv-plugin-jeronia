@@ -1,12 +1,17 @@
 package org.shrigorevich.ml.domain.models;
 
 public class User {
+
+    private int id;
     private String name;
     private String lastIp;
     private int livesNumber;
     private boolean confirmed;
     private String roleName;
 
+    public int getId() {
+        return id;
+    }
     public String getName() {
         return name;
     }

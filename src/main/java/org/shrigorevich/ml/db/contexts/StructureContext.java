@@ -40,16 +40,17 @@ public class StructureContext implements IStructureContext {
 
                 QueryRunner run = new QueryRunner(dataSource);
                 ResultSetHandler<Structure> h = new BeanHandler(Structure.class);
-                IStructure struct = run.query(String.format(
-                        "INSERT INTO structures (typeid, ownerid, destructible, world, x1, y1, z1, x2, y2, z2)\n" +
-                        "VALUES (%d, %d, %b, '%s', %d, %d, %d, %d, %d, %d)\n" +
+                IStructure struct = run.insert(String.format(
+                        "INSERT INTO structures (name, typeid, ownerid, destructible, world, x1, y1, z1, x2, y2, z2)\n" +
+                        "VALUES ('%s', %d, %d, %b, '%s', %d, %d, %d, %d, %d, %d)\n" +
                         "RETURNING *",
-                        st.typeId, st.ownerId, st.destructible, st.world, st.x1, st.y1, st.z1, st.x2, st.y2, st.z2), h);
+                        st.name, st.typeId, st.ownerId, st.destructible, st.world, st.x1, st.y1, st.z1, st.x2, st.y2, st.z2), h);
 
-                scheduler.runTask(plugin, () -> cb.onQueryDone(struct, "Ok"));
+                scheduler.runTask(plugin, () -> cb.onQueryDone(true, "Ok"));
 
             } catch (SQLException ex) {
                 plugin.getLogger().severe(ex.toString());
+                cb.onQueryDone(false, ex.toString());
             }
         });
     }

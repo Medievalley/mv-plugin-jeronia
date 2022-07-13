@@ -5,6 +5,7 @@ import org.shrigorevich.ml.db.callbacks.ICreateOneCallback;
 import org.shrigorevich.ml.db.contexts.IStructureContext;
 import org.shrigorevich.ml.db.models.CreateStructModel;
 import org.shrigorevich.ml.domain.enums.StructureType;
+import org.shrigorevich.ml.domain.models.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,4 +24,5 @@ public interface IStructureCreatorService {
     CreateStructModel getStruct(String key);
 
     void addStruct(CreateStructModel m, String key);
+    void createDefault(User user, ICreateOneCallback cb) throws IllegalArgumentException;
 }

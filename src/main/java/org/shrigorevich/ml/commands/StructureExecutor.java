@@ -1,5 +1,6 @@
 package org.shrigorevich.ml.commands;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -7,13 +8,19 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.shrigorevich.ml.db.models.CreateStructModel;
 import org.shrigorevich.ml.domain.enums.StructureType;
+import org.shrigorevich.ml.domain.models.User;
 import org.shrigorevich.ml.domain.services.IStructureCreatorService;
+import org.shrigorevich.ml.domain.services.IUserService;
+
+import java.util.Optional;
 
 public class StructureExecutor implements CommandExecutor {
     private final IStructureCreatorService structCreator;
+    private final IUserService userService;
 
-    public StructureExecutor(IStructureCreatorService structCreator) {
+    public StructureExecutor(IStructureCreatorService structCreator, IUserService userService) {
         this.structCreator = structCreator;
+        this.userService = userService;
     }
 
     @Override
@@ -29,6 +36,19 @@ public class StructureExecutor implements CommandExecutor {
                             setType(player, typeId);
                         } catch (Exception ex) {
                             player.sendMessage(ChatColor.RED + "Wrong argument type (struct type id)");
+                        }
+                    } else if (args[1].equals("default")) {
+                        try {
+                            Optional<User> u = userService.getFromOnlineList(player.getName());
+                            if (u.isPresent())
+                                structCreator.createDefault(u.get(), ((result, msg) -> {
+                                    player.sendMessage(msg);
+                                }));
+                            else
+                                player.sendMessage("User not authorized");
+                        } catch (IllegalArgumentException ex) {
+                            Bukkit.getLogger().severe(ex.toString());
+                            player.sendMessage(ChatColor.RED + ex.getMessage());
                         }
                     }
                 }

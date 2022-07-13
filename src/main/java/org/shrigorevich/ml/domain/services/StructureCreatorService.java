@@ -5,6 +5,7 @@ import org.shrigorevich.ml.db.callbacks.ICreateOneCallback;
 import org.shrigorevich.ml.db.contexts.IStructureContext;
 import org.shrigorevich.ml.db.models.CreateStructModel;
 import org.shrigorevich.ml.domain.enums.StructureType;
+import org.shrigorevich.ml.domain.models.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,5 +57,20 @@ public class StructureCreatorService implements IStructureCreatorService{
 
     public void addStruct(CreateStructModel m, String key) {
         structs.put(key, m);
+    }
+
+    public void createDefault(User user, ICreateOneCallback cb) throws IllegalArgumentException{
+        CreateStructModel m = new CreateStructModel();
+        ArrayList<Location> corners = structCorners.get(user.getName());
+        if (corners == null || corners.size() != 2) {
+            throw new IllegalArgumentException("Structure location not set");
+        }
+        applyLocation(m, corners.get(0), corners.get(1));
+        m.typeId = StructureType.DEFAULT.getTypeId();
+        m.destructible = false;
+        m.name = String.format("%s`s structure", user.getName());
+        m.ownerId = user.getId();
+        m.world = corners.get(0).getWorld().getName();
+        saveStruct(m, cb);
     }
 }

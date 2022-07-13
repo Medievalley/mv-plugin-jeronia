@@ -1,6 +1,6 @@
 package org.shrigorevich.ml.db.callbacks;
 
-public interface ICreateOneCallback<T> {
+public interface ICreateOneCallback {
 
-    void onQueryDone(T model, String msg);
+    void onQueryDone(boolean result, String msg);
 }
