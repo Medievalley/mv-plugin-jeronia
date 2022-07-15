@@ -1,6 +1,6 @@
 package org.shrigorevich.ml.domain.services;
 
-import org.shrigorevich.ml.db.callbacks.IAccessCheckCallback;
+import org.shrigorevich.ml.domain.callbacks.IAccessCheckCallback;
 import org.shrigorevich.ml.db.contexts.IUserContext;
 import org.shrigorevich.ml.domain.models.User;
 

@@ -1,4 +1,4 @@
-package org.shrigorevich.ml.db.callbacks;
+package org.shrigorevich.ml.domain.callbacks;
 
 public interface IFindOneCallback<T> {
     void onQueryDone(T model);

@@ -11,6 +11,8 @@ import org.shrigorevich.ml.db.models.GetStructModel;
 import org.shrigorevich.ml.domain.enums.StructureType;
 
 public class Structure implements IStructure {
+
+    private final int id;
     private final String name;
     private final String owner;
     private final String world;
@@ -19,7 +21,8 @@ public class Structure implements IStructure {
     private final int x1, y1, z1;
     private final int x2, y2, z2;
 
-    private Structure(GetStructModel m) {
+    public Structure(GetStructModel m) {
+        this.id = m.id;
         this.world = m.world;
         this.name = m.name;
         this.owner = m.owner;
@@ -35,6 +38,10 @@ public class Structure implements IStructure {
 
     public StructureType getType() {
         return this.type;
+    }
+
+    public int getId() {
+        return this.id;
     }
 
     public String getName() { return this.name; }

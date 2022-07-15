@@ -48,7 +48,8 @@ CREATE TABLE IF NOT EXISTS structures (
 
 -- MOCK SCRIPT
 
--- INSERT INTO roles VALUES (1, 'Admin', 'Most privileged role');
+ INSERT INTO roles VALUES (1, 'Admin', 'Most privileged role');
+ INSERT INTO struct_types (id, name, description) VALUES (0, 'default', 'default structure');
 -- with rows as (
 --     insert into users(
 --         username, 

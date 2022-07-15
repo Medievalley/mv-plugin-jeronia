@@ -6,7 +6,7 @@ import org.apache.commons.dbutils.handlers.BeanHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitScheduler;
-import org.shrigorevich.ml.db.callbacks.IFindOneCallback;
+import org.shrigorevich.ml.domain.callbacks.IFindOneCallback;
 import org.shrigorevich.ml.domain.models.User;
 
 import javax.sql.DataSource;

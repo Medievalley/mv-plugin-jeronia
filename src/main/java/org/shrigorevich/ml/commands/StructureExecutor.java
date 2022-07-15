@@ -9,18 +9,18 @@ import org.bukkit.entity.Player;
 import org.shrigorevich.ml.db.models.CreateStructModel;
 import org.shrigorevich.ml.domain.enums.StructureType;
 import org.shrigorevich.ml.domain.models.User;
-import org.shrigorevich.ml.domain.services.IStructureCreatorService;
+import org.shrigorevich.ml.domain.services.IStructureService;
 import org.shrigorevich.ml.domain.services.IUserService;
 
 import java.util.Optional;
 
 public class StructureExecutor implements CommandExecutor {
-    private final IStructureCreatorService structCreator;
     private final IUserService userService;
+    private final IStructureService structService;
 
-    public StructureExecutor(IStructureCreatorService structCreator, IUserService userService) {
-        this.structCreator = structCreator;
+    public StructureExecutor(IUserService userService, IStructureService structService) {
         this.userService = userService;
+        this.structService = structService;
     }
 
     @Override
@@ -41,8 +41,8 @@ public class StructureExecutor implements CommandExecutor {
                         try {
                             Optional<User> u = userService.getFromOnlineList(player.getName());
                             if (u.isPresent())
-                                structCreator.createDefault(u.get(), ((result, msg) -> {
-                                    player.sendMessage(msg);
+                                structService.createDefault(u.get(), ((result, msg) -> {
+                                    //TODO: implement logic
                                 }));
                             else
                                 player.sendMessage("User not authorized");
@@ -60,7 +60,7 @@ public class StructureExecutor implements CommandExecutor {
     }
 
     private void setType(Player p, int typeId) {
-        CreateStructModel m = structCreator.getStruct(p.getName());
+        CreateStructModel m = structService.getStruct(p.getName());
         if (m == null) m = new CreateStructModel();
         StructureType t = null;
         for(StructureType st : StructureType.values()) {
