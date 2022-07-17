@@ -25,24 +25,23 @@ public class UserService implements IUserService {
 
         User user = userContext.getByName(userName);
 
-        System.out.printf("%s, %s, %s%n", user.getLastIp(), ip, user.getLastIp().equals(ip));
         if (user == null) {
             cb.onСheck(false, regMsg);
         }
         else if(!user.getLastIp().equals(ip)) {
             cb.onСheck(false, ipMsg);
         }
-        else if(!user.isConfirmed()) {
+        else if(!user.isVerified()) {
             cb.onСheck(false, confirmedMsg);
         }
-        else if (user.getLivesNumber() <= 0){
+        else if (user.getLives() <= 0){
             cb.onСheck(false, livesNumberMsg);
         }
         else if (getFromOnlineList(userName).isPresent()) {
             cb.onСheck(false, nameMsg);
         }
         else {
-            addInMemory(user);
+            addInOnlineList(user);
         }
     }
 
@@ -51,7 +50,7 @@ public class UserService implements IUserService {
         return user != null ? Optional.of(user) : Optional.empty();
     }
 
-    public void addInMemory(User user) {
+    public void addInOnlineList(User user) {
         onlineList.put(user.getName(), user);
     }
 }

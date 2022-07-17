@@ -10,6 +10,6 @@ public interface IUserService {
 
     Optional<User> getFromOnlineList(String name);
 
-    void addInMemory(User user);
+    void addInOnlineList(User user);
 
 }

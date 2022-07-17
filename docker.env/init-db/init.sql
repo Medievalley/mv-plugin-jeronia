@@ -46,22 +46,47 @@ CREATE TABLE IF NOT EXISTS structures (
     z2 INTEGER NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS volumes (
+    id SERIAL PRIMARY KEY,
+    size_x INTEGER NOT NULL,
+    size_y INTEGER NOT NULL,
+    size_z INTEGER NOT NULL,
+    name TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS volume_blocks (
+    id SERIAL PRIMARY KEY,
+    volume_id INTEGER REFERENCES volumes(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    material VARCHAR(255) NOT NULL,
+    x INTEGER,
+    y INTEGER,
+    z INTEGER
+);
+
+CREATE UNIQUE INDEX vol_block_idx ON volume_blocks (volume_id, x, y, z);
+
+INSERT INTO roles VALUES (1, 'Admin', 'Most privileged role');
+INSERT INTO struct_types (id, name, description)
+VALUES (0, 'default', 'default structure')
+VALUES (1, 'private', 'Private territory that each user can own')
+VALUES (2, 'lore', 'Lore structure that normally cannot be destroyed');
+
 -- MOCK SCRIPT
 
- INSERT INTO roles VALUES (1, 'Admin', 'Most privileged role');
- INSERT INTO struct_types (id, name, description) VALUES (0, 'default', 'default structure');
 -- with rows as (
 --     insert into users(
 --         username, 
 --         email, 
 --         password, 
---         lastip) 
+--         lastip,
+--         verified)
 --     values(
 --         'Smarkatch',
 --         'shrigorevich@gmail.com',
 --         'password',
---         '127.0.0.1'
+--         '127.0.0.1',
+--         false
 --     )
 --     returning id
 -- )
--- insert into player_data (userid, roleid) select id, 1 from rows;
+-- insert into player_data (userid, roleid, lives) select id, 1, 4 from rows;

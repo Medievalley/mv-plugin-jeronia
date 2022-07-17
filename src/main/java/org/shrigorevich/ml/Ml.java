@@ -11,6 +11,7 @@ import org.shrigorevich.ml.db.contexts.StructureContext;
 import org.shrigorevich.ml.db.contexts.UserContext;
 import org.shrigorevich.ml.domain.services.*;
 import org.shrigorevich.ml.listeners.PlayerInteract;
+import org.shrigorevich.ml.listeners.PreLogin;
 
 import javax.sql.DataSource;
 
@@ -35,6 +36,7 @@ public final class Ml extends JavaPlugin {
     @Override
     public void onEnable() {
         setupListeners();
+        setupExecutors();
     }
 
     @Override
@@ -45,7 +47,7 @@ public final class Ml extends JavaPlugin {
 
     private void setupListeners() {
         PluginManager pm = getServer().getPluginManager();
-        //pm.registerEvents(new PreLogin(userService), this);
+        pm.registerEvents(new PreLogin(userService), this);
         pm.registerEvents(new PlayerInteract(structService), this);
     }
 

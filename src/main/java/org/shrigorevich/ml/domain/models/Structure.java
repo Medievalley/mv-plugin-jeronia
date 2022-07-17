@@ -22,18 +22,18 @@ public class Structure implements IStructure {
     private final int x2, y2, z2;
 
     public Structure(GetStructModel m) {
-        this.id = m.id;
-        this.world = m.world;
-        this.name = m.name;
-        this.owner = m.owner;
-        this.destructible = m.destructible;
-        this.x1 = Math.min(m.x1, m.x2);
-        this.x2 = Math.max(m.x1, m.x2);
-        this.y1 = Math.min(m.y1, m.y2);
-        this.y2 = Math.max(m.y1, m.y2);
-        this.z1 = Math.min(m.z1, m.z2);
-        this.z2 = Math.max(m.z1, m.z2);
-        this.type = setType(m.typeId);
+        this.id = m.getId();
+        this.world = m.getWorld();
+        this.name = m.getName();
+        this.owner = m.getOwner();
+        this.destructible = m.isDestructible();
+        this.x1 = Math.min(m.getX1(), m.getX2());
+        this.x2 = Math.max(m.getX1(), m.getX2());
+        this.y1 = Math.min(m.getY1(), m.getY2());
+        this.y2 = Math.max(m.getY1(), m.getY2());
+        this.z1 = Math.min(m.getZ1(), m.getZ2());
+        this.z2 = Math.max(m.getZ1(), m.getZ2());
+        this.type = setType(m.getTypeId());
     }
 
     public StructureType getType() {
@@ -275,6 +275,7 @@ public class Structure implements IStructure {
             this.sizeY = Math.abs(y2 - y1) + 1;
             this.sizeZ = Math.abs(z2 - z1) + 1;
             this.x = this.y = this.z = 0;
+            System.out.println(String.format("Cuboid iterator: %d, %d, %d", sizeX, sizeY, sizeZ));
         }
 
         public boolean hasNext() {

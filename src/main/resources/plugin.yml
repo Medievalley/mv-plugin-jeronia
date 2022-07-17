@@ -2,3 +2,9 @@ name: Ml
 version: '${project.version}'
 main: org.shrigorevich.ml.Ml
 api-version: 1.19
+commands:
+  struct:
+    description: "Structure management"
+    aliases: [ s ]
+    usage: "Usage: /<command> type name isDestructible"
+

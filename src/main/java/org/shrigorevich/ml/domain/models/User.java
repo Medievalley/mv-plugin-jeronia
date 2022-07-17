@@ -5,8 +5,8 @@ public class User {
     private int id;
     private String name;
     private String lastIp;
-    private int livesNumber;
-    private boolean confirmed;
+    private int lives;
+    private boolean verified;
     private String roleName;
 
     public int getId() {
@@ -20,12 +20,12 @@ public class User {
         return lastIp;
     }
 
-    public int getLivesNumber() {
-        return livesNumber;
+    public int getLives() {
+        return lives;
     }
 
-    public boolean isConfirmed() {
-        return confirmed;
+    public boolean isVerified() {
+        return verified;
     }
 
     public String getRoleName() {
@@ -40,12 +40,16 @@ public class User {
         this.lastIp = lastIp;
     }
 
-    public void setLivesNumber(int livesNumber) {
-        this.livesNumber = livesNumber;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public void setConfirmed(boolean confirmed) {
-        this.confirmed = confirmed;
+    public void setLives(int lives) {
+        this.lives = lives;
+    }
+
+    public void setVerified(boolean verified) {
+        this.verified = verified;
     }
 
     public void setRoleName(String roleName) {

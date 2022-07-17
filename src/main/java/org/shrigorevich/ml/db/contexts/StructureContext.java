@@ -9,7 +9,8 @@ import org.bukkit.Location;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.shrigorevich.ml.domain.callbacks.IFindOneCallback;
-import org.shrigorevich.ml.domain.callbacks.IStructureCallback;
+import org.shrigorevich.ml.domain.callbacks.IFindStructCallback;
+import org.shrigorevich.ml.domain.callbacks.ISaveStructCallback;
 import org.shrigorevich.ml.db.models.CreateStructModel;
 import org.shrigorevich.ml.db.models.GetStructModel;
 import org.shrigorevich.ml.domain.models.IStructure;
@@ -36,7 +37,7 @@ public class StructureContext implements IStructureContext {
 
     }
 
-    public void saveAsync(CreateStructModel st, IStructureCallback cb) {
+    public void saveAsync(CreateStructModel st, ISaveStructCallback cb) {
         scheduler.runTaskAsynchronously(plugin, () -> {
             try {
 
@@ -48,16 +49,17 @@ public class StructureContext implements IStructureContext {
                         "RETURNING *",
                         st.name, st.typeId, st.ownerId, st.destructible, st.world, st.x1, st.y1, st.z1, st.x2, st.y2, st.z2), h);
 
-                scheduler.runTask(plugin, () -> cb.structSaved(Optional.of(m),true, "Ok"));
+                scheduler.runTask(plugin, () -> cb.done(Optional.of(m), true, "Ok"));
 
             } catch (SQLException ex) {
                 plugin.getLogger().severe(ex.toString());
-                cb.structSaved(Optional.empty(), false, ex.toString());
+                cb.done(Optional.empty(), false, ex.toString());
             }
         });
     }
 
-    // Write SQL query
+    //TODO: refactore
+    @Deprecated
     public void getStructuresAsync(Location l, IFindOneCallback cb) {
         scheduler.runTaskAsynchronously(plugin, () -> {
             try {
@@ -69,6 +71,27 @@ public class StructureContext implements IStructureContext {
 
             } catch (SQLException ex) {
                 plugin.getLogger().severe(ex.toString());
+            }
+        });
+    }
+
+    public void getByIdAsync(int id, IFindStructCallback cb) {
+        scheduler.runTaskAsynchronously(plugin, () -> {
+            try {
+                QueryRunner run = new QueryRunner(dataSource);
+                ResultSetHandler<GetStructModel> h = new BeanHandler(GetStructModel.class);
+                String sql = String.format("select s.id, s.name, s.typeId, s.destructible, s.world, s.x1, s.y1, s.z1, s.x2, s.y2, s.z2, \n" +
+                        "u.username as owner\n" +
+                        "from structures s join users u on s.ownerid = u.id\n" +
+                        "where s.id=%d;", id);
+
+                GetStructModel s = run.query(sql, h);
+                Optional<GetStructModel> struct = s == null ? Optional.empty() : Optional.of(s);
+
+                scheduler.runTask(plugin, () -> cb.done(struct, "ok")); //TODO: refactor msg
+
+            } catch (SQLException ex) {
+                plugin.getLogger().severe("StructContext:90. Exception: " + ex.toString());
             }
         });
     }

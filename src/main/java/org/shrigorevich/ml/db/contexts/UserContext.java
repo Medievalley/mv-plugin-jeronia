@@ -46,12 +46,12 @@ public class UserContext implements IUserContext {
         try {
             QueryRunner run = new QueryRunner(dataSource);
             ResultSetHandler<User> h = new BeanHandler<>(User.class);
-            User user = run.query(String.format("SELECT u.username as name, u.lastip, u.confirmed, ud.livesnumber, r.name as rolename \n" +
-                    "from users u JOIN user_data ud on u.id = ud.userid JOIN roles r on r.id = ud.roleid \n" +
+            User user = run.query(String.format("SELECT u.id, u.username as name, u.lastip, u.verified, ud.lives, r.name as rolename \n" +
+                    "from users u JOIN player_data ud on u.id = ud.userid JOIN roles r on r.id = ud.roleid \n" +
                     "WHERE u.username = '%s'", name), h);
 
             if (user != null) {
-                System.out.printf("%s, %s, %s, %s, %s%n", user.getName(), user.getLastIp(), user.getLivesNumber(), user.getRoleName(), user.isConfirmed());
+                System.out.printf("%s, %s, %s, %s, %s%n", user.getName(), user.getLastIp(), user.getLives(), user.getRoleName(), user.isVerified());
             }
             return user;
 

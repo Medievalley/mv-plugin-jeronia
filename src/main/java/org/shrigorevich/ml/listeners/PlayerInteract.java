@@ -2,6 +2,7 @@ package org.shrigorevich.ml.listeners;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -22,6 +23,7 @@ public class PlayerInteract implements Listener {
 
         Action action = event.getAction();
         Player p = event.getPlayer();
+
         if (event.getMaterial() == Material.STICK && action.equals(Action.RIGHT_CLICK_BLOCK)) {
             p.sendMessage(action + " " + event.getMaterial());
             structureService.setCorner(p.getName(), event.getClickedBlock().getLocation());
