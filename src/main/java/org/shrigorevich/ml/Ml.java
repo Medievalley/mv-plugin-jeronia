@@ -37,6 +37,7 @@ public final class Ml extends JavaPlugin {
     public void onEnable() {
         setupListeners();
         setupExecutors();
+        structService.loadStructures();
     }
 
     @Override

@@ -36,10 +36,6 @@ public class StructureContext implements IStructureContext {
         this.scheduler = Bukkit.getScheduler();
     }
 
-    public void loadAll() {
-
-    }
-
     public void saveAsync(CreateStructModel st, ISaveStructCallback cb) {
         scheduler.runTaskAsynchronously(plugin, () -> {
             try {
@@ -111,7 +107,7 @@ public class StructureContext implements IStructureContext {
 
 
 
-                Object[][] volumeBlockValues = new Object[blockList.size()][5];
+                Object[][] volumeBlockValues = new Object[blockList.size()][6];
                 int offsetX = blockList.get(0).getX();
                 int offsetY = blockList.get(0).getY();
                 int offsetZ = blockList.get(0).getZ();
@@ -120,13 +116,14 @@ public class StructureContext implements IStructureContext {
                     volumeBlockValues[i] = new Object[] {
                             volumeId,
                             b.getType().toString(),
+                            b.getBlockData().getAsString(),
                             b.getX() - offsetX,
                             b.getY() - offsetY,
-                            b.getZ() - offsetZ
+                            b.getZ() - offsetZ,
                         };
                 }
 
-                sql = "INSERT INTO volume_blocks (volume_id, type, x, y, z) VALUES (?, ?, ?, ?, ?)";
+                sql = "INSERT INTO volume_blocks (volume_id, type, block_data, x, y, z) VALUES (?, ?, ?, ?, ?, ?)";
                 int rows[] = run.batch(sql, volumeBlockValues);
                 System.out.println(rows.length);
 
@@ -143,7 +140,7 @@ public class StructureContext implements IStructureContext {
             try {
                 QueryRunner run = new QueryRunner(dataSource);
                 ResultSetHandler<List<VolumeBlock>> volumeHandler = new BeanListHandler(VolumeBlock.class);
-                String sql = String.format("SELECT * FROM volume_blocks where volume_id=%d;", id);
+                String sql = String.format("SELECT type, block_data as blockdata, x, y, z FROM volume_blocks where volume_id=%d;", id);
                 List<VolumeBlock> blocks = run.query(sql, volumeHandler);
                 scheduler.runTask(plugin, () -> cb.volumeFound(true, blocks));
             } catch (SQLException ex) {
@@ -151,5 +148,22 @@ public class StructureContext implements IStructureContext {
                 cb.volumeFound(false, new ArrayList<>(0));
             }
         });
+    }
+
+    public void getStructures(IGetStructsCallback cb) {
+        try {
+            QueryRunner run = new QueryRunner(dataSource);
+            ResultSetHandler<List<GetStructModel>> h = new BeanListHandler(GetStructModel.class);
+            String sql = String.format("select s.id, s.name, s.typeId, s.destructible, s.world, s.x1, s.y1, s.z1, s.x2, s.y2, s.z2, \n" +
+                    "u.username as owner\n" +
+                    "from structures s join users u on s.ownerid = u.id");
+
+            List<GetStructModel> structs = run.query(sql, h);
+
+            scheduler.runTask(plugin, () -> cb.found(structs));
+
+        } catch (SQLException ex) {
+            plugin.getLogger().severe("StructContext: Exception: " + ex.getMessage());
+        }
     }
 }

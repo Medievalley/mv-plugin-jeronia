@@ -1,10 +1,13 @@
 package org.shrigorevich.ml.domain.services;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
 import org.shrigorevich.ml.db.models.Volume;
+import org.shrigorevich.ml.db.models.VolumeBlock;
 import org.shrigorevich.ml.domain.callbacks.IResultCallback;
 import org.shrigorevich.ml.domain.callbacks.ISaveStructCallback;
 import org.shrigorevich.ml.db.contexts.IStructureContext;
@@ -43,7 +46,6 @@ public class StructureService implements IStructureService {
             throw new Exception("Structure location not set");
         }
         applyLocation(m, corners.get(0), corners.get(1));
-        System.out.println(type.toUpperCase()); //TODO: remove
         m.typeId = StructureType.valueOf(type.toUpperCase()).getTypeId();
         m.destructible = destructible;
         m.name = name;
@@ -170,8 +172,9 @@ public class StructureService implements IStructureService {
                 if (res && volumeBlocks.size() > 0) {
                     List<Block> structBlocks = struct.get().getBlocks();
                     for(int i = 0; i < structBlocks.size(); i ++) {
-                        Material type = Material.valueOf(volumeBlocks.get(i).getType());
-                        structBlocks.get(i).setType(type);
+                        VolumeBlock vb = volumeBlocks.get(i);
+                        BlockData bd = Bukkit.createBlockData(vb.getBlockData());
+                        structBlocks.get(i).setBlockData(bd);
                     }
                 } else {
                     cb.sendResult(false, "Volume not found");
@@ -182,28 +185,13 @@ public class StructureService implements IStructureService {
         }
     }
 
-    @Deprecated
-    public void createDefault(User user, IResultCallback cb) throws Exception {
-        CreateStructModel m = new CreateStructModel();
-        ArrayList<Location> corners = structCorners.get(user.getName());
-        if (corners == null || corners.size() != 2) {
-            throw new Exception("Structure location not set");
-        }
-        applyLocation(m, corners.get(0), corners.get(1));
-        m.typeId = StructureType.DEFAULT.getTypeId();
-        m.destructible = false;
-        m.name = String.format("%s`s structure", user.getName());
-        m.ownerId = user.getId();
-        m.world = corners.get(0).getWorld().getName();
-
-        saveStruct(m, (model, result, msg) -> {
-            if (result && model.isPresent()) {
-                IStructure s = registerStructure(model.get());
-                cb.sendResult(true, "gg"); //TODO: refactor message
-            } else {
-                cb.sendResult(false, "gg"); //TODO: refactor message
+    public void loadStructures() {
+        structureContext.getStructures((structs -> {
+            for (GetStructModel s : structs) {
+                registerStructure(s);
             }
-        });
+            Bukkit.getLogger().info("Loaded structs number: " + structures.size());
+        }));
     }
 }
 

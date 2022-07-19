@@ -4,7 +4,7 @@ import org.bukkit.Material;
 
 public class VolumeBlock {
     private int x, y, z;
-    private String type;
+    private String type, blockData;
 
     public int getX() {
         return x;
@@ -36,5 +36,13 @@ public class VolumeBlock {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getBlockData() {
+        return blockData;
+    }
+
+    public void setBlockData(String blockData) {
+        this.blockData = blockData;
     }
 }

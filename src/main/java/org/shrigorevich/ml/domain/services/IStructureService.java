@@ -18,12 +18,11 @@ public interface IStructureService {
 
     void saveStruct(CreateStructModel m, ISaveStructCallback cb);
 
-    void createDefault(User user, IResultCallback cb) throws Exception;
-
     void getByIdAsync(int id);
 
     void saveStructVolume(String userName, String volumeName, IResultCallback cb);
     void selectStructByLocation(String userName, Location l, IResultCallback cb);
 
     void applyVolumeToStruct(int structId, int volumeId, IResultCallback cb);
+    void loadStructures();
 }

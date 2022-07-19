@@ -9,12 +9,10 @@ import java.util.List;
 
 public interface IStructureContext {
 
-    void loadAll();
     void saveAsync(CreateStructModel struct, ISaveStructCallback cb);
     void getStructuresAsync(Location l, IFindOneCallback cb);
     void getByIdAsync(int id, IFindStructCallback cb);
-
     void saveStructVolumeAsync(Volume volume, List<Block> blockList, ISaveVolumeCallback cb);
-
     void getVolumeByIdAsync(int id, IGetVolumeCallback cb);
+    void getStructures(IGetStructsCallback cb);
 }
