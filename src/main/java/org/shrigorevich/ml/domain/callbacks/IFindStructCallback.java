@@ -6,5 +6,5 @@ import java.util.Optional;
 
 public interface IFindStructCallback {
 
-    void done(Optional<GetStructModel> m, String msg);
+    void done(Optional<GetStructModel> m);
 }

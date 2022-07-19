@@ -29,31 +29,49 @@ public class StructureExecutor implements CommandExecutor {
             if(sender instanceof Player){
                 Player player = (Player) sender;
 
-                switch (args[0].toLowerCase()) {
-                    case "find":
-                        structService.getByIdAsync(Integer.parseInt(args[1]));
-                        break;
-                    case "create":
-                        try {
+                try {
+                    switch (args[0].toLowerCase()) {
+                        case "find":
+                            structService.getByIdAsync(Integer.parseInt(args[1]));
+                            break;
+                        case "c":
+                        case "create":
                             Optional<User> u = userService.getFromOnlineList(player.getName());
                             if (u.isPresent())
                                 structService.create(
                                         u.get(), args[1], args[2],
                                         Boolean.parseBoolean(args[3]),
                                         (result, msg) -> {
-                                            //TODO: implement logic
+                                            player.sendMessage(msg);
                                         }
                                 );
                             else
                                 player.sendMessage(ChatColor.RED + "User not authorized");
-                        } catch (Exception ex) {
-                            Bukkit.getLogger().severe(ex.toString());
-                            player.sendMessage(ChatColor.RED + ex.getMessage());
-                        }
-                        break;
-                    default:
-                        player.sendMessage(ChatColor.YELLOW + String.format("Command '%s' not found", args[0]));
-                        break;
+                            break;
+                        case "sv":
+                        case "save_volume":
+                            structService.saveStructVolume(player.getName(), args[1], (res, msg) -> {
+                                player.sendMessage(msg);
+                            });
+                            break;
+                        case "av":
+                        case "apply_volume":
+                            structService.applyVolumeToStruct(Integer.parseInt(args[1]), Integer.parseInt(args[2]), (res, msg) -> {
+                                player.sendMessage(msg);
+                            });
+                            break;
+                        default:
+                            player.sendMessage(ChatColor.YELLOW + String.format("Command '%s' not found", args[0]));
+                            break;
+                    }
+                }
+                catch (ArrayIndexOutOfBoundsException ex) {
+                    Bukkit.getLogger().severe(ex.toString());
+                    player.sendMessage(ChatColor.RED + ex.getMessage());
+                }
+                catch (Exception ex) {
+                    Bukkit.getLogger().severe(ex.toString());
+                    player.sendMessage(ChatColor.RED + ex.getMessage());
                 }
             } else {
                 System.out.println("You can`t use this command through console");

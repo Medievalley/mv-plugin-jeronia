@@ -4,13 +4,15 @@ import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.BeanHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
+import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitScheduler;
-import org.shrigorevich.ml.domain.callbacks.IFindOneCallback;
-import org.shrigorevich.ml.domain.callbacks.IFindStructCallback;
-import org.shrigorevich.ml.domain.callbacks.ISaveStructCallback;
+import org.shrigorevich.ml.db.models.Volume;
+import org.shrigorevich.ml.db.models.VolumeBlock;
+import org.shrigorevich.ml.domain.callbacks.*;
 import org.shrigorevich.ml.db.models.CreateStructModel;
 import org.shrigorevich.ml.db.models.GetStructModel;
 import org.shrigorevich.ml.domain.models.IStructure;
@@ -18,6 +20,7 @@ import org.shrigorevich.ml.domain.models.Structure;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -88,10 +91,64 @@ public class StructureContext implements IStructureContext {
                 GetStructModel s = run.query(sql, h);
                 Optional<GetStructModel> struct = s == null ? Optional.empty() : Optional.of(s);
 
-                scheduler.runTask(plugin, () -> cb.done(struct, "ok")); //TODO: refactor msg
+                scheduler.runTask(plugin, () -> cb.done(struct));
 
             } catch (SQLException ex) {
                 plugin.getLogger().severe("StructContext:90. Exception: " + ex.toString());
+            }
+        });
+    }
+
+    public void saveStructVolumeAsync(Volume v, List<Block> blockList, ISaveVolumeCallback cb) {
+        scheduler.runTaskAsynchronously(plugin, () -> {
+            try {
+                QueryRunner run = new QueryRunner(dataSource);
+                ResultSetHandler<Integer> volumeHandler = new ScalarHandler<>();
+                String sql = String.format(
+                        "INSERT INTO volumes (name, size_x, size_y, size_z) VALUES ('%s', %d, %d, %d) returning id;",
+                        v.getName(), v.getSizeX(), v.getSizeY(), v.getSizeZ());
+                int volumeId = run.query(sql, volumeHandler);
+
+
+
+                Object[][] volumeBlockValues = new Object[blockList.size()][5];
+                int offsetX = blockList.get(0).getX();
+                int offsetY = blockList.get(0).getY();
+                int offsetZ = blockList.get(0).getZ();
+                for (int i = 0; i < blockList.size(); i++) {
+                    Block b = blockList.get(i);
+                    volumeBlockValues[i] = new Object[] {
+                            volumeId,
+                            b.getType().toString(),
+                            b.getX() - offsetX,
+                            b.getY() - offsetY,
+                            b.getZ() - offsetZ
+                        };
+                }
+
+                sql = "INSERT INTO volume_blocks (volume_id, type, x, y, z) VALUES (?, ?, ?, ?, ?)";
+                int rows[] = run.batch(sql, volumeBlockValues);
+                System.out.println(rows.length);
+
+                scheduler.runTask(plugin, () -> cb.volumeSaved(true, volumeId));
+
+            } catch (SQLException ex) {
+                plugin.getLogger().severe("StructContext: Exception: " + ex);
+            }
+        });
+    }
+
+    public void getVolumeByIdAsync(int id, IGetVolumeCallback cb) {
+        scheduler.runTaskAsynchronously(plugin, () -> {
+            try {
+                QueryRunner run = new QueryRunner(dataSource);
+                ResultSetHandler<List<VolumeBlock>> volumeHandler = new BeanListHandler(VolumeBlock.class);
+                String sql = String.format("SELECT * FROM volume_blocks where volume_id=%d;", id);
+                List<VolumeBlock> blocks = run.query(sql, volumeHandler);
+                scheduler.runTask(plugin, () -> cb.volumeFound(true, blocks));
+            } catch (SQLException ex) {
+                plugin.getLogger().severe("StructContext: Exception: " + ex);
+                cb.volumeFound(false, new ArrayList<>(0));
             }
         });
     }

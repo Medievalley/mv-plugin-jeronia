@@ -6,5 +6,8 @@ commands:
   struct:
     description: "Structure management"
     aliases: [ s ]
-    usage: "Usage: /<command> type name isDestructible"
+    usage: "/<command> create | c [type] [name] [isDestructible] \n 
+            /<command> save_volume | sv [volumeName] \n
+            /<command> apply_volume | av [structId] [volumeId]"
+
 

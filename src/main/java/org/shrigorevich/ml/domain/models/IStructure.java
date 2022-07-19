@@ -1,4 +1,5 @@
 package org.shrigorevich.ml.domain.models;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.shrigorevich.ml.domain.enums.StructureType;
@@ -21,4 +22,6 @@ public interface IStructure {
     int getZ2();
 
     List<Block> getBlocks();
+
+    boolean contains(Location l);
 }

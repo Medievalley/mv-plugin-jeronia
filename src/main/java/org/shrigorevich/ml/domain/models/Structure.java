@@ -275,7 +275,6 @@ public class Structure implements IStructure {
             this.sizeY = Math.abs(y2 - y1) + 1;
             this.sizeZ = Math.abs(z2 - z1) + 1;
             this.x = this.y = this.z = 0;
-            System.out.println(String.format("Cuboid iterator: %d, %d, %d", sizeX, sizeY, sizeZ));
         }
 
         public boolean hasNext() {
