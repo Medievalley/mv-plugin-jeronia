@@ -10,8 +10,10 @@ import org.shrigorevich.ml.db.contexts.IUserContext;
 import org.shrigorevich.ml.db.contexts.StructureContext;
 import org.shrigorevich.ml.db.contexts.UserContext;
 import org.shrigorevich.ml.domain.services.*;
+import org.shrigorevich.ml.listeners.BlockBreak;
+import org.shrigorevich.ml.listeners.BlockExplode;
 import org.shrigorevich.ml.listeners.PlayerInteract;
-import org.shrigorevich.ml.listeners.PreLogin;
+import org.shrigorevich.ml.listeners.Auth;
 
 import javax.sql.DataSource;
 
@@ -48,8 +50,10 @@ public final class Ml extends JavaPlugin {
 
     private void setupListeners() {
         PluginManager pm = getServer().getPluginManager();
-        pm.registerEvents(new PreLogin(userService), this);
+        pm.registerEvents(new Auth(userService), this);
         pm.registerEvents(new PlayerInteract(structService), this);
+        pm.registerEvents(new BlockExplode(structService), this);
+        pm.registerEvents(new BlockBreak(structService), this);
     }
 
     private void setupExecutors() {

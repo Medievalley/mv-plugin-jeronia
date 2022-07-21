@@ -24,4 +24,8 @@ public interface IStructure {
     List<Block> getBlocks();
 
     boolean contains(Location l);
+
+    int getSizeX();
+    int getSizeY();
+    int getSizeZ();
 }

@@ -23,6 +23,6 @@ public interface IStructureService {
     void saveStructVolume(String userName, String volumeName, IResultCallback cb);
     void selectStructByLocation(String userName, Location l, IResultCallback cb);
 
-    void applyVolumeToStruct(int structId, int volumeId, IResultCallback cb);
+    void applyVolumeToStruct(int structId, int volumeId, IResultCallback cb) throws IllegalArgumentException;
     void loadStructures();
 }

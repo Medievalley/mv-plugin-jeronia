@@ -4,6 +4,7 @@ import org.shrigorevich.ml.domain.callbacks.IAccessCheckCallback;
 import org.shrigorevich.ml.db.contexts.IUserContext;
 import org.shrigorevich.ml.domain.models.User;
 
+import javax.swing.text.html.Option;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -23,25 +24,25 @@ public class UserService implements IUserService {
                 livesNumberMsg = "Your character has no lives left:)",
                 confirmedMsg = "You have not verified your email";
 
-        User user = userContext.getByName(userName);
+        Optional<User> user = userContext.getByName(userName);
 
-        if (user == null) {
+        if (!user.isPresent()) {
             cb.onСheck(false, regMsg);
         }
-        else if(!user.getLastIp().equals(ip)) {
+        else if(!user.get().getIp().equals(ip)) {
             cb.onСheck(false, ipMsg);
         }
-        else if(!user.isVerified()) {
+        else if(!user.get().isVerified()) {
             cb.onСheck(false, confirmedMsg);
         }
-        else if (user.getLives() <= 0){
+        else if (user.get().getLives() <= 0){
             cb.onСheck(false, livesNumberMsg);
         }
         else if (getFromOnlineList(userName).isPresent()) {
             cb.onСheck(false, nameMsg);
         }
         else {
-            addInOnlineList(user);
+            addInOnlineList(user.get());
         }
     }
 
@@ -52,5 +53,9 @@ public class UserService implements IUserService {
 
     public void addInOnlineList(User user) {
         onlineList.put(user.getName(), user);
+    }
+
+    public void removeFromOnlineList(String name) {
+        onlineList.remove(name);
     }
 }

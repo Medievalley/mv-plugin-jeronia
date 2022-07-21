@@ -4,7 +4,7 @@ public class User {
 
     private int id;
     private String name;
-    private String lastIp;
+    private String ip;
     private int lives;
     private boolean verified;
     private String roleName;
@@ -16,8 +16,8 @@ public class User {
         return name;
     }
 
-    public String getLastIp() {
-        return lastIp;
+    public String getIp() {
+        return ip;
     }
 
     public int getLives() {
@@ -36,8 +36,8 @@ public class User {
         this.name = name;
     }
 
-    public void setLastIp(String lastIp) {
-        this.lastIp = lastIp;
+    public void setIp(String ip) {
+        this.ip = ip;
     }
 
     public void setId(int id) {

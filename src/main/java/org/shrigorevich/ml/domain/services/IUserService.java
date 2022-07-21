@@ -11,5 +11,6 @@ public interface IUserService {
     Optional<User> getFromOnlineList(String name);
 
     void addInOnlineList(User user);
+    void removeFromOnlineList(String name);
 
 }

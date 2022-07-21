@@ -69,6 +69,10 @@ public class StructureExecutor implements CommandExecutor {
                     Bukkit.getLogger().severe(ex.toString());
                     player.sendMessage(ChatColor.RED + ex.getMessage());
                 }
+                catch (IllegalArgumentException ex) {
+                    Bukkit.getLogger().severe(ex.toString());
+                    player.sendMessage(ChatColor.RED + ex.getMessage());
+                }
                 catch (Exception ex) {
                     Bukkit.getLogger().severe(ex.toString());
                     player.sendMessage(ChatColor.RED + ex.getMessage());

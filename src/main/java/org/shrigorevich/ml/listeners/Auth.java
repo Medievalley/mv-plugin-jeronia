@@ -5,12 +5,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.shrigorevich.ml.domain.services.IUserService;
 
-public class PreLogin implements Listener {
+public class Auth implements Listener {
 
     IUserService userService;
-    public PreLogin(IUserService userService) {
+    public Auth(IUserService userService) {
         this.userService = userService;
     }
 
@@ -23,5 +24,10 @@ public class PreLogin implements Listener {
                 event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Component.text(msg));
             }
         });
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void Logout(PlayerQuitEvent event) {
+        userService.removeFromOnlineList(event.getPlayer().getName());
     }
 }

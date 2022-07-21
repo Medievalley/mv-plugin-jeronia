@@ -63,7 +63,7 @@ public class StructureService implements IStructureService {
     }
 
     public void saveStruct(CreateStructModel m, ISaveStructCallback cb) {
-        structureContext.saveAsync(m, cb);
+        structureContext.save(m, cb);
     }
 
     private void applyLocation(CreateStructModel m, Location l1, Location l2) {
@@ -73,7 +73,7 @@ public class StructureService implements IStructureService {
         m.x2 = Math.max(l1.getBlockX(), l2.getBlockX());
         m.y2 = Math.max(l1.getBlockY(), l2.getBlockY());
         m.z2 = Math.max(l1.getBlockZ(), l2.getBlockZ());
-    };
+    }
 
     public void setCorner(String key, Location l) {
         ArrayList<Location> corners = structCorners.get(key);
@@ -91,30 +91,30 @@ public class StructureService implements IStructureService {
         return structCorners.get(key);
     }
 
-    public IStructure registerStructure(GetStructModel m) { //TODO: error handling
+    public IStructure registerStructure(GetStructModel m) {
         IStructure s = new Structure(m);
         structures.put(s.getId(), s);
-        return s; //TODO: verify that struct in hashmap is also updated
+        return s;
     }
 
     public void getByIdAsync(int id) {
-        structureContext.getByIdAsync(id, (model) -> {
-            if (model.isPresent()) {
-                GetStructModel m = model.get();
-                System.out.println(String.format("Model: %d, %s, %s, %b, %s, %d, %d",
-                        m.getId(),
-                        m.getName(),
-                        m.getWorld(),
-                        m.isDestructible(),
-                        m.getOwner(),
-                        m.getTypeId(),
-                        m.getX1()));
+        Optional<GetStructModel> model = structureContext.getById(id);
 
-                IStructure s = registerStructure(m);
-                List<Block> blockList = s.getBlocks();
-                System.out.println(blockList.size());
-            }
-        });
+        if (model.isPresent()) {
+            GetStructModel m = model.get();
+            System.out.println(String.format("Model: %d, %s, %s, %b, %s, %d, %d",
+                    m.getId(),
+                    m.getName(),
+                    m.getWorld(),
+                    m.isDestructible(),
+                    m.getOwner(),
+                    m.getTypeId(),
+                    m.getX1()));
+
+            IStructure s = registerStructure(m);
+            List<Block> blockList = s.getBlocks();
+            System.out.println(blockList.size());
+        }
     }
     private Optional<IStructure> getRegisteredStructById (int id) {
         IStructure struct = structures.get(id);
@@ -157,41 +157,52 @@ public class StructureService implements IStructureService {
                     s.getY2() - s.getY1() + 1,
                     s.getZ2() - s.getZ1() + 1
             );
-            structureContext.saveStructVolumeAsync(v, blockList, (res, volumeId) -> {
-                cb.sendResult(res, String.format("VolumeId: %d", volumeId));
-            });
+            structureContext.saveStructVolume(v, blockList,
+                    (res, volumeId) -> cb.sendResult(res, String.format("VolumeId: %d", volumeId)));
         } else {
-            cb.sendResult(false, ChatColor.YELLOW + "Please choose struct by right click to any struct block");
+            cb.sendResult(false, "Please choose struct by right click to any struct block");
         }
     }
 
-    public void applyVolumeToStruct(int structId, int volumeId, IResultCallback cb) {
+    public void applyVolumeToStruct(int structId, int volumeId, IResultCallback cb) throws IllegalArgumentException {
+
         Optional<IStructure> struct = this.getRegisteredStructById(structId);
-        if (struct.isPresent()) {
-            structureContext.getVolumeByIdAsync(volumeId, (res, volumeBlocks) -> {
-                if (res && volumeBlocks.size() > 0) {
-                    List<Block> structBlocks = struct.get().getBlocks();
-                    for(int i = 0; i < structBlocks.size(); i ++) {
-                        VolumeBlock vb = volumeBlocks.get(i);
-                        BlockData bd = Bukkit.createBlockData(vb.getBlockData());
-                        structBlocks.get(i).setBlockData(bd);
-                    }
-                } else {
-                    cb.sendResult(false, "Volume not found");
-                }
-            });
-        } else {
-            cb.sendResult(false, String.format("Stuct %s not found", structId));
+        if (!struct.isPresent()) throw new IllegalArgumentException(String.format("Stuct %d not found", structId));
+
+        Optional<Volume> volume = structureContext.getVolumeById(volumeId);
+        if (!volume.isPresent()) throw new IllegalArgumentException(String.format("Volume %d not found", volumeId));
+
+        if(!isSizeEqual(struct.get(), volume.get()))
+            throw new IllegalArgumentException("Structure and volume sizes are not equal");
+
+        structureContext.setStructVolume(structId, volumeId);
+
+        List<VolumeBlock> volumeBlocks = structureContext.getVolumeBlocks(volumeId);
+
+        List<Block> structBlocks = struct.get().getBlocks();
+        for(int i = 0; i < volumeBlocks.size(); i ++) {
+            VolumeBlock vb = volumeBlocks.get(i);
+            BlockData bd = Bukkit.createBlockData(vb.getBlockData());
+            structBlocks.get(i).setBlockData(bd);
         }
     }
 
     public void loadStructures() {
-        structureContext.getStructures((structs -> {
-            for (GetStructModel s : structs) {
-                registerStructure(s);
-            }
-            Bukkit.getLogger().info("Loaded structs number: " + structures.size());
-        }));
+        List<GetStructModel> structs = structureContext.getStructures();
+        for (GetStructModel s : structs) {
+            registerStructure(s);
+        }
+        Bukkit.getLogger().info("Loaded structs number: " + structures.size());
+    }
+
+    public void ProcessExplodedBlocksAsync(List<Block> blocks) {
+
+    }
+
+    private boolean isSizeEqual(IStructure struct, Volume volume) {
+        return struct.getSizeX() == volume.getSizeX() &&
+                struct.getSizeY() == volume.getSizeY() &&
+                struct.getSizeZ() == volume.getSizeZ();
     }
 }
 
