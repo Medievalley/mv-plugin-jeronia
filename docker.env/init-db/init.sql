@@ -75,7 +75,6 @@ CREATE TABLE IF NOT EXISTS broken_blocks (
 
 INSERT INTO roles VALUES (1, 'Admin', 'Most privileged role');
 INSERT INTO struct_types (id, name, description) VALUES
-(0, 'default', 'default structure'),
 (1, 'private', 'Private territory that each user can own'),
 (2, 'lore', 'Lore structure that normally cannot be destroyed');
 

@@ -1,5 +1,6 @@
 package org.shrigorevich.ml;
 
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.shrigorevich.ml.commands.StructureExecutor;
@@ -39,7 +40,11 @@ public final class Ml extends JavaPlugin {
     public void onEnable() {
         setupListeners();
         setupExecutors();
-        structService.loadStructures();
+        try {
+            structService.loadStructures();
+        } catch (IllegalArgumentException ex) {
+            Bukkit.getLogger().severe(ex.getMessage());
+        }
     }
 
     @Override

@@ -195,10 +195,15 @@ public class StructureService implements IStructureService {
         Bukkit.getLogger().info("Loaded structs number: " + structures.size());
     }
 
-    public void ProcessExplodedBlocksAsync(List<Block> blocks) {
-
-    }
-
+//    public void ProcessExplodedBlockAsync(Block block) {
+//        Optional<IStructure> struct = getByLocation(block.getLocation());
+//        if (struct.isPresent() && struct.get().getV) {
+//            Optional<>
+//        }
+//        if (struct.get().getType() != StructureType.PRIVATE) {
+//            structureContext.sa
+//        }
+//    }
     private boolean isSizeEqual(IStructure struct, Volume volume) {
         return struct.getSizeX() == volume.getSizeX() &&
                 struct.getSizeY() == volume.getSizeY() &&

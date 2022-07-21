@@ -130,9 +130,11 @@ public class StructureContext implements IStructureContext {
         try {
             QueryRunner run = new QueryRunner(dataSource);
             ResultSetHandler<List<GetStructModel>> h = new BeanListHandler(GetStructModel.class);
-            String sql = String.format("select s.id, s.name, s.type_Id as typeid, s.destructible, s.world, s.x1, s.y1, s.z1, s.x2, s.y2, s.z2, \n" +
+            String sql = String.format(
+                    "SELECT s.id, s.name, s.type_Id as typeid, s.volume_id as volumeid, s.destructible, " +
+                    "s.world, s.x1, s.y1, s.z1, s.x2, s.y2, s.z2, \n" +
                     "u.username as owner\n" +
-                    "from structures s join users u on s.owner_id = u.id");
+                    "FROM structures s JOIN users u ON s.owner_id = u.id");
 
             List<GetStructModel> structs = run.query(sql, h);
 
@@ -154,7 +156,7 @@ public class StructureContext implements IStructureContext {
         }
     }
 
-    public void saveBrokenBlocks(List<Block> blocks) {
+    public void saveBrokenBlock(Block block, int structId) {
         try {
             QueryRunner run = new QueryRunner(dataSource);
             ResultSetHandler<List<GetStructModel>> h = new BeanListHandler(GetStructModel.class);

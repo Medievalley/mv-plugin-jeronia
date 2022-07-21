@@ -16,12 +16,18 @@ public class Structure implements IStructure {
     private final String name;
     private final String owner;
     private final String world;
+    private final int volumeId;
     private final StructureType type;
     private final boolean destructible;
     private final int x1, y1, z1;
     private final int x2, y2, z2;
 
-    public Structure(GetStructModel m) {
+    public Structure(GetStructModel m) throws IllegalArgumentException {
+
+        this.type = parseType(m.getTypeId());
+        if(type == null) throw new IllegalArgumentException(
+                String.format("Unable to parse struct type: %d. StructId: %d", m.getTypeId(), m.getId()));
+
         this.id = m.getId();
         this.world = m.getWorld();
         this.name = m.getName();
@@ -33,7 +39,7 @@ public class Structure implements IStructure {
         this.y2 = Math.max(m.getY1(), m.getY2());
         this.z1 = Math.min(m.getZ1(), m.getZ2());
         this.z2 = Math.max(m.getZ1(), m.getZ2());
-        this.type = setType(m.getTypeId());
+        this.volumeId = m.getVolumeId();
     }
 
     public StructureType getType() {
@@ -351,12 +357,12 @@ public class Structure implements IStructure {
         return z2;
     }
 
-    private StructureType setType(int typeId) {
+    private StructureType parseType(int typeId) {
         for(StructureType st : StructureType.values()) {
             if (st.getTypeId() == typeId) {
                 return st;
             }
         }
-        return  StructureType.DEFAULT;
+        return null;
     }
 }
