@@ -22,8 +22,6 @@ public class BlockBreak implements Listener {
 
         Player p = event.getPlayer();
         Block b = event.getBlock();
-        p.sendMessage("Block broken");
-        System.out.println(b.getType() + " " + p.getName());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

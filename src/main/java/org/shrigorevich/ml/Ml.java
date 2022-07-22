@@ -34,7 +34,7 @@ public final class Ml extends JavaPlugin {
         IUserContext userContext = new UserContext(this, dataSource);
         IStructureContext structureContext = new StructureContext(this, dataSource);
         userService = new UserService(userContext);
-        structService = new StructureService(structureContext);
+        structService = new StructureService(structureContext, this);
     }
     @Override
     public void onEnable() {

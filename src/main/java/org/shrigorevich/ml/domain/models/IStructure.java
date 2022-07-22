@@ -20,12 +20,14 @@ public interface IStructure {
     int getX2();
     int getY2();
     int getZ2();
-
-    List<Block> getBlocks();
-
-    boolean contains(Location l);
-
     int getSizeX();
     int getSizeY();
     int getSizeZ();
+    int getVolumeId();
+    List<Block> getBlocks();
+    boolean contains(Location l);
+    int getBrokenBlocksNumber();
+    void setBrokenBlocks(int number);
+
+    Location getCenter();
 }

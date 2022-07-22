@@ -9,11 +9,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitScheduler;
-import org.shrigorevich.ml.db.models.Volume;
-import org.shrigorevich.ml.db.models.VolumeBlock;
+import org.shrigorevich.ml.db.models.*;
 import org.shrigorevich.ml.domain.callbacks.*;
-import org.shrigorevich.ml.db.models.CreateStructModel;
-import org.shrigorevich.ml.db.models.GetStructModel;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -73,7 +70,7 @@ public class StructureContext implements IStructureContext {
         }
     }
 
-    public void saveStructVolume(Volume v, List<Block> blockList, ISaveVolumeCallback cb) {
+    public void saveStructVolume(Volume v, List<Block> blockList, ISaveVolumeCallback cb) { //TODO: Move offset logic to service
         scheduler.runTaskAsynchronously(plugin, () -> {
             try {
                 QueryRunner run = new QueryRunner(dataSource);
@@ -150,22 +147,31 @@ public class StructureContext implements IStructureContext {
         try {
             QueryRunner run = new QueryRunner(dataSource);
             String sql = String.format("UPDATE structures SET volume_id = %d where id = %d", volumeId, structId);
-            int rows = run.update(sql);
+            run.update(sql);
         } catch (SQLException ex) {
             plugin.getLogger().severe("StructContext: Exception: " + ex.getMessage());
         }
     }
 
-    public void saveBrokenBlock(Block block, int structId) {
+    public int saveBrokenBlocks(List<BrokenBlock> brokenBlocks) {
         try {
             QueryRunner run = new QueryRunner(dataSource);
-            ResultSetHandler<List<GetStructModel>> h = new BeanListHandler(GetStructModel.class);
-            String sql = "";
+            Object[][] brokenBlockValues = new Object[brokenBlocks.size()][2];
 
-            List<GetStructModel> structs = run.query(sql, h);
+            for (int i = 0; i < brokenBlocks.size(); i++) {
+                brokenBlocks.get(i);
+                brokenBlockValues[i] = new Object[] {
+                    brokenBlocks.get(i).getVolumeBlockId(),
+                    brokenBlocks.get(i).getStructId()
+                };
+            }
+            String sql = "INSERT INTO broken_blocks (volume_block_id, struct_id) VALUES (?, ?)";
+            int rows[] = run.batch(sql, brokenBlockValues);
+            return rows.length;
 
         } catch (SQLException ex) {
-            plugin.getLogger().severe("StructContext: Exception: " + ex.getMessage());
+            plugin.getLogger().severe("StructContext: Exception: " + ex);
+            return 0;
         }
     }
 
@@ -182,6 +188,36 @@ public class StructureContext implements IStructureContext {
         } catch (SQLException ex) {
             plugin.getLogger().severe("StructContext:. Exception: " + ex);
             return Optional.empty();
+        }
+    }
+    public Optional<VolumeBlock> getVolumeBlock(int x, int y, int z, int volumeId) {
+        try {
+            QueryRunner run = new QueryRunner(dataSource);
+            ResultSetHandler<VolumeBlock> h = new BeanHandler(VolumeBlock.class);
+            String sql = String.format("SELECT id, x, y, z, type, block_data as blockdata FROM volume_blocks\n" +
+                    "WHERE x=%d and y=%d and z=%d and volume_id=%d", x, y, z, volumeId);
+
+            VolumeBlock s = run.query(sql, h);
+
+            return s == null ? Optional.empty() : Optional.of(s);
+
+        } catch (SQLException ex) {
+            plugin.getLogger().severe("StructContext: Exception: " + ex);
+            return Optional.empty();
+        }
+    }
+
+    public long getVolumeNotAirBlocksNumber(int volumeId) {
+        try {
+            QueryRunner run = new QueryRunner(dataSource);
+            ResultSetHandler<Long> volumeHandler = new ScalarHandler<>();
+            String sql = String.format("SELECT COUNT(*) FROM volume_blocks WHERE type not like '%s' and volume_id=%d",
+                    "%AIR%", volumeId);
+
+            return run.query(sql, volumeHandler);
+        } catch (SQLException ex) {
+            plugin.getLogger().severe("StructContext: Exception: " + ex);
+            return 0;
         }
     }
 }

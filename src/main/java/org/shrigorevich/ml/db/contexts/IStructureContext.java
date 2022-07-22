@@ -1,10 +1,7 @@
 package org.shrigorevich.ml.db.contexts;
 import org.bukkit.block.Block;
-import org.shrigorevich.ml.db.models.GetStructModel;
-import org.shrigorevich.ml.db.models.Volume;
-import org.shrigorevich.ml.db.models.VolumeBlock;
+import org.shrigorevich.ml.db.models.*;
 import org.shrigorevich.ml.domain.callbacks.*;
-import org.shrigorevich.ml.db.models.CreateStructModel;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,4 +21,7 @@ public interface IStructureContext {
      * @param structId Structure identifier
      */
     void setStructVolume(int structId, int volumeId);
+    Optional<VolumeBlock> getVolumeBlock(int x, int y, int z, int volumeId);
+    int saveBrokenBlocks(List<BrokenBlock> brokenBlocks);
+    long getVolumeNotAirBlocksNumber(int volumeId);
 }

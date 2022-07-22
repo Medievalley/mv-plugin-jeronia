@@ -1,43 +1,46 @@
 package org.shrigorevich.ml.domain.services;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
-import org.shrigorevich.ml.db.models.Volume;
-import org.shrigorevich.ml.db.models.VolumeBlock;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.event.player.PlayerAnimationEvent;
+import org.bukkit.plugin.Plugin;
+import org.shrigorevich.ml.db.models.*;
 import org.shrigorevich.ml.domain.callbacks.IResultCallback;
 import org.shrigorevich.ml.domain.callbacks.ISaveStructCallback;
 import org.shrigorevich.ml.db.contexts.IStructureContext;
-import org.shrigorevich.ml.db.models.CreateStructModel;
-import org.shrigorevich.ml.db.models.GetStructModel;
+import org.shrigorevich.ml.domain.callbacks.StructDamagedCallback;
 import org.shrigorevich.ml.domain.enums.StructureType;
 import org.shrigorevich.ml.domain.models.IStructure;
 import org.shrigorevich.ml.domain.models.Structure;
 import org.shrigorevich.ml.domain.models.User;
-
 import java.util.*;
 
 public class StructureService implements IStructureService {
     private final Map<String, ArrayList<Location>> structCorners;
-    private final IStructureContext structureContext;
+    private final IStructureContext structContext;
     private final Map<Integer, IStructure> structures;
     private final Map<String, IStructure> selectedStruct;
+    private final Plugin plugin;
+    private final Map<Integer, ArmorStand> structStands;
 
-    public StructureService(IStructureContext structureContext) {
-        this.structureContext = structureContext;
+    public StructureService(IStructureContext structureContext, Plugin plugin) {
+        this.plugin = plugin;
+        this.structContext = structureContext;
         this.structCorners = new HashMap<>();
         this.structures = new HashMap<>();
         this.selectedStruct = new HashMap<>();
+        this.structStands = new HashMap<>();
     }
 
     public void create(
-            User user,
-            String type,
-            String name,
-            boolean destructible,
+            User user, String type,
+            String name, boolean destructible,
             IResultCallback cb
     ) throws Exception  {
         CreateStructModel m = new CreateStructModel();
@@ -63,7 +66,7 @@ public class StructureService implements IStructureService {
     }
 
     public void saveStruct(CreateStructModel m, ISaveStructCallback cb) {
-        structureContext.save(m, cb);
+        structContext.save(m, cb);
     }
 
     private void applyLocation(CreateStructModel m, Location l1, Location l2) {
@@ -98,7 +101,7 @@ public class StructureService implements IStructureService {
     }
 
     public void getByIdAsync(int id) {
-        Optional<GetStructModel> model = structureContext.getById(id);
+        Optional<GetStructModel> model = structContext.getById(id);
 
         if (model.isPresent()) {
             GetStructModel m = model.get();
@@ -157,7 +160,7 @@ public class StructureService implements IStructureService {
                     s.getY2() - s.getY1() + 1,
                     s.getZ2() - s.getZ1() + 1
             );
-            structureContext.saveStructVolume(v, blockList,
+            structContext.saveStructVolume(v, blockList,
                     (res, volumeId) -> cb.sendResult(res, String.format("VolumeId: %d", volumeId)));
         } else {
             cb.sendResult(false, "Please choose struct by right click to any struct block");
@@ -169,15 +172,15 @@ public class StructureService implements IStructureService {
         Optional<IStructure> struct = this.getRegisteredStructById(structId);
         if (!struct.isPresent()) throw new IllegalArgumentException(String.format("Stuct %d not found", structId));
 
-        Optional<Volume> volume = structureContext.getVolumeById(volumeId);
+        Optional<Volume> volume = structContext.getVolumeById(volumeId);
         if (!volume.isPresent()) throw new IllegalArgumentException(String.format("Volume %d not found", volumeId));
 
         if(!isSizeEqual(struct.get(), volume.get()))
             throw new IllegalArgumentException("Structure and volume sizes are not equal");
 
-        structureContext.setStructVolume(structId, volumeId);
+        structContext.setStructVolume(structId, volumeId);
 
-        List<VolumeBlock> volumeBlocks = structureContext.getVolumeBlocks(volumeId);
+        List<VolumeBlock> volumeBlocks = structContext.getVolumeBlocks(volumeId);
 
         List<Block> structBlocks = struct.get().getBlocks();
         for(int i = 0; i < volumeBlocks.size(); i ++) {
@@ -188,26 +191,71 @@ public class StructureService implements IStructureService {
     }
 
     public void loadStructures() {
-        List<GetStructModel> structs = structureContext.getStructures();
+        List<GetStructModel> structs = structContext.getStructures();
         for (GetStructModel s : structs) {
             registerStructure(s);
         }
         Bukkit.getLogger().info("Loaded structs number: " + structures.size());
     }
 
-//    public void ProcessExplodedBlockAsync(Block block) {
-//        Optional<IStructure> struct = getByLocation(block.getLocation());
-//        if (struct.isPresent() && struct.get().getV) {
-//            Optional<>
-//        }
-//        if (struct.get().getType() != StructureType.PRIVATE) {
-//            structureContext.sa
-//        }
-//    }
+    public void processExplodedBlocksAsync(List<Block> blocks) {
+
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            List<BrokenBlock> brokenBlocks = new ArrayList<>();
+            for (Block block : blocks) {
+                Optional<BrokenBlock> b = getBrokenBlock(block);
+                b.ifPresent(brokenBlocks::add);
+            }
+            structContext.saveBrokenBlocks(brokenBlocks);
+
+            HashMap<Integer, IStructure> damagedStructures = new HashMap<>();
+            //TODO: create StructDamagedEvent
+            for (BrokenBlock b : brokenBlocks) {
+                IStructure s = structures.get(b.getStructId());
+                int blocksByStruct = s.getBrokenBlocksNumber();
+                if (blocksByStruct == 0)
+                    s.setBrokenBlocks(1);
+                else
+                    s.setBrokenBlocks(blocksByStruct + 1);
+
+                damagedStructures.put(s.getId(), s);
+            }
+
+            for (IStructure s : damagedStructures.values()) {
+                long volumeBlocksCount = structContext.getVolumeNotAirBlocksNumber(s.getVolumeId());
+                long destroyedPercent = s.getBrokenBlocksNumber() * 100L / volumeBlocksCount;
+                System.out.println(s.getBrokenBlocksNumber() + " " + volumeBlocksCount);
+                System.out.printf("Destroyed percent %d%n", destroyedPercent);
+                Bukkit.getScheduler().runTask(plugin, () -> {}); //TODO: Maybe this can be improved (Call event)
+            }
+
+        });
+    }
+
+    private Optional<BrokenBlock> getBrokenBlock(Block block) {
+        Optional<IStructure> struct = getByLocation(block.getLocation());
+
+        if (struct.isPresent() && struct.get().getType() != StructureType.PRIVATE) {
+            IStructure s = struct.get();
+            int x = block.getX() - s.getX1();
+            int y = block.getY() - s.getY1();
+            int z = block.getZ() - s.getZ1();
+            Optional<VolumeBlock> vb = structContext.getVolumeBlock(x, y, z, s.getVolumeId());
+            if (vb.isPresent()) {
+                VolumeBlock volumeBlock = vb.get();
+                if(!Material.valueOf(volumeBlock.getType()).isAir()) {
+                    return Optional.of(new BrokenBlock(volumeBlock.getId(), s.getId()));
+                }
+            }
+        }
+        return Optional.empty();
+    }
+
     private boolean isSizeEqual(IStructure struct, Volume volume) {
         return struct.getSizeX() == volume.getSizeX() &&
                 struct.getSizeY() == volume.getSizeY() &&
                 struct.getSizeZ() == volume.getSizeZ();
     }
+
 }
 

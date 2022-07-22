@@ -1,6 +1,6 @@
 package org.shrigorevich.ml.listeners;
 
-import org.bukkit.Bukkit;
+import org.bukkit.block.Block;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -29,5 +29,6 @@ public class BlockExplode implements Listener {
         }
 
         System.out.println("Blocks exploded: " + event.blockList().size());
+        structureService.processExplodedBlocksAsync(event.blockList());
     }
 }

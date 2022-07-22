@@ -21,6 +21,7 @@ public class Structure implements IStructure {
     private final boolean destructible;
     private final int x1, y1, z1;
     private final int x2, y2, z2;
+    private int brokenBlocksNumber;
 
     public Structure(GetStructModel m) throws IllegalArgumentException {
 
@@ -45,21 +46,25 @@ public class Structure implements IStructure {
     public StructureType getType() {
         return this.type;
     }
-
+    public int getVolumeId() {
+        return this.volumeId;
+    }
     public int getId() {
         return this.id;
     }
-
     public String getName() { return this.name; }
-
     public String getOwner() { return this.owner; }
-
     public boolean isDestructible() { return this.destructible; }
-
     public World getWorld() {
         World world = Bukkit.getWorld(this.world);
         if (world == null) throw new IllegalStateException("World '" + this.world + "' is not loaded");
         return world;
+    }
+    public void setBrokenBlocks(int number) {
+        this.brokenBlocksNumber = number;
+    }
+    public int getBrokenBlocksNumber() {
+        return this.brokenBlocksNumber;
     }
 
     public Location getLowerNE() {

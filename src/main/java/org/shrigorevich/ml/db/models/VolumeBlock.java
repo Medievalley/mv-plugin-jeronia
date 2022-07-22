@@ -3,9 +3,17 @@ package org.shrigorevich.ml.db.models;
 import org.bukkit.Material;
 
 public class VolumeBlock {
-    private int x, y, z;
+    private int id;
+    private int x;
+    private int y;
+    private int z;
     private String type, blockData;
-
+    public int getId() {
+        return id;
+    }
+    public void setId(int id) {
+        this.id = id;
+    }
     public int getX() {
         return x;
     }
