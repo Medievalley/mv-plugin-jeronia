@@ -67,10 +67,11 @@ CREATE TABLE IF NOT EXISTS structures (
     z2 INTEGER NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS broken_blocks (
+CREATE TABLE IF NOT EXISTS struct_blocks (
     id SERIAL PRIMARY KEY,
     struct_id INTEGER references structures (id) ON DELETE CASCADE ON UPDATE CASCADE,
-    volume_block_id INTEGER references volume_blocks (id) ON DELETE CASCADE ON UPDATE CASCADE
+    volume_block_id INTEGER references volume_blocks (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    broken BOOLEAN DEFAULT false NOT NULL
 );
 
 INSERT INTO roles VALUES (1, 'Admin', 'Most privileged role');

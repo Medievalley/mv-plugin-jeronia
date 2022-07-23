@@ -8,6 +8,18 @@ public class VolumeBlock {
     private int y;
     private int z;
     private String type, blockData;
+
+    public VolumeBlock() {}
+    public VolumeBlock(
+            int x, int y, int z,
+            String type, String blockData
+    ) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.type = type;
+        this.blockData = blockData;
+    }
     public int getId() {
         return id;
     }

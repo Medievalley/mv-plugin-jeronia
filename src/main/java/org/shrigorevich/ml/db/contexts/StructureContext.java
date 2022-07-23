@@ -30,25 +30,24 @@ public class StructureContext implements IStructureContext {
         this.scheduler = Bukkit.getScheduler();
     }
 
-    public void save(CreateStructModel st, ISaveStructCallback cb) {
-        scheduler.runTaskAsynchronously(plugin, () -> {
-            try {
+    public int save(CreateStructModel st) {
+        try {
 
-                QueryRunner run = new QueryRunner(dataSource);
-                ResultSetHandler<GetStructModel> h = new BeanHandler(GetStructModel.class);
-                GetStructModel m = run.insert(String.format(
-                        "INSERT INTO structures (name, type_id, owner_id, destructible, world, x1, y1, z1, x2, y2, z2)\n" +
-                        "VALUES ('%s', %d, %d, %b, '%s', %d, %d, %d, %d, %d, %d)\n" +
-                        "RETURNING *",
-                        st.name, st.typeId, st.ownerId, st.destructible, st.world, st.x1, st.y1, st.z1, st.x2, st.y2, st.z2), h);
+            QueryRunner run = new QueryRunner(dataSource);
+            ResultSetHandler<Integer> h = new ScalarHandler<>();
 
-                scheduler.runTask(plugin, () -> cb.done(Optional.of(m), true, "Ok"));
+            String sql2 = String.format(
+                    "INSERT INTO structures (name, type_id, owner_id, destructible, world, x1, y1, z1, x2, y2, z2)\n" +
+                    "VALUES ('%s', %d, %d, %b, '%s', %d, %d, %d, %d, %d, %d)\n" +
+                    "RETURNING id",
+                    st.name, st.typeId, st.ownerId, st.destructible, st.world, st.x1, st.y1, st.z1, st.x2, st.y2, st.z2
+            );
+            return run.insert(sql2, h);
 
-            } catch (SQLException ex) {
-                plugin.getLogger().severe(ex.toString());
-                cb.done(Optional.empty(), false, ex.toString());
-            }
-        });
+        } catch (SQLException ex) {
+            plugin.getLogger().severe("StructContext. SaveStructure: " + ex);
+            return 0;
+        }
     }
 
     public Optional<GetStructModel> getById(int id) {
@@ -65,12 +64,12 @@ public class StructureContext implements IStructureContext {
             return s == null ? Optional.empty() : Optional.of(s);
 
         } catch (SQLException ex) {
-            plugin.getLogger().severe("StructContext:90. Exception: " + ex.toString());
+            plugin.getLogger().severe("StructContext. GetById: " + ex);
             return Optional.empty();
         }
     }
 
-    public void saveStructVolume(Volume v, List<Block> blockList, ISaveVolumeCallback cb) { //TODO: Move offset logic to service
+    public void saveStructVolume(Volume v, List<VolumeBlock> volumeBlocks, ISaveVolumeCallback cb) { //TODO: Move offset logic to service
         scheduler.runTaskAsynchronously(plugin, () -> {
             try {
                 QueryRunner run = new QueryRunner(dataSource);
@@ -80,21 +79,17 @@ public class StructureContext implements IStructureContext {
                         v.getName(), v.getSizeX(), v.getSizeY(), v.getSizeZ());
                 int volumeId = run.query(sql, volumeHandler);
 
+                Object[][] volumeBlockValues = new Object[volumeBlocks.size()][6];
 
-
-                Object[][] volumeBlockValues = new Object[blockList.size()][6];
-                int offsetX = blockList.get(0).getX();
-                int offsetY = blockList.get(0).getY();
-                int offsetZ = blockList.get(0).getZ();
-                for (int i = 0; i < blockList.size(); i++) {
-                    Block b = blockList.get(i);
+                for (int i = 0; i < volumeBlocks.size(); i++) {
+                    VolumeBlock b = volumeBlocks.get(i);
                     volumeBlockValues[i] = new Object[] {
                             volumeId,
-                            b.getType().toString(),
-                            b.getBlockData().getAsString(),
-                            b.getX() - offsetX,
-                            b.getY() - offsetY,
-                            b.getZ() - offsetZ,
+                            b.getType(),
+                            b.getBlockData(),
+                            b.getX(),
+                            b.getY(),
+                            b.getZ()
                         };
                 }
 
@@ -105,7 +100,7 @@ public class StructureContext implements IStructureContext {
                 scheduler.runTask(plugin, () -> cb.volumeSaved(true, volumeId));
 
             } catch (SQLException ex) {
-                plugin.getLogger().severe("StructContext: Exception: " + ex);
+                plugin.getLogger().severe("StructContext. SaveStructVolume: "  + ex);
             }
         });
     }
@@ -118,7 +113,7 @@ public class StructureContext implements IStructureContext {
             List<VolumeBlock> blocks = run.query(sql, volumeHandler);
             return blocks;
         } catch (SQLException ex) {
-            plugin.getLogger().severe("StructContext: Exception: " + ex);
+            plugin.getLogger().severe("StructContext. GetVolumeBlocks: " + ex);
             return new ArrayList<>(0);
         }
     }
@@ -138,7 +133,7 @@ public class StructureContext implements IStructureContext {
             return structs;
 
         } catch (SQLException ex) {
-            plugin.getLogger().severe("StructContext: Exception: " + ex.getMessage());
+            plugin.getLogger().severe("StructContext. GetStructures: " + ex);
             return new ArrayList<>(0);
         }
     }
@@ -149,7 +144,7 @@ public class StructureContext implements IStructureContext {
             String sql = String.format("UPDATE structures SET volume_id = %d where id = %d", volumeId, structId);
             run.update(sql);
         } catch (SQLException ex) {
-            plugin.getLogger().severe("StructContext: Exception: " + ex.getMessage());
+            plugin.getLogger().severe("StructContext. SetStructVolume: " + ex);
         }
     }
 
@@ -170,7 +165,7 @@ public class StructureContext implements IStructureContext {
             return rows.length;
 
         } catch (SQLException ex) {
-            plugin.getLogger().severe("StructContext: Exception: " + ex);
+            plugin.getLogger().severe("StructContext. SaveBrokenBlocks: " + ex);
             return 0;
         }
     }
@@ -186,7 +181,7 @@ public class StructureContext implements IStructureContext {
             return volume == null ? Optional.empty() : Optional.of(volume);
 
         } catch (SQLException ex) {
-            plugin.getLogger().severe("StructContext:. Exception: " + ex);
+            plugin.getLogger().severe("StructContext. GetVolumeById: " + ex);
             return Optional.empty();
         }
     }
@@ -202,7 +197,7 @@ public class StructureContext implements IStructureContext {
             return s == null ? Optional.empty() : Optional.of(s);
 
         } catch (SQLException ex) {
-            plugin.getLogger().severe("StructContext: Exception: " + ex);
+            plugin.getLogger().severe("StructContext. GetVolumeBlock: " + ex);
             return Optional.empty();
         }
     }
@@ -216,8 +211,15 @@ public class StructureContext implements IStructureContext {
 
             return run.query(sql, volumeHandler);
         } catch (SQLException ex) {
-            plugin.getLogger().severe("StructContext: Exception: " + ex);
+            plugin.getLogger().severe("StructContext. GetVolumeNotAirBlocksNumber: " + ex);
             return 0;
         }
     }
 }
+//                System.out.println(
+//                        String.format("%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s",
+//                                m.getId(), m.getName(), m.getTypeId(), m.isDestructible(),
+//                                m.getOwner(), m.getWorld(), m.getVolumeId(),
+//                                m.getX1(), m.getY1(), m.getZ1(),
+//                                m.getX2(), m.getY2(), m.getZ2())
+//                );

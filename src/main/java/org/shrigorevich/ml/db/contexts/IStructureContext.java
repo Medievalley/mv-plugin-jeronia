@@ -8,9 +8,9 @@ import java.util.Optional;
 
 public interface IStructureContext {
 
-    void save(CreateStructModel struct, ISaveStructCallback cb);
+    int save(CreateStructModel struct);
     Optional<GetStructModel> getById(int id);
-    void saveStructVolume(Volume volume, List<Block> blockList, ISaveVolumeCallback cb);
+    void saveStructVolume(Volume volume, List<VolumeBlock> volumeBlocks, ISaveVolumeCallback cb);
     List<VolumeBlock> getVolumeBlocks(int id);
 
     Optional<Volume> getVolumeById(int id);

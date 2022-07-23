@@ -31,9 +31,6 @@ public class StructureExecutor implements CommandExecutor {
 
                 try {
                     switch (args[0].toLowerCase()) {
-                        case "find":
-                            structService.getByIdAsync(Integer.parseInt(args[1]));
-                            break;
                         case "c":
                         case "create":
                             Optional<User> u = userService.getFromOnlineList(player.getName());

@@ -1,20 +1,15 @@
 package org.shrigorevich.ml.domain.services;
 
-import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.ArmorStand;
-import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.plugin.Plugin;
 import org.shrigorevich.ml.db.models.*;
 import org.shrigorevich.ml.domain.callbacks.IResultCallback;
-import org.shrigorevich.ml.domain.callbacks.ISaveStructCallback;
 import org.shrigorevich.ml.db.contexts.IStructureContext;
-import org.shrigorevich.ml.domain.callbacks.StructDamagedCallback;
 import org.shrigorevich.ml.domain.enums.StructureType;
 import org.shrigorevich.ml.domain.models.IStructure;
 import org.shrigorevich.ml.domain.models.Structure;
@@ -55,18 +50,16 @@ public class StructureService implements IStructureService {
         m.ownerId = user.getId();
         m.world = corners.get(0).getWorld().getName();
 
-        saveStruct(m, (model, result, msg) -> {
-            if (result && model.isPresent()) {
-                IStructure s = registerStructure(model.get());
-                cb.sendResult(true, String.format("Structure registered. Id: %d", s.getId()));
-            } else {
-                cb.sendResult(false, "Something was wrong");
-            }
-        });
+        int structId = saveStruct(m);
+        if (structId != 0) {
+            Optional<GetStructModel> model = structContext.getById(structId);
+            if (model.isPresent()) registerStructure(model.get());
+            cb.sendResult(true, String.format("StructId: %d", structId));
+        }
     }
 
-    public void saveStruct(CreateStructModel m, ISaveStructCallback cb) {
-        structContext.save(m, cb);
+    private int saveStruct(CreateStructModel m) {
+        return structContext.save(m);
     }
 
     private void applyLocation(CreateStructModel m, Location l1, Location l2) {
@@ -94,29 +87,14 @@ public class StructureService implements IStructureService {
         return structCorners.get(key);
     }
 
-    public IStructure registerStructure(GetStructModel m) {
-        IStructure s = new Structure(m);
-        structures.put(s.getId(), s);
-        return s;
-    }
-
-    public void getByIdAsync(int id) {
-        Optional<GetStructModel> model = structContext.getById(id);
-
-        if (model.isPresent()) {
-            GetStructModel m = model.get();
-            System.out.println(String.format("Model: %d, %s, %s, %b, %s, %d, %d",
-                    m.getId(),
-                    m.getName(),
-                    m.getWorld(),
-                    m.isDestructible(),
-                    m.getOwner(),
-                    m.getTypeId(),
-                    m.getX1()));
-
-            IStructure s = registerStructure(m);
-            List<Block> blockList = s.getBlocks();
-            System.out.println(blockList.size());
+    private Optional<IStructure> registerStructure(GetStructModel m) {
+        try {
+            IStructure s = new Structure(m);
+            structures.put(s.getId(), s);
+            return Optional.of(s);
+        } catch (IllegalArgumentException ex) {
+            Bukkit.getLogger().severe(ex.getMessage());
+            return Optional.empty();
         }
     }
     private Optional<IStructure> getRegisteredStructById (int id) {
@@ -153,14 +131,31 @@ public class StructureService implements IStructureService {
     public void saveStructVolume(String userName, String volumeName, IResultCallback cb) {
         IStructure s = selectedStruct.get(userName);
         if (s != null) {
-            List<Block> blockList = s.getBlocks();
+
             Volume v = new Volume(
                     volumeName,
-                    s.getX2() - s.getX1() + 1,
-                    s.getY2() - s.getY1() + 1,
-                    s.getZ2() - s.getZ1() + 1
+                    s.getSizeX(),
+                    s.getSizeY(),
+                    s.getSizeZ()
             );
-            structContext.saveStructVolume(v, blockList,
+
+            List<VolumeBlock> volumeBlocks = new ArrayList<>(); //s.getBlocks();
+            List<Block> structBlocks = s.getBlocks();
+            int offsetX = structBlocks.get(0).getX();
+            int offsetY = structBlocks.get(0).getY();
+            int offsetZ = structBlocks.get(0).getZ();
+
+            for (Block b : structBlocks) {
+                volumeBlocks.add(
+                    new VolumeBlock(
+                        b.getX() - offsetX,
+                        b.getY() - offsetY,
+                        b.getZ() - offsetZ,
+                        b.getType().toString(),
+                        b.getBlockData().getAsString()
+                    ));
+            }
+            structContext.saveStructVolume(v, volumeBlocks,
                     (res, volumeId) -> cb.sendResult(res, String.format("VolumeId: %d", volumeId)));
         } else {
             cb.sendResult(false, "Please choose struct by right click to any struct block");
