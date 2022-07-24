@@ -183,7 +183,6 @@ public class StructureContext implements IStructureContext {
         }
     }
 
-    //TODO: create index by volumeBlockId
     public List<StructBlockFull> getStructBlocks(int structId) {
         try {
             QueryRunner run = new QueryRunner(dataSource);
@@ -196,23 +195,28 @@ public class StructureContext implements IStructureContext {
 
             return run.query(sql, h);
         } catch (SQLException ex) {
-            plugin.getLogger().severe("StructContext. GetStructBlock: " + ex);
+            plugin.getLogger().severe("StructContext. GetStructBlocks: " + ex);
             return new ArrayList<>(0);
         }
     }
 
+    //TODO: Maybe create new db index
     public Optional<StructBlockFull> getStructBlock(int x, int y, int z, int volumeId, int structId) {
         try {
             QueryRunner run = new QueryRunner(dataSource);
             ResultSetHandler<StructBlockFull> h = new BeanHandler(StructBlockFull.class);
             String sql = String.format(
-                    "select s.id, v.id as volumeblockid, v.type, v.block_data as blockdata, v.x, v.y, v.z, s.broken \n" +
+                    "select s.id, s.struct_id as structid, v.id as volumeblockid, v.type, v.block_data as blockdata, v.x, v.y, v.z, s.broken \n" +
                             "from struct_blocks s join volume_blocks v \n" +
                             "ON s.volume_block_id=v.id \n" +
                             "where v.x=%d and v.y=%d and v.z=%d and v.volume_id=%d and struct_id=%d",
                     x, y, z, volumeId, structId);
 
             StructBlockFull block = run.query(sql, h);
+            if (block == null) {
+                System.out.println(String.format("Null block: %s, %s, %s, %s, %s", x, y, z, volumeId, structId));
+            }
+
             return block == null ? Optional.empty() : Optional.of(block);
 
         } catch (SQLException ex) {
@@ -229,15 +233,15 @@ public class StructureContext implements IStructureContext {
             for (int i = 0; i < blocks.size(); i++) {
                 StructBlockFull b = blocks.get(i);
                 blockValues[i] = new Object[] {
-                        b.getId(),
-                        b.isBroken()
+                        b.isBroken(),
+                        b.getId()
                 };
             }
             String sql = "UPDATE struct_blocks SET broken=? WHERE id=?";
             int rows[] = run.batch(sql, blockValues);
             return rows.length;
         } catch (SQLException ex) {
-            plugin.getLogger().severe("StructContext. SaveBrokenBlocks: " + ex);
+            plugin.getLogger().severe("StructContext. UpdateStructBlocksBrokenStatus: " + ex);
             return 0;
         }
     }

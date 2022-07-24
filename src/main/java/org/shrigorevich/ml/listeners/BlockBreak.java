@@ -1,4 +1,5 @@
 package org.shrigorevich.ml.listeners;
+import com.sun.tools.javac.util.List;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -11,6 +12,10 @@ import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.entity.EntitySpellCastEvent;
 import org.shrigorevich.ml.domain.services.IStructureService;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+
 public class BlockBreak implements Listener {
     IStructureService structureService;
     public BlockBreak(IStructureService structureService) {
@@ -22,21 +27,22 @@ public class BlockBreak implements Listener {
 
         Player p = event.getPlayer();
         Block b = event.getBlock();
+        structureService.processExplodedBlocksAsync(new ArrayList<>(Arrays.asList(b)));
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void DoorBrokenByEntity(EntityBreakDoorEvent event) {
-        //TODO: Handle event
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void DoorBrokenByEntity(EntitySpawnEvent event) {
-
-        Entity e = event.getEntity();
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void DoorBrokenByEntity(EntitySpellCastEvent event) {
-        //TODO: Check to possibility of creating custom spells
-    }
+//    @EventHandler(priority = EventPriority.HIGHEST)
+//    public void DoorBrokenByEntity(EntityBreakDoorEvent event) {
+//        //TODO: Handle event
+//    }
+//
+//    @EventHandler(priority = EventPriority.HIGHEST)
+//    public void DoorBrokenByEntity(EntitySpawnEvent event) {
+//
+//        Entity e = event.getEntity();
+//    }
+//
+//    @EventHandler(priority = EventPriority.HIGHEST)
+//    public void DoorBrokenByEntity(EntitySpellCastEvent event) {
+//        //TODO: Check to possibility of creating custom spells
+//    }
 }
