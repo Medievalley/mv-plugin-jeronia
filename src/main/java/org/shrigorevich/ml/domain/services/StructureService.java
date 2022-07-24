@@ -38,7 +38,7 @@ public class StructureService implements IStructureService {
             String name, boolean destructible,
             IResultCallback cb
     ) throws Exception  {
-        CreateStructModel m = new CreateStructModel();
+        CreateStruct m = new CreateStruct();
         ArrayList<Location> corners = structCorners.get(user.getName());
         if (corners == null || corners.size() != 2) {
             throw new Exception("Structure location not set");
@@ -52,17 +52,17 @@ public class StructureService implements IStructureService {
 
         int structId = saveStruct(m);
         if (structId != 0) {
-            Optional<GetStructModel> model = structContext.getById(structId);
+            Optional<GetStruct> model = structContext.getById(structId);
             if (model.isPresent()) registerStructure(model.get());
             cb.sendResult(true, String.format("StructId: %d", structId));
         }
     }
 
-    private int saveStruct(CreateStructModel m) {
+    private int saveStruct(CreateStruct m) {
         return structContext.save(m);
     }
 
-    private void applyLocation(CreateStructModel m, Location l1, Location l2) {
+    private void applyLocation(CreateStruct m, Location l1, Location l2) {
         m.x1 = Math.min(l1.getBlockX(), l2.getBlockX());
         m.y1 = Math.min(l1.getBlockY(), l2.getBlockY());
         m.z1 = Math.min(l1.getBlockZ(), l2.getBlockZ());
@@ -87,7 +87,7 @@ public class StructureService implements IStructureService {
         return structCorners.get(key);
     }
 
-    private Optional<IStructure> registerStructure(GetStructModel m) {
+    private Optional<IStructure> registerStructure(GetStruct m) {
         try {
             IStructure s = new Structure(m);
             structures.put(s.getId(), s);
@@ -131,7 +131,6 @@ public class StructureService implements IStructureService {
     public void saveStructVolume(String userName, String volumeName, IResultCallback cb) {
         IStructure s = selectedStruct.get(userName);
         if (s != null) {
-
             Volume v = new Volume(
                     volumeName,
                     s.getSizeX(),
@@ -139,23 +138,25 @@ public class StructureService implements IStructureService {
                     s.getSizeZ()
             );
 
-            List<VolumeBlock> volumeBlocks = new ArrayList<>(); //s.getBlocks();
-            List<Block> structBlocks = s.getBlocks();
-            int offsetX = structBlocks.get(0).getX();
-            int offsetY = structBlocks.get(0).getY();
-            int offsetZ = structBlocks.get(0).getZ();
+            List<VolumeBlock> volumeBlocks = new ArrayList<>();
+            List<Block> blocks = s.getBlocks();
+            int offsetX = blocks.get(0).getX();
+            int offsetY = blocks.get(0).getY();
+            int offsetZ = blocks.get(0).getZ();
 
-            for (Block b : structBlocks) {
-                volumeBlocks.add(
-                    new VolumeBlock(
-                        b.getX() - offsetX,
-                        b.getY() - offsetY,
-                        b.getZ() - offsetZ,
-                        b.getType().toString(),
-                        b.getBlockData().getAsString()
-                    ));
+            for (Block b : blocks) {
+                if (!b.getType().isAir()) {
+                    volumeBlocks.add(
+                            new VolumeBlock(
+                                    b.getX() - offsetX,
+                                    b.getY() - offsetY,
+                                    b.getZ() - offsetZ,
+                                    b.getType().toString(),
+                                    b.getBlockData().getAsString()
+                            ));
+                }
             }
-            structContext.saveStructVolume(v, volumeBlocks,
+            structContext.createVolume(v, volumeBlocks,
                     (res, volumeId) -> cb.sendResult(res, String.format("VolumeId: %d", volumeId)));
         } else {
             cb.sendResult(false, "Please choose struct by right click to any struct block");
@@ -174,20 +175,26 @@ public class StructureService implements IStructureService {
             throw new IllegalArgumentException("Structure and volume sizes are not equal");
 
         structContext.setStructVolume(structId, volumeId);
-
-        List<VolumeBlock> volumeBlocks = structContext.getVolumeBlocks(volumeId);
-
-        List<Block> structBlocks = struct.get().getBlocks();
+        IStructure s = struct.get();
+        List<VolumeBlock> volumeBlocks = structContext.getVolumeBlocks(volumeId); //TODO: Get Struct blocks
+        List<StructBlock> structBlocks = new ArrayList<>();
         for(int i = 0; i < volumeBlocks.size(); i ++) {
             VolumeBlock vb = volumeBlocks.get(i);
             BlockData bd = Bukkit.createBlockData(vb.getBlockData());
-            structBlocks.get(i).setBlockData(bd);
+            Block b = s.getWorld().getBlockAt(
+                    vb.getX()+s.getX1(),
+                    vb.getY()+s.getY1(),
+                    vb.getZ()+s.getZ1());
+
+            b.setBlockData(bd);
+            structBlocks.add(new StructBlock(s.getId(), vb.getId(), false));
         }
+        structContext.saveStructBlocks(structBlocks);
     }
 
     public void loadStructures() {
-        List<GetStructModel> structs = structContext.getStructures();
-        for (GetStructModel s : structs) {
+        List<GetStruct> structs = structContext.getStructures();
+        for (GetStruct s : structs) {
             registerStructure(s);
         }
         Bukkit.getLogger().info("Loaded structs number: " + structures.size());
@@ -196,38 +203,41 @@ public class StructureService implements IStructureService {
     public void processExplodedBlocksAsync(List<Block> blocks) {
 
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            List<BrokenBlock> brokenBlocks = new ArrayList<>();
+            List<StructBlockFull> brokenBlocks = new ArrayList<>();
             for (Block block : blocks) {
-                Optional<BrokenBlock> b = getBrokenBlock(block);
+                Optional<StructBlockFull> b = getBrokenBlock(block);
                 b.ifPresent(brokenBlocks::add);
             }
-            structContext.saveBrokenBlocks(brokenBlocks);
 
-            HashMap<Integer, IStructure> damagedStructures = new HashMap<>();
-            //TODO: create StructDamagedEvent
-            for (BrokenBlock b : brokenBlocks) {
-                IStructure s = structures.get(b.getStructId());
-                int blocksByStruct = s.getBrokenBlocksNumber();
-                if (blocksByStruct == 0)
-                    s.setBrokenBlocks(1);
-                else
-                    s.setBrokenBlocks(blocksByStruct + 1);
+            int count = structContext.updateStructBlocksBrokenStatus(brokenBlocks);
 
-                damagedStructures.put(s.getId(), s);
+            if (count == brokenBlocks.size() && count > 0) {
+                HashMap<Integer, IStructure> damagedStructures = new HashMap<>();
+                //TODO: create StructDamagedEvent
+                for (StructBlockFull b : brokenBlocks) {
+                    if(damagedStructures.get(b.getStructId()) == null) {
+                        IStructure s = structures.get(b.getStructId());
+                        damagedStructures.put(s.getId(), s);
+                    }
+                }
+
+                for (IStructure s : damagedStructures.values()) {
+                    List<StructBlockFull> structBlocks = structContext.getStructBlocks(s.getId());
+                    long brokenCounter = 0;
+                    for (StructBlockFull b : structBlocks) {
+                        if (b.isBroken()) brokenCounter += 1;
+                    }
+
+                    long destroyedPercent = brokenCounter * 100 / structBlocks.size();
+                    System.out.println(brokenCounter + " " + structBlocks.size());
+                    System.out.printf("Destroyed percent %d%n", destroyedPercent);
+                    Bukkit.getScheduler().runTask(plugin, () -> {}); //TODO: Maybe this can be improved (Call event)
+                }
             }
-
-            for (IStructure s : damagedStructures.values()) {
-                long volumeBlocksCount = structContext.getVolumeNotAirBlocksNumber(s.getVolumeId());
-                long destroyedPercent = s.getBrokenBlocksNumber() * 100L / volumeBlocksCount;
-                System.out.println(s.getBrokenBlocksNumber() + " " + volumeBlocksCount);
-                System.out.printf("Destroyed percent %d%n", destroyedPercent);
-                Bukkit.getScheduler().runTask(plugin, () -> {}); //TODO: Maybe this can be improved (Call event)
-            }
-
         });
     }
 
-    private Optional<BrokenBlock> getBrokenBlock(Block block) {
+    private Optional<StructBlockFull> getBrokenBlock(Block block) {
         Optional<IStructure> struct = getByLocation(block.getLocation());
 
         if (struct.isPresent() && struct.get().getType() != StructureType.PRIVATE) {
@@ -235,12 +245,11 @@ public class StructureService implements IStructureService {
             int x = block.getX() - s.getX1();
             int y = block.getY() - s.getY1();
             int z = block.getZ() - s.getZ1();
-            Optional<VolumeBlock> vb = structContext.getVolumeBlock(x, y, z, s.getVolumeId());
-            if (vb.isPresent()) {
-                VolumeBlock volumeBlock = vb.get();
-                if(!Material.valueOf(volumeBlock.getType()).isAir()) {
-                    return Optional.of(new BrokenBlock(volumeBlock.getId(), s.getId()));
-                }
+            Optional<StructBlockFull> sb = structContext.getStructBlock(x, y, z, s.getVolumeId(), s.getId());
+            if (sb.isPresent() && !sb.get().isBroken()) {
+                sb.get().setBroken(true);
+                System.out.println(sb.get().isBroken()); //TODO: remove system.out
+                return sb;
             }
         }
         return Optional.empty();

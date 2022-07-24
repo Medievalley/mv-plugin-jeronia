@@ -6,7 +6,6 @@ import org.apache.commons.dbutils.handlers.BeanHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.bukkit.Bukkit;
-import org.bukkit.block.Block;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.shrigorevich.ml.db.models.*;
@@ -30,7 +29,7 @@ public class StructureContext implements IStructureContext {
         this.scheduler = Bukkit.getScheduler();
     }
 
-    public int save(CreateStructModel st) {
+    public int save(CreateStruct st) {
         try {
 
             QueryRunner run = new QueryRunner(dataSource);
@@ -50,16 +49,16 @@ public class StructureContext implements IStructureContext {
         }
     }
 
-    public Optional<GetStructModel> getById(int id) {
+    public Optional<GetStruct> getById(int id) {
         try {
             QueryRunner run = new QueryRunner(dataSource);
-            ResultSetHandler<GetStructModel> h = new BeanHandler(GetStructModel.class);
+            ResultSetHandler<GetStruct> h = new BeanHandler(GetStruct.class);
             String sql = String.format("select s.id, s.name, s.type_id as typeid, s.destructible, s.world, s.x1, s.y1, s.z1, s.x2, s.y2, s.z2, \n" +
                     "u.username as owner\n" +
                     "from structures s join users u on s.owner_id = u.id\n" +
                     "where s.id=%d;", id);
 
-            GetStructModel s = run.query(sql, h);
+            GetStruct s = run.query(sql, h);
 
             return s == null ? Optional.empty() : Optional.of(s);
 
@@ -69,7 +68,7 @@ public class StructureContext implements IStructureContext {
         }
     }
 
-    public void saveStructVolume(Volume v, List<VolumeBlock> volumeBlocks, ISaveVolumeCallback cb) { //TODO: Move offset logic to service
+    public void createVolume(Volume v, List<VolumeBlock> volumeBlocks, ISaveVolumeCallback cb) { //TODO: Move offset logic to service
         scheduler.runTaskAsynchronously(plugin, () -> {
             try {
                 QueryRunner run = new QueryRunner(dataSource);
@@ -109,7 +108,7 @@ public class StructureContext implements IStructureContext {
         try {
             QueryRunner run = new QueryRunner(dataSource);
             ResultSetHandler<List<VolumeBlock>> volumeHandler = new BeanListHandler(VolumeBlock.class);
-            String sql = String.format("SELECT type, block_data as blockdata, x, y, z FROM volume_blocks where volume_id=%d;", id);
+            String sql = String.format("SELECT id, type, block_data as blockdata, x, y, z FROM volume_blocks where volume_id=%d;", id);
             List<VolumeBlock> blocks = run.query(sql, volumeHandler);
             return blocks;
         } catch (SQLException ex) {
@@ -118,17 +117,17 @@ public class StructureContext implements IStructureContext {
         }
     }
 
-    public List<GetStructModel> getStructures() {
+    public List<GetStruct> getStructures() {
         try {
             QueryRunner run = new QueryRunner(dataSource);
-            ResultSetHandler<List<GetStructModel>> h = new BeanListHandler(GetStructModel.class);
+            ResultSetHandler<List<GetStruct>> h = new BeanListHandler(GetStruct.class);
             String sql = String.format(
                     "SELECT s.id, s.name, s.type_Id as typeid, s.volume_id as volumeid, s.destructible, " +
                     "s.world, s.x1, s.y1, s.z1, s.x2, s.y2, s.z2, \n" +
                     "u.username as owner\n" +
                     "FROM structures s JOIN users u ON s.owner_id = u.id");
 
-            List<GetStructModel> structs = run.query(sql, h);
+            List<GetStruct> structs = run.query(sql, h);
 
             return structs;
 
@@ -148,28 +147,6 @@ public class StructureContext implements IStructureContext {
         }
     }
 
-    public int saveBrokenBlocks(List<BrokenBlock> brokenBlocks) {
-        try {
-            QueryRunner run = new QueryRunner(dataSource);
-            Object[][] brokenBlockValues = new Object[brokenBlocks.size()][2];
-
-            for (int i = 0; i < brokenBlocks.size(); i++) {
-                brokenBlocks.get(i);
-                brokenBlockValues[i] = new Object[] {
-                    brokenBlocks.get(i).getVolumeBlockId(),
-                    brokenBlocks.get(i).getStructId()
-                };
-            }
-            String sql = "INSERT INTO broken_blocks (volume_block_id, struct_id) VALUES (?, ?)";
-            int rows[] = run.batch(sql, brokenBlockValues);
-            return rows.length;
-
-        } catch (SQLException ex) {
-            plugin.getLogger().severe("StructContext. SaveBrokenBlocks: " + ex);
-            return 0;
-        }
-    }
-
     public Optional<Volume> getVolumeById(int id) {
         try {
             QueryRunner run = new QueryRunner(dataSource);
@@ -185,41 +162,91 @@ public class StructureContext implements IStructureContext {
             return Optional.empty();
         }
     }
-    public Optional<VolumeBlock> getVolumeBlock(int x, int y, int z, int volumeId) {
+
+    public void saveStructBlocks(List<StructBlock> blocks) {
         try {
             QueryRunner run = new QueryRunner(dataSource);
-            ResultSetHandler<VolumeBlock> h = new BeanHandler(VolumeBlock.class);
-            String sql = String.format("SELECT id, x, y, z, type, block_data as blockdata FROM volume_blocks\n" +
-                    "WHERE x=%d and y=%d and z=%d and volume_id=%d", x, y, z, volumeId);
+            Object[][] brokenBlockValues = new Object[blocks.size()][2];
 
-            VolumeBlock s = run.query(sql, h);
+            for (int i = 0; i < blocks.size(); i++) {
+                StructBlock b = blocks.get(i);
+                brokenBlockValues[i] = new Object[] {
+                        b.getStructId(),
+                        b.getVolumeBlockId(),
+                        b.isBroken()
+                };
+            }
+            String sql = "INSERT INTO struct_blocks (struct_id, volume_block_id, broken) VALUES (?, ?, ?)";
+            int rows[] = run.batch(sql, brokenBlockValues);
+        } catch (SQLException ex) {
+            plugin.getLogger().severe("StructContext. SaveBrokenBlocks: " + ex);
+        }
+    }
 
-            return s == null ? Optional.empty() : Optional.of(s);
+    //TODO: create index by volumeBlockId
+    public List<StructBlockFull> getStructBlocks(int structId) {
+        try {
+            QueryRunner run = new QueryRunner(dataSource);
+            ResultSetHandler<List<StructBlockFull>> h = new BeanListHandler(StructBlockFull.class);
+            String sql = String.format(
+                    "select s.id, v.id as volumeblockid, v.type, v.block_data as blockdata, v.x, v.y, v.z, s.broken \n" +
+                    "from struct_blocks s join volume_blocks v \n" +
+                    "ON s.volume_block_id=v.id \n" +
+                    "where struct_id=%d", structId);
+
+            return run.query(sql, h);
+        } catch (SQLException ex) {
+            plugin.getLogger().severe("StructContext. GetStructBlock: " + ex);
+            return new ArrayList<>(0);
+        }
+    }
+
+    public Optional<StructBlockFull> getStructBlock(int x, int y, int z, int volumeId, int structId) {
+        try {
+            QueryRunner run = new QueryRunner(dataSource);
+            ResultSetHandler<StructBlockFull> h = new BeanHandler(StructBlockFull.class);
+            String sql = String.format(
+                    "select s.id, v.id as volumeblockid, v.type, v.block_data as blockdata, v.x, v.y, v.z, s.broken \n" +
+                            "from struct_blocks s join volume_blocks v \n" +
+                            "ON s.volume_block_id=v.id \n" +
+                            "where v.x=%d and v.y=%d and v.z=%d and v.volume_id=%d and struct_id=%d",
+                    x, y, z, volumeId, structId);
+
+            StructBlockFull block = run.query(sql, h);
+            return block == null ? Optional.empty() : Optional.of(block);
 
         } catch (SQLException ex) {
-            plugin.getLogger().severe("StructContext. GetVolumeBlock: " + ex);
+            plugin.getLogger().severe("StructContext. GetStructBlock: " + ex);
             return Optional.empty();
         }
     }
 
-    public long getVolumeNotAirBlocksNumber(int volumeId) {
+    public int updateStructBlocksBrokenStatus(List<StructBlockFull> blocks) {
         try {
             QueryRunner run = new QueryRunner(dataSource);
-            ResultSetHandler<Long> volumeHandler = new ScalarHandler<>();
-            String sql = String.format("SELECT COUNT(*) FROM volume_blocks WHERE type not like '%s' and volume_id=%d",
-                    "%AIR%", volumeId);
+            Object[][] blockValues = new Object[blocks.size()][2];
 
-            return run.query(sql, volumeHandler);
+            for (int i = 0; i < blocks.size(); i++) {
+                StructBlockFull b = blocks.get(i);
+                blockValues[i] = new Object[] {
+                        b.getId(),
+                        b.isBroken()
+                };
+            }
+            String sql = "UPDATE struct_blocks SET broken=? WHERE id=?";
+            int rows[] = run.batch(sql, blockValues);
+            return rows.length;
         } catch (SQLException ex) {
-            plugin.getLogger().severe("StructContext. GetVolumeNotAirBlocksNumber: " + ex);
+            plugin.getLogger().severe("StructContext. SaveBrokenBlocks: " + ex);
             return 0;
         }
     }
 }
-//                System.out.println(
-//                        String.format("%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s",
-//                                m.getId(), m.getName(), m.getTypeId(), m.isDestructible(),
-//                                m.getOwner(), m.getWorld(), m.getVolumeId(),
-//                                m.getX1(), m.getY1(), m.getZ1(),
-//                                m.getX2(), m.getY2(), m.getZ2())
-//                );
+
+//System.out.println(
+//        String.format("%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s",
+//                m.getId(), m.getName(), m.getTypeId(), m.isDestructible(),
+//                m.getOwner(), m.getWorld(), m.getVolumeId(),
+//                m.getX1(), m.getY1(), m.getZ1(),
+//                m.getX2(), m.getY2(), m.getZ2())
+//);

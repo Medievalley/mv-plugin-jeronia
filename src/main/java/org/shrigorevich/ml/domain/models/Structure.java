@@ -7,7 +7,7 @@ import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.shrigorevich.ml.db.models.GetStructModel;
+import org.shrigorevich.ml.db.models.GetStruct;
 import org.shrigorevich.ml.domain.enums.StructureType;
 
 public class Structure implements IStructure {
@@ -21,9 +21,8 @@ public class Structure implements IStructure {
     private final boolean destructible;
     private final int x1, y1, z1;
     private final int x2, y2, z2;
-    private int brokenBlocksNumber;
 
-    public Structure(GetStructModel m) throws IllegalArgumentException {
+    public Structure(GetStruct m) throws IllegalArgumentException {
 
         this.type = parseType(m.getTypeId());
         if(type == null) throw new IllegalArgumentException(
@@ -60,13 +59,6 @@ public class Structure implements IStructure {
         if (world == null) throw new IllegalStateException("World '" + this.world + "' is not loaded");
         return world;
     }
-    public void setBrokenBlocks(int number) {
-        this.brokenBlocksNumber = number;
-    }
-    public int getBrokenBlocksNumber() {
-        return this.brokenBlocksNumber;
-    }
-
     public Location getLowerNE() {
         return new Location(this.getWorld(), this.x1, this.y1, this.z1);
     }

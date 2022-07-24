@@ -1,6 +1,6 @@
 package org.shrigorevich.ml.db.models;
 
-public class GetStructModel {
+public class GetStruct {
     private int id;
     private int volumeId;
     private String name;

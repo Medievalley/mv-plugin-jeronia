@@ -1,6 +1,6 @@
 package org.shrigorevich.ml.db.models;
 
-public class CreateStructModel {
+public class CreateStruct {
 
     public String name;
     public int ownerId;

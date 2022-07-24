@@ -26,8 +26,4 @@ public interface IStructure {
     int getVolumeId();
     List<Block> getBlocks();
     boolean contains(Location l);
-    int getBrokenBlocksNumber();
-    void setBrokenBlocks(int number);
-
-    Location getCenter();
 }

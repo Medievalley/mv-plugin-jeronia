@@ -6,8 +6,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.shrigorevich.ml.db.models.CreateStructModel;
-import org.shrigorevich.ml.domain.enums.StructureType;
 import org.shrigorevich.ml.domain.models.User;
 import org.shrigorevich.ml.domain.services.IStructureService;
 import org.shrigorevich.ml.domain.services.IUserService;
