@@ -27,8 +27,7 @@ public class BlockExplode implements Listener {
         if (event.getEntity() instanceof TNTPrimed) { //TODO: Implement logic
 
         }
-
-        System.out.println("Blocks exploded: " + event.blockList().size());
+        System.out.println("Blocks exploded: " + event.blockList().size()); //TODO: remove comment
         structureService.processExplodedBlocksAsync(event.blockList());
     }
 }

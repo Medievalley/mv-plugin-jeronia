@@ -35,7 +35,7 @@ public class PlayerInteract implements Listener {
         else if (event.getMaterial() == Material.STICK && action.equals(Action.RIGHT_CLICK_BLOCK)) {
             structureService.setCorner(p.getName(), event.getClickedBlock().getLocation());
             for(Location l : structureService.getStructCorners(p.getName())) {
-                p.sendMessage(String.format("%d, %d, %d", l.getBlockX(), l.getBlockY(), l.getBlockZ()));
+                p.sendMessage(String.format("%d, %d, %d", l.getBlockX() + 5, l.getBlockY() - 77, l.getBlockZ() - 37));
             }
         }
     }

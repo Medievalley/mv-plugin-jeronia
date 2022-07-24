@@ -208,14 +208,12 @@ public class StructureService implements IStructureService {
                 Optional<StructBlockFull> b = getBrokenBlock(block);
                 b.ifPresent(brokenBlocks::add);
             }
-            System.out.println("Broken blocks: " + brokenBlocks.size()); //TODO: comment
             int count = structContext.updateStructBlocksBrokenStatus(brokenBlocks);
             System.out.println("Broken blocks count: " + count); //TODO: comment
 
             if (count == brokenBlocks.size() && count > 0) {
                 HashMap<Integer, IStructure> damagedStructures = new HashMap<>();
                 //TODO: create StructDamagedEvent
-                System.out.println("StructId: " + brokenBlocks.get(0).getStructId());
                 for (StructBlockFull b : brokenBlocks) {
                     if(damagedStructures.get(b.getStructId()) == null) {
                         IStructure s = structures.get(b.getStructId());
