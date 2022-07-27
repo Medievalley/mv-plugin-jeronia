@@ -1,4 +1,4 @@
-package org.shrigorevich.ml.domain.models;
+package org.shrigorevich.ml.domain.structures;
 
 import java.util.*;
 
@@ -7,53 +7,40 @@ import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.shrigorevich.ml.db.models.GetStruct;
+import org.shrigorevich.ml.db.models.StructModel;
 import org.shrigorevich.ml.domain.enums.StructureType;
 
-public class Structure implements IStructure {
+public class BaseStructure implements Structure {
 
     private final int id;
-    private final String name;
-    private final String owner;
     private final String world;
-    private final int volumeId;
     private final StructureType type;
-    private final boolean destructible;
     private final int x1, y1, z1;
     private final int x2, y2, z2;
 
-    public Structure(GetStruct m) throws IllegalArgumentException {
+    //TODO: refactor constructor
+    public BaseStructure(StructModel m) throws IllegalArgumentException {
 
         this.type = parseType(m.getTypeId());
         if(type == null) throw new IllegalArgumentException(
-                String.format("Unable to parse struct type: %d. StructId: %d", m.getTypeId(), m.getId()));
+                String.format("Unable to parse struct type: %d. StructId: %d", 1, m.getId()));
 
         this.id = m.getId();
         this.world = m.getWorld();
-        this.name = m.getName();
-        this.owner = m.getOwner();
-        this.destructible = m.isDestructible();
         this.x1 = Math.min(m.getX1(), m.getX2());
         this.x2 = Math.max(m.getX1(), m.getX2());
         this.y1 = Math.min(m.getY1(), m.getY2());
         this.y2 = Math.max(m.getY1(), m.getY2());
         this.z1 = Math.min(m.getZ1(), m.getZ2());
         this.z2 = Math.max(m.getZ1(), m.getZ2());
-        this.volumeId = m.getVolumeId();
     }
 
     public StructureType getType() {
         return this.type;
     }
-    public int getVolumeId() {
-        return this.volumeId;
-    }
     public int getId() {
         return this.id;
     }
-    public String getName() { return this.name; }
-    public String getOwner() { return this.owner; }
-    public boolean isDestructible() { return this.destructible; }
     public World getWorld() {
         World world = Bukkit.getWorld(this.world);
         if (world == null) throw new IllegalStateException("World '" + this.world + "' is not loaded");
@@ -192,29 +179,6 @@ public class Structure implements IStructure {
         return res;
     }
 
-//    public Structure expand(CuboidDirection dir, int amount) {
-//        switch (dir) {
-//            case North:
-//                return new Structure(this.world, this.x1 - amount, this.y1, this.z1, this.x2, this.y2, this.z2);
-//            case South:
-//                return new Structure(this.world, this.x1, this.y1, this.z1, this.x2 + amount, this.y2, this.z2);
-//            case East:
-//                return new Structure(this.world, this.x1, this.y1, this.z1 - amount, this.x2, this.y2, this.z2);
-//            case West:
-//                return new Structure(this.world, this.x1, this.y1, this.z1, this.x2, this.y2, this.z2 + amount);
-//            case Down:
-//                return new Structure(this.world, this.x1, this.y1 - amount, this.z1, this.x2, this.y2, this.z2);
-//            case Up:
-//                return new Structure(this.world, this.x1, this.y1, this.z1, this.x2, this.y2 + amount, this.z2);
-//            default:
-//                throw new IllegalArgumentException("Invalid direction " + dir);
-//        }
-//    }
-
-//    public Structure shift(CuboidDirection dir, int amount) {
-//        return expand(dir, amount).expand(dir.opposite(), -amount);
-//    }
-
     public boolean contains(int x, int y, int z) {
         return x >= this.x1 && x <= this.x2 && y >= this.y1 && y <= this.y2 && z >= this.z1 && z <= this.z2;
     }
@@ -224,18 +188,6 @@ public class Structure implements IStructure {
     public boolean contains(Location l) {
         if (!this.world.equals(l.getWorld().getName())) return false;
         return this.contains(l.getBlockX(), l.getBlockY(), l.getBlockZ());
-    }
-
-    /**
-     * Get a block relative to the lower NE point of the Cuboid.
-     *
-     * @param x - The X co-ordinate
-     * @param y - The Y co-ordinate
-     * @param z - The Z co-ordinate
-     * @return The block at the given position
-     */
-    public Block getRelativeBlock(int x, int y, int z) {
-        return this.getWorld().getBlockAt(this.x1 + x, this.y1 + y, this.z1 + z);
     }
 
     /**

@@ -1,4 +1,4 @@
-package org.shrigorevich.ml.domain.models;
+package org.shrigorevich.ml.domain.structures;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -6,13 +6,10 @@ import org.shrigorevich.ml.domain.enums.StructureType;
 
 import java.util.List;
 
-public interface IStructure {
+public interface Structure{
 
     int getId();
-    String getName();
-    String getOwner();
     World getWorld();
-    boolean isDestructible();
     StructureType getType();
     int getX1();
     int getY1();
@@ -23,7 +20,6 @@ public interface IStructure {
     int getSizeX();
     int getSizeY();
     int getSizeZ();
-    int getVolumeId();
     List<Block> getBlocks();
     boolean contains(Location l);
 }

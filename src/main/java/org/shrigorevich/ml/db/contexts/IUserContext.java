@@ -1,6 +1,6 @@
 package org.shrigorevich.ml.db.contexts;
 
-import org.shrigorevich.ml.domain.models.User;
+import org.shrigorevich.ml.domain.users.User;
 
 import java.util.Optional;
 

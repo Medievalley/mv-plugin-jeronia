@@ -29,19 +29,23 @@ public class StructureContext implements IStructureContext {
         this.scheduler = Bukkit.getScheduler();
     }
 
-    public int save(CreateStruct st) {
+    public int save(LoreStructModel st) {
         try {
 
             QueryRunner run = new QueryRunner(dataSource);
             ResultSetHandler<Integer> h = new ScalarHandler<>();
-
-            String sql2 = String.format(
-                    "INSERT INTO structures (name, type_id, owner_id, destructible, world, x1, y1, z1, x2, y2, z2)\n" +
-                    "VALUES ('%s', %d, %d, %b, '%s', %d, %d, %d, %d, %d, %d)\n" +
-                    "RETURNING id",
-                    st.name, st.typeId, st.ownerId, st.destructible, st.world, st.x1, st.y1, st.z1, st.x2, st.y2, st.z2
+            String sql = String.format(
+                    "WITH rows as (\n" +
+                    "    INSERT INTO struct (type_id, destructible, world, x1, y1, z1, x2, y2, z2)\n" +
+                    "    VALUES (%d, %b, '%s', %d, %d, %d, %d, %d, %d)\n" +
+                    "    RETURNING id\n" +
+                    ")\n" +
+                    "INSERT INTO lore_struct (struct_id, name) SELECT id, '%s' from rows\n" +
+                    "RETURNING struct_id",
+                    st.typeId, st.destructible, st.world, st.x1, st.y1, st.z1, st.x2, st.y2, st.z2, st.name
             );
-            return run.insert(sql2, h);
+
+            return run.insert(sql, h);
 
         } catch (SQLException ex) {
             plugin.getLogger().severe("StructContext. SaveStructure: " + ex);
@@ -49,16 +53,15 @@ public class StructureContext implements IStructureContext {
         }
     }
 
-    public Optional<GetStruct> getById(int id) {
+    @Deprecated
+    public Optional<LoreStructModel> getById(int id) {
         try {
             QueryRunner run = new QueryRunner(dataSource);
-            ResultSetHandler<GetStruct> h = new BeanHandler(GetStruct.class);
-            String sql = String.format("select s.id, s.name, s.type_id as typeid, s.destructible, s.world, s.x1, s.y1, s.z1, s.x2, s.y2, s.z2, \n" +
-                    "u.username as owner\n" +
-                    "from structures s join users u on s.owner_id = u.id\n" +
-                    "where s.id=%d;", id);
+            ResultSetHandler<LoreStructModel> h = new BeanHandler(LoreStructModel.class);
+            String sql = String.format("select ls.struct_id as id, ls.name, ls.volume_id as volumeid, s.type_id as typeid, s.world, s.x1, s.y1, s.z1, s.x2, s.y2, s.z2\n" +
+                    "from lore_struct ls JOIN struct s ON s.id = ls.struct_id where ls.struct_id=%d ", id);
 
-            GetStruct s = run.query(sql, h);
+            LoreStructModel s = run.query(sql, h);
 
             return s == null ? Optional.empty() : Optional.of(s);
 
@@ -68,13 +71,13 @@ public class StructureContext implements IStructureContext {
         }
     }
 
-    public void createVolume(Volume v, List<VolumeBlock> volumeBlocks, ISaveVolumeCallback cb) { //TODO: Move offset logic to service
+    public void createVolume(Volume v, List<VolumeBlock> volumeBlocks, ISaveVolumeCallback cb) {
         scheduler.runTaskAsynchronously(plugin, () -> {
             try {
                 QueryRunner run = new QueryRunner(dataSource);
                 ResultSetHandler<Integer> volumeHandler = new ScalarHandler<>();
                 String sql = String.format(
-                        "INSERT INTO volumes (name, size_x, size_y, size_z) VALUES ('%s', %d, %d, %d) returning id;",
+                        "INSERT INTO volume (name, size_x, size_y, size_z) VALUES ('%s', %d, %d, %d) returning id;",
                         v.getName(), v.getSizeX(), v.getSizeY(), v.getSizeZ());
                 int volumeId = run.query(sql, volumeHandler);
 
@@ -92,7 +95,7 @@ public class StructureContext implements IStructureContext {
                         };
                 }
 
-                sql = "INSERT INTO volume_blocks (volume_id, type, block_data, x, y, z) VALUES (?, ?, ?, ?, ?, ?)";
+                sql = "INSERT INTO volume_block (volume_id, type, block_data, x, y, z) VALUES (?, ?, ?, ?, ?, ?)";
                 int rows[] = run.batch(sql, volumeBlockValues);
                 System.out.println(rows.length);
 
@@ -108,7 +111,7 @@ public class StructureContext implements IStructureContext {
         try {
             QueryRunner run = new QueryRunner(dataSource);
             ResultSetHandler<List<VolumeBlock>> volumeHandler = new BeanListHandler(VolumeBlock.class);
-            String sql = String.format("SELECT id, type, block_data as blockdata, x, y, z FROM volume_blocks where volume_id=%d;", id);
+            String sql = String.format("SELECT id, type, block_data as blockdata, x, y, z FROM volume_block where volume_id=%d;", id);
             List<VolumeBlock> blocks = run.query(sql, volumeHandler);
             return blocks;
         } catch (SQLException ex) {
@@ -117,18 +120,19 @@ public class StructureContext implements IStructureContext {
         }
     }
 
-    public List<GetStruct> getStructures() {
+    public List<LoreStructModel> getStructures() {
         try {
             QueryRunner run = new QueryRunner(dataSource);
-            ResultSetHandler<List<GetStruct>> h = new BeanListHandler(GetStruct.class);
+            ResultSetHandler<List<LoreStructModel>> h = new BeanListHandler(LoreStructModel.class);
             String sql = String.format(
-                    "SELECT s.id, s.name, s.type_Id as typeid, s.volume_id as volumeid, s.destructible, " +
-                    "s.world, s.x1, s.y1, s.z1, s.x2, s.y2, s.z2, \n" +
-                    "u.username as owner\n" +
-                    "FROM structures s JOIN users u ON s.owner_id = u.id");
+                    "select ls.struct_id as id, ls.name, ls.volume_id as volumeid, s.type_id as typeid, s.world, s.x1, s.y1, s.z1, s.x2, s.y2, s.z2\n" +
+                    "from lore_struct ls JOIN struct s ON s.id = ls.struct_id;");
 
-            List<GetStruct> structs = run.query(sql, h);
-
+            List<LoreStructModel> structs = run.query(sql, h);
+            for (LoreStructModel s : structs) {
+                System.out.printf("Id: %d, TypeId: %d, World: %s, Name: %s, VolumeId: %d DestroyedPercent: %d%n",
+                        s.id, s.typeId, s.world, s.name, s.volumeId, s.destroyedPercent);
+            }
             return structs;
 
         } catch (SQLException ex) {
@@ -139,8 +143,9 @@ public class StructureContext implements IStructureContext {
 
     public void setStructVolume(int structId, int volumeId) {
         try {
+            System.out.printf("Set volume: %d, %d%n", structId, volumeId);
             QueryRunner run = new QueryRunner(dataSource);
-            String sql = String.format("UPDATE structures SET volume_id = %d where id = %d", volumeId, structId);
+            String sql = String.format("UPDATE lore_struct SET volume_id = %d where struct_id = %d", volumeId, structId);
             run.update(sql);
         } catch (SQLException ex) {
             plugin.getLogger().severe("StructContext. SetStructVolume: " + ex);
@@ -152,7 +157,7 @@ public class StructureContext implements IStructureContext {
             QueryRunner run = new QueryRunner(dataSource);
             ResultSetHandler<Volume> h = new BeanHandler(Volume.class);
             String sql = String.format("SELECT id, size_x as sizex, size_y as sizey, size_z as sizez, name \n" +
-                    "FROM volumes WHERE id=%d", id);
+                    "FROM volume WHERE id=%d", id);
 
             Volume volume = run.query(sql, h);
             return volume == null ? Optional.empty() : Optional.of(volume);
@@ -176,7 +181,7 @@ public class StructureContext implements IStructureContext {
                         b.isBroken()
                 };
             }
-            String sql = "INSERT INTO struct_blocks (struct_id, volume_block_id, broken) VALUES (?, ?, ?)";
+            String sql = "INSERT INTO struct_block (struct_id, volume_block_id, broken) VALUES (?, ?, ?)";
             int rows[] = run.batch(sql, brokenBlockValues);
         } catch (SQLException ex) {
             plugin.getLogger().severe("StructContext. SaveBrokenBlocks: " + ex);
@@ -189,7 +194,7 @@ public class StructureContext implements IStructureContext {
             ResultSetHandler<List<StructBlockFull>> h = new BeanListHandler(StructBlockFull.class);
             String sql = String.format(
                     "select s.id, v.id as volumeblockid, v.type, v.block_data as blockdata, v.x, v.y, v.z, s.broken \n" +
-                    "from struct_blocks s join volume_blocks v \n" +
+                    "from struct_block s join volume_block v \n" +
                     "ON s.volume_block_id=v.id \n" +
                     "where struct_id=%d", structId);
 
@@ -207,7 +212,7 @@ public class StructureContext implements IStructureContext {
             ResultSetHandler<StructBlockFull> h = new BeanHandler(StructBlockFull.class);
             String sql = String.format(
                     "select s.id, s.struct_id as structid, v.id as volumeblockid, v.type, v.block_data as blockdata, v.x, v.y, v.z, s.broken \n" +
-                            "from struct_blocks s join volume_blocks v \n" +
+                            "from struct_block s join volume_block v \n" +
                             "ON s.volume_block_id=v.id \n" +
                             "where v.x=%d and v.y=%d and v.z=%d and v.volume_id=%d and struct_id=%d",
                     x, y, z, volumeId, structId);
@@ -237,7 +242,7 @@ public class StructureContext implements IStructureContext {
                         b.getId()
                 };
             }
-            String sql = "UPDATE struct_blocks SET broken=? WHERE id=?";
+            String sql = "UPDATE struct_block SET broken=? WHERE id=?";
             int rows[] = run.batch(sql, blockValues);
             return rows.length;
         } catch (SQLException ex) {
@@ -246,11 +251,8 @@ public class StructureContext implements IStructureContext {
         }
     }
 }
+//select *,
+//        (select count(id) from struct_blocks where struct_id=3 and broken=true) * 100
+//        / (select count(id) from struct_blocks where struct_id=3 and broken=false) as blocks
+//        from structures where id=3
 
-//System.out.println(
-//        String.format("%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s",
-//                m.getId(), m.getName(), m.getTypeId(), m.isDestructible(),
-//                m.getOwner(), m.getWorld(), m.getVolumeId(),
-//                m.getX1(), m.getY1(), m.getZ1(),
-//                m.getX2(), m.getY2(), m.getZ2())
-//);

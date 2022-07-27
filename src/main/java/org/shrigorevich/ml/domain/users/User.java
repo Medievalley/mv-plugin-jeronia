@@ -1,4 +1,4 @@
-package org.shrigorevich.ml.domain.models;
+package org.shrigorevich.ml.domain.users;
 
 public class User {
 

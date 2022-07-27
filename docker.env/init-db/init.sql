@@ -1,9 +1,3 @@
--- DROP TABLE IF EXISTS users CASCADE;
--- DROP TABLE IF EXISTS player_data;
--- DROP TABLE IF EXISTS roles;
--- DROP TABLE IF EXISTS structures;
--- DROP TABLE IF EXISTS structure_types;
-
 CREATE TABLE IF NOT EXISTS users (
 	id SERIAL PRIMARY KEY,
 	username VARCHAR (20) UNIQUE NOT NULL,
@@ -13,7 +7,7 @@ CREATE TABLE IF NOT EXISTS users (
     verified BOOLEAN DEFAULT false NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS roles (
+CREATE TABLE IF NOT EXISTS role (
     id INTEGER PRIMARY KEY,
     name VARCHAR (30) UNIQUE NOT NULL,
     description TEXT NOT NULL
@@ -21,11 +15,11 @@ CREATE TABLE IF NOT EXISTS roles (
 
 CREATE TABLE IF NOT EXISTS player_data (
 	user_id INTEGER references users (id) ON DELETE CASCADE PRIMARY KEY,
-	role_id INTEGER references roles (id) ON DELETE SET NULL,
+	role_id INTEGER references role (id) ON DELETE SET NULL,
     lives INTEGER DEFAULT 0 NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS volumes (
+CREATE TABLE IF NOT EXISTS volume (
     id SERIAL PRIMARY KEY,
     size_x INTEGER NOT NULL,
     size_y INTEGER NOT NULL,
@@ -33,9 +27,9 @@ CREATE TABLE IF NOT EXISTS volumes (
     name TEXT NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS volume_blocks (
+CREATE TABLE IF NOT EXISTS volume_block (
     id SERIAL PRIMARY KEY,
-    volume_id INTEGER REFERENCES volumes(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    volume_id INTEGER REFERENCES volume(id) ON DELETE CASCADE ON UPDATE CASCADE,
     type VARCHAR(255) NOT NULL,
     block_data TEXT NOT NULL,
     x INTEGER,
@@ -43,20 +37,17 @@ CREATE TABLE IF NOT EXISTS volume_blocks (
     z INTEGER
 );
 
-CREATE UNIQUE INDEX vol_block_idx ON volume_blocks (volume_id, x, y, z);
+CREATE UNIQUE INDEX vol_block_idx ON volume_block (volume_id, x, y, z);
 
-CREATE TABLE IF NOT EXISTS struct_types (
+CREATE TABLE IF NOT EXISTS struct_type (
     id INTEGER PRIMARY KEY,
     name VARCHAR(20) NOT NULL,
     description TEXT NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS structures (
+CREATE TABLE IF NOT EXISTS struct (
     id SERIAL PRIMARY KEY,
-    name varchar(100) NOT NULL,
-    owner_id INTEGER references users(id) ON DELETE SET NULL,
-    type_id INTEGER references struct_types(id) ON DELETE SET NULL ON UPDATE CASCADE,
-    volume_id integer references volumes(id) ON UPDATE CASCADE,
+    type_id INTEGER references struct_type(id) ON DELETE SET NULL ON UPDATE CASCADE,
     destructible BOOLEAN DEFAULT false NOT NULL,
     world VARCHAR(255) NOT NULL,
     x1 INTEGER NOT NULL,
@@ -67,15 +58,29 @@ CREATE TABLE IF NOT EXISTS structures (
     z2 INTEGER NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS struct_blocks (
+CREATE TABLE IF NOT EXISTS lore_struct (
     id SERIAL PRIMARY KEY,
-    struct_id INTEGER references structures (id) ON DELETE CASCADE ON UPDATE CASCADE,
-    volume_block_id INTEGER references volume_blocks (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    struct_id INTEGER references struct(id) ON DELETE CASCADE ON UPDATE CASCADE NOT NULL,
+    volume_id integer references volume(id) ON DELETE SET NULL ON UPDATE CASCADE,
+    name varchar(100) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS private_struct (
+    id SERIAL PRIMARY KEY,
+    struct_id INTEGER references struct(id) ON DELETE CASCADE ON UPDATE CASCADE NOT NULL,
+    volume_id integer references volume(id) ON DELETE SET NULL ON UPDATE CASCADE,
+    owner_id INTEGER references users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS struct_block (
+    id SERIAL PRIMARY KEY,
+    struct_id INTEGER references struct (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    volume_block_id INTEGER references volume_block (id) ON DELETE CASCADE ON UPDATE CASCADE,
     broken BOOLEAN DEFAULT false NOT NULL
 );
 
-INSERT INTO roles VALUES (1, 'Admin', 'Most privileged role');
-INSERT INTO struct_types (id, name, description) VALUES
+INSERT INTO role VALUES (1, 'Admin', 'Most privileged role');
+INSERT INTO struct_type (id, name, description) VALUES
 (1, 'private', 'Private territory that each user can own'),
 (2, 'lore', 'Lore structure that normally cannot be destroyed');
 

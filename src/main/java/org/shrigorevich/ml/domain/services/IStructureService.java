@@ -3,10 +3,12 @@ package org.shrigorevich.ml.domain.services;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.shrigorevich.ml.domain.callbacks.IResultCallback;
-import org.shrigorevich.ml.domain.models.User;
+import org.shrigorevich.ml.domain.structures.Structure;
+import org.shrigorevich.ml.domain.users.User;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public interface IStructureService {
 
@@ -18,4 +20,5 @@ public interface IStructureService {
     void applyVolumeToStruct(int structId, int volumeId, IResultCallback cb) throws IllegalArgumentException;
     void loadStructures();
     void processExplodedBlocksAsync(List<Block> blocks);
+    Optional<Structure> getById(int id);
 }

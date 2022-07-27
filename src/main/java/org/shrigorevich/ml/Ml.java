@@ -11,6 +11,8 @@ import org.shrigorevich.ml.db.contexts.IUserContext;
 import org.shrigorevich.ml.db.contexts.StructureContext;
 import org.shrigorevich.ml.db.contexts.UserContext;
 import org.shrigorevich.ml.domain.services.*;
+import org.shrigorevich.ml.domain.users.IUserService;
+import org.shrigorevich.ml.domain.users.UserService;
 import org.shrigorevich.ml.listeners.BlockBreak;
 import org.shrigorevich.ml.listeners.BlockExplode;
 import org.shrigorevich.ml.listeners.PlayerInteract;

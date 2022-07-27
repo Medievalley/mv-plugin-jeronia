@@ -6,9 +6,11 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.shrigorevich.ml.domain.models.User;
+import org.shrigorevich.ml.domain.structures.LoreStructure;
+import org.shrigorevich.ml.domain.structures.Structure;
+import org.shrigorevich.ml.domain.users.User;
 import org.shrigorevich.ml.domain.services.IStructureService;
-import org.shrigorevich.ml.domain.services.IUserService;
+import org.shrigorevich.ml.domain.users.IUserService;
 
 import java.util.Optional;
 
@@ -29,6 +31,14 @@ public class StructureExecutor implements CommandExecutor {
 
                 try {
                     switch (args[0].toLowerCase()) {
+
+                        case "restore":
+                            Optional<Structure> s = structService.getById(Integer.parseInt(args[1]));
+                            if (s.isPresent()) {
+                                LoreStructure ls = (LoreStructure) s.get();
+                                ls.restore();
+                            }
+                            break;
                         case "c":
                         case "create":
                             Optional<User> u = userService.getFromOnlineList(player.getName());

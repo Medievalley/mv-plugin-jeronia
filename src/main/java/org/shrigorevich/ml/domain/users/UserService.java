@@ -1,10 +1,8 @@
-package org.shrigorevich.ml.domain.services;
+package org.shrigorevich.ml.domain.users;
 
 import org.shrigorevich.ml.domain.callbacks.IAccessCheckCallback;
 import org.shrigorevich.ml.db.contexts.IUserContext;
-import org.shrigorevich.ml.domain.models.User;
 
-import javax.swing.text.html.Option;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;

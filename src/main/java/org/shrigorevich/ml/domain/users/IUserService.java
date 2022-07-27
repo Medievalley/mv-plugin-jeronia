@@ -1,7 +1,7 @@
-package org.shrigorevich.ml.domain.services;
+package org.shrigorevich.ml.domain.users;
 
 import org.shrigorevich.ml.domain.callbacks.IAccessCheckCallback;
-import org.shrigorevich.ml.domain.models.User;
+import org.shrigorevich.ml.domain.users.User;
 
 import java.util.Optional;
 

@@ -1,18 +1,19 @@
 package org.shrigorevich.ml.db.contexts;
 import org.shrigorevich.ml.db.models.*;
 import org.shrigorevich.ml.domain.callbacks.*;
+import org.shrigorevich.ml.domain.structures.LoreStructure;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface IStructureContext {
 
-    int save(CreateStruct struct);
-    Optional<GetStruct> getById(int id);
+    int save(LoreStructModel struct);
+    Optional<LoreStructModel> getById(int id);
     void createVolume(Volume volume, List<VolumeBlock> volumeBlocks, ISaveVolumeCallback cb);
     List<VolumeBlock> getVolumeBlocks(int id);
     Optional<Volume> getVolumeById(int id);
-    List<GetStruct> getStructures();
+    List<LoreStructModel> getStructures();
     /**
      * @param volumeId Identifier of volume assigned to structure
      * @param structId Structure identifier
