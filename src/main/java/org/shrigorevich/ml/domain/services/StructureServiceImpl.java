@@ -5,7 +5,6 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.plugin.Plugin;
 import org.shrigorevich.ml.domain.structure.models.LoreStructModel;
-import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
 import org.shrigorevich.ml.domain.structure.models.VolumeBlockModel;
 import org.shrigorevich.ml.domain.structure.models.VolumeModel;
 import org.shrigorevich.ml.domain.callbacks.IResultCallback;
@@ -53,7 +52,7 @@ public class StructureServiceImpl implements StructureService {
         int structId = structContext.save(m);
         if (structId != 0) {
             Optional<LoreStructDB> model = structContext.getById(structId);
-            if (model.isPresent()) registerStructure(new LoreStructImpl(model.get(), structContext));
+            model.ifPresent(loreStructDB -> registerStructure(new LoreStructImpl(loreStructDB, structContext)));
             cb.sendResult(true, String.format("StructId: %d", structId));
         }
     }
@@ -116,7 +115,7 @@ public class StructureServiceImpl implements StructureService {
         }
     }
 
-    public void saveStructVolume(String userName, String volumeName, IResultCallback cb) {
+    public void exportVolume(String userName, String volumeName, IResultCallback cb) {
         Structure s = selectedStruct.get(userName);
         if (s != null) {
             VolumeModel v = new VolumeModel(
@@ -139,7 +138,7 @@ public class StructureServiceImpl implements StructureService {
                                     b.getX() - offsetX,
                                     b.getY() - offsetY,
                                     b.getZ() - offsetZ,
-                                    b.getType(),
+                                    b.getType().toString(),
                                     b.getBlockData().getAsString()
                             ));
                 }
@@ -149,31 +148,6 @@ public class StructureServiceImpl implements StructureService {
         } else {
             cb.sendResult(false, "Please choose struct by right click to any struct block");
         }
-    }
-
-    //TODO: remove previous volume before applying new one
-    public void applyVolumeToStruct(int structId, int volumeId, IResultCallback cb) throws IllegalArgumentException {
-
-        Optional<LoreStructure> struct = this.getById(structId);
-        if (!struct.isPresent()) throw new IllegalArgumentException(String.format("Stuct %d not found", structId));
-
-        Optional<VolumeDB> volume = structContext.getVolumeById(volumeId);
-        if (!volume.isPresent()) throw new IllegalArgumentException(String.format("Volume %d not found", volumeId));
-
-        if(!isSizeEqual(struct.get(), volume.get()))
-            throw new IllegalArgumentException("Structure and volume sizes are not equal");
-
-        structContext.removeVolume(structId);
-        structContext.setStructVolume(structId, volumeId);
-        LoreStructure loreStruct = struct.get();
-        List<VolumeBlockDB> volumeBlocks = structContext.getVolumeBlocks(volumeId);
-        List<StructBlockDB> structBlocks = new ArrayList<>();
-        for(int i = 0; i < volumeBlocks.size(); i ++) {
-            VolumeBlockDB vb = volumeBlocks.get(i);
-            structBlocks.add(new StructBlockModel(loreStruct.getId(), vb.getId(), false));
-        }
-        structContext.saveStructBlocks(structBlocks);
-        loreStruct.restore();
     }
 
     public void loadStructures() {
@@ -196,27 +170,24 @@ public class StructureServiceImpl implements StructureService {
             int count = structContext.updateStructBlocksBrokenStatus(brokenBlocks);
             System.out.println("Broken blocks count: " + count); //TODO: comment
 
-            if (count == brokenBlocks.size() && count > 0) {
-                HashMap<Integer, Structure> damagedStructures = new HashMap<>();
-                //TODO: create StructDamagedEvent
-                for (StructBlockDB b : brokenBlocks) {
-                    if(damagedStructures.get(b.getStructId()) == null) {
-                        Structure s = structures.get(b.getStructId());
-                        damagedStructures.put(s.getId(), s);
-                    }
+            HashMap<Integer, LoreStructure> damagedStructures = new HashMap<>();
+            //TODO: create StructDamagedEvent
+            for (StructBlockDB b : brokenBlocks) {
+                if(damagedStructures.get(b.getStructId()) == null) {
+                    LoreStructure s = structures.get(b.getStructId());
+                    damagedStructures.put(s.getId(), s);
+                }
+            }
+
+            for (LoreStructure s : damagedStructures.values()) {
+                List<StructBlockDB> structBlocks = structContext.getStructBlocks(s.getId());
+                int brokenCounter = 0;
+                for (StructBlockDB b : structBlocks) {
+                    if (b.isBroken()) brokenCounter += 1;
                 }
 
-                for (Structure s : damagedStructures.values()) {
-                    List<StructBlockDB> structBlocks = structContext.getStructBlocks(s.getId());
-                    long brokenCounter = 0;
-                    for (StructBlockDB b : structBlocks) {
-                        if (b.isBroken()) brokenCounter += 1;
-                    }
-
-                    long destroyedPercent = brokenCounter * 100 / structBlocks.size();
-                    System.out.println(brokenCounter + " " + structBlocks.size());
-                    System.out.printf("Destroyed percent %d%n", destroyedPercent);
-                }
+                int destroyedPercent = brokenCounter * 100 / structBlocks.size();
+                s.setDestroyedPercent(destroyedPercent);
             }
         });
     }
@@ -238,11 +209,6 @@ public class StructureServiceImpl implements StructureService {
         return Optional.empty();
     }
 
-    private boolean isSizeEqual(Structure struct, VolumeDB volume) {
-        return struct.getSizeX() == volume.getSizeX() &&
-                struct.getSizeY() == volume.getSizeY() &&
-                struct.getSizeZ() == volume.getSizeZ();
-    }
 
     public void delete(int structId) {
         structures.remove(structId);

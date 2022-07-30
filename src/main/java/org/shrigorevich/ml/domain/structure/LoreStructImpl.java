@@ -4,15 +4,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.shrigorevich.ml.db.contexts.IStructureContext;
-import org.shrigorevich.ml.domain.structure.models.StructBlockDB;
-import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
-import org.shrigorevich.ml.domain.structure.models.LoreStructDB;
+import org.shrigorevich.ml.domain.structure.models.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class LoreStructImpl extends StructureImpl implements LoreStructure {
-    private final int volumeId;
+    private int volumeId;
     private final String name;
     private final boolean destructible;
     private int destroyedPercent;
@@ -23,13 +22,24 @@ public class LoreStructImpl extends StructureImpl implements LoreStructure {
         this.volumeId = m.getVolumeId();
         this.name = m.getName();
         this.destructible = m.isDestructible();
-        this.destroyedPercent = m.getDestroyedPercent();
         this.context = context;
+
+        if (m.getBlocks() > 0 && m.getBrokenBlocks() > 0) {
+            this.destroyedPercent = m.getBrokenBlocks() * 100 / m.getBlocks();
+            System.out.println(destroyedPercent); //TODO: remove comment
+        } else {
+            destroyedPercent = 0;
+        }
     }
 
     @Override
     public long getDestructionPercent() {
         return this.destroyedPercent;
+    }
+
+    public void setDestroyedPercent(int destroyedPercent) {
+        this.destroyedPercent = destroyedPercent;
+        System.out.printf("Destroyed percent updated: %d%%%n", destroyedPercent);
     }
 
     public boolean isDestructible() {
@@ -83,5 +93,37 @@ public class LoreStructImpl extends StructureImpl implements LoreStructure {
                     sb.getZ() + getZ1());
             b.setBlockData(bd);
         }
+    }
+
+    @Override
+    public void applyVolume(int volumeId) throws IllegalArgumentException {
+        Optional<VolumeDB> volume = context.getVolumeById(volumeId);
+        if (!volume.isPresent()) throw new IllegalArgumentException(String.format("Volume %d not found", volumeId));
+
+        if(!isSizeEqual(volume.get()))
+            throw new IllegalArgumentException("Structure and volume sizes are not equal");
+
+        context.removeVolume(getId());
+        context.setStructVolume(getId(), volumeId);
+
+        List<VolumeBlockDB> volumeBlocks = context.getVolumeBlocks(volumeId);
+        List<StructBlockDB> structBlocks = new ArrayList<>();
+        for(int i = 0; i < volumeBlocks.size(); i ++) {
+            VolumeBlockDB vb = volumeBlocks.get(i);
+            structBlocks.add(new StructBlockModel(getId(), vb.getId(), false));
+        }
+        context.saveStructBlocks(structBlocks);
+        this.volumeId = volumeId;
+        this.restore();
+    }
+
+    @Override
+    public int getFoodStock() {
+        return 0;
+    }
+
+    private boolean isSizeEqual(VolumeDB volume) {
+        return this.getSizeX() == volume.getSizeX() && this.getSizeY() == volume.getSizeY() &&
+                this.getSizeZ() == volume.getSizeZ();
     }
 }

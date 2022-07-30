@@ -1,20 +1,17 @@
 package org.shrigorevich.ml.domain.structure.models;
 
-import org.bukkit.Material;
-import org.shrigorevich.ml.domain.structure.models.VolumeBlockDB;
-
 public class VolumeBlockModel implements VolumeBlockDB {
     private int id;
     private int x;
     private int y;
     private int z;
     private String blockData;
-    private Material type;
+    private String type;
 
     public VolumeBlockModel() {}
     public VolumeBlockModel(
             int x, int y, int z,
-            Material type, String blockData
+            String type, String blockData
     ) {
         this.x = x;
         this.y = y;
@@ -52,12 +49,12 @@ public class VolumeBlockModel implements VolumeBlockDB {
         this.z = z;
     }
 
-    public Material getType() {
+    public String getType() {
         return type;
     }
 
     public void setType(String type) {
-        this.type = Material.valueOf(type);
+        this.type = type;
     }
 
     public String getBlockData() {

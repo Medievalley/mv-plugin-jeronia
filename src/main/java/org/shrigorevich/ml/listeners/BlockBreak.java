@@ -25,7 +25,6 @@ public class BlockBreak implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void BlockBroken(BlockDestroyEvent event) {
         Block b = event.getBlock();
-        System.out.println("Destroyed block: " + b.getType());
         structureService.processExplodedBlocksAsync(new ArrayList<>(Arrays.asList(b)));
     }
 

@@ -130,13 +130,16 @@ public class StructureContext implements IStructureContext {
             QueryRunner run = new QueryRunner(dataSource);
             ResultSetHandler<List<LoreStructDB>> h = new BeanListHandler(LoreStructModel.class);
             String sql = String.format(
-                    "select ls.struct_id as id, ls.name, ls.volume_id as volumeid, s.type_id as typeid, s.world, s.x1, s.y1, s.z1, s.x2, s.y2, s.z2\n" +
-                    "from lore_struct ls JOIN struct s ON s.id = ls.struct_id;");
+                    "select ls.struct_id as id, ls.name, ls.volume_id as volumeid, s.type_id as typeid, \n" +
+                    "s.world, s.x1, s.y1, s.z1, s.x2, s.y2, s.z2,\n" +
+                    "(select count(id)::int from struct_block where struct_id=s.id and broken=true) as brokenBlocks,\n" +
+                    "(select count(id)::int from struct_block where struct_id=s.id and broken=false) as blocks\n" +
+                    "from lore_struct ls JOIN struct s ON s.id = ls.struct_id");
 
             List<LoreStructDB> structs = run.query(sql, h);
             for (LoreStructDB s : structs) {
-                System.out.printf("Id: %d, TypeId: %d, World: %s, Name: %s, VolumeId: %d DestroyedPercent: %d%n",
-                        s.getId(), s.getTypeId(), s.getWorld(), s.getName(), s.getVolumeId(), s.getDestroyedPercent());
+                System.out.printf("Id: %d, TypeId: %d, World: %s, Name: %s, VolumeId: %d brokenBlocks: %d%n",
+                        s.getId(), s.getTypeId(), s.getWorld(), s.getName(), s.getVolumeId(), s.getBrokenBlocks());
             }
             return structs;
 
@@ -291,8 +294,4 @@ public class StructureContext implements IStructureContext {
         }
     }
 }
-//select *,
-//        (select count(id) from struct_blocks where struct_id=3 and broken=true) * 100
-//        / (select count(id) from struct_blocks where struct_id=3 and broken=false) as blocks
-//        from structures where id=3
 

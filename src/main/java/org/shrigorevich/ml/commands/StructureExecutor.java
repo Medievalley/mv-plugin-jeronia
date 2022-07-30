@@ -60,15 +60,14 @@ public class StructureExecutor implements CommandExecutor {
                             break;
                         case "sv":
                         case "save_volume":
-                            structService.saveStructVolume(player.getName(), args[1], (res, msg) -> {
+                            structService.exportVolume(player.getName(), args[1], (res, msg) -> {
                                 player.sendMessage(msg);
                             });
                             break;
                         case "av":
                         case "apply_volume":
-                            structService.applyVolumeToStruct(Integer.parseInt(args[1]), Integer.parseInt(args[2]), (res, msg) -> {
-                                player.sendMessage(msg);
-                            });
+                            Optional<LoreStructure> structure = structService.getById(Integer.parseInt(args[1]));
+                            structure.ifPresent(loreStructure -> loreStructure.applyVolume(Integer.parseInt(args[2])));
                             break;
                         default:
                             player.sendMessage(ChatColor.YELLOW + String.format("Command '%s' not found", args[0]));

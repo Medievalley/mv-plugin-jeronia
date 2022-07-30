@@ -11,4 +11,5 @@ public interface Volumeable {
     void updateVolume(List<StructBlockModel> blocks);
     void restoreBlock(int x, int y, int z);
     void restore();
+    void applyVolume(int volumeId) throws IllegalArgumentException;
 }

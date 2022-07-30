@@ -5,17 +5,11 @@ public class LoreStructModel extends StructModel implements LoreStructDB {
     /** ID of base structure */
     public String name;
     public boolean destructible;
-    public int destroyedPercent;
+    public int blocks, brokenBlocks;
     public LoreStructModel() {
         super();
     }
 
-    public int getDestroyedPercent() {
-        return destroyedPercent;
-    }
-    public void setDestroyedPercent(int destroyedPercent) {
-        this.destroyedPercent = destroyedPercent;
-    }
     public int getVolumeId() {
         return volumeId;
     }
@@ -33,5 +27,17 @@ public class LoreStructModel extends StructModel implements LoreStructDB {
     }
     public void setDestructible(boolean destructible) {
         this.destructible = destructible;
+    }
+    public int getBlocks() {
+        return blocks;
+    }
+    public void setBlocks(int blocks) {
+        this.blocks = blocks;
+    }
+    public int getBrokenBlocks() {
+        return brokenBlocks;
+    }
+    public void setBrokenBlocks(int brokenBlocks) {
+        this.brokenBlocks = brokenBlocks;
     }
 }
