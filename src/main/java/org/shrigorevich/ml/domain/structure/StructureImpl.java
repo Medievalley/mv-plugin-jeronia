@@ -1,4 +1,4 @@
-package org.shrigorevich.ml.domain.structures;
+package org.shrigorevich.ml.domain.structure;
 
 import java.util.*;
 
@@ -7,10 +7,10 @@ import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.shrigorevich.ml.db.models.StructModel;
 import org.shrigorevich.ml.domain.enums.StructureType;
+import org.shrigorevich.ml.domain.structure.models.StructDB;
 
-public class BaseStructure implements Structure {
+public abstract class StructureImpl implements Structure {
 
     private final int id;
     private final String world;
@@ -19,7 +19,7 @@ public class BaseStructure implements Structure {
     private final int x2, y2, z2;
 
     //TODO: refactor constructor
-    public BaseStructure(StructModel m) throws IllegalArgumentException {
+    public StructureImpl(StructDB m) throws IllegalArgumentException {
 
         this.type = parseType(m.getTypeId());
         if(type == null) throw new IllegalArgumentException(

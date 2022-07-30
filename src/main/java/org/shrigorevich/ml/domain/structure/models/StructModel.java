@@ -1,6 +1,8 @@
-package org.shrigorevich.ml.db.models;
+package org.shrigorevich.ml.domain.structure.models;
 
-public class StructModel {
+import org.shrigorevich.ml.domain.structure.models.StructDB;
+
+public class StructModel implements StructDB {
     public int id;
     public String world;
     public int typeId, x1, y1, z1, x2, y2, z2;

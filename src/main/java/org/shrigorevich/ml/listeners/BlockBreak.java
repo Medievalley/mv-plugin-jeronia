@@ -5,14 +5,14 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.shrigorevich.ml.domain.services.IStructureService;
+import org.shrigorevich.ml.domain.services.StructureService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class BlockBreak implements Listener {
-    IStructureService structureService;
-    public BlockBreak(IStructureService structureService) {
+    StructureService structureService;
+    public BlockBreak(StructureService structureService) {
         this.structureService = structureService;
     }
 

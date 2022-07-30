@@ -1,18 +1,17 @@
 package org.shrigorevich.ml.listeners;
 
-import org.bukkit.block.Block;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
-import org.shrigorevich.ml.domain.services.IStructureService;
+import org.shrigorevich.ml.domain.services.StructureService;
 
 public class BlockExplode implements Listener {
 
-    IStructureService structureService;
-    public BlockExplode(IStructureService structureService) {
+    StructureService structureService;
+    public BlockExplode(StructureService structureService) {
         this.structureService = structureService;
     }
 

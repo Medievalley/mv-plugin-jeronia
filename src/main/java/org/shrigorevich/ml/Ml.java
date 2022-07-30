@@ -24,7 +24,7 @@ public final class Ml extends JavaPlugin {
     private Configuration config;
     private DataSource dataSource;
     private IUserService userService;
-    private IStructureService structService;
+    private StructureService structService;
     @Override
     public void onLoad() {
         saveDefaultConfig();
@@ -36,7 +36,7 @@ public final class Ml extends JavaPlugin {
         IUserContext userContext = new UserContext(this, dataSource);
         IStructureContext structureContext = new StructureContext(this, dataSource);
         userService = new UserService(userContext);
-        structService = new StructureService(structureContext, this);
+        structService = new StructureServiceImpl(structureContext, this);
     }
     @Override
     public void onEnable() {

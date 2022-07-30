@@ -1,23 +1,18 @@
 package org.shrigorevich.ml.listeners;
 
-import net.kyori.adventure.text.Component;
 import org.bukkit.*;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.shrigorevich.ml.domain.services.IStructureService;
-
-import java.util.List;
+import org.shrigorevich.ml.domain.services.StructureService;
 
 public class PlayerInteract implements Listener {
 
-    IStructureService structureService;
-    public PlayerInteract(IStructureService structureService) {
+    StructureService structureService;
+    public PlayerInteract(StructureService structureService) {
         this.structureService = structureService;
     }
 

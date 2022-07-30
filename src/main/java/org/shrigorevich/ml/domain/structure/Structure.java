@@ -1,4 +1,4 @@
-package org.shrigorevich.ml.domain.structures;
+package org.shrigorevich.ml.domain.structure;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;

@@ -1,19 +1,21 @@
-package org.shrigorevich.ml.db.models;
+package org.shrigorevich.ml.domain.structure.models;
 
-public class Volume {
+import org.shrigorevich.ml.domain.structure.models.VolumeDB;
+
+public class VolumeModel implements VolumeDB {
     private int id;
     private String name;
     private int sizeX;
     private int sizeY;
     private int sizeZ;
 
-    public Volume(String name, int sizeX, int sizeY, int sizeZ) {
+    public VolumeModel(String name, int sizeX, int sizeY, int sizeZ) {
         this.name = name;
         this.sizeX = sizeX;
         this.sizeY = sizeY;
         this.sizeZ = sizeZ;
     }
-    public Volume(){}
+    public VolumeModel(){}
     public String getName() {
         return name;
     }

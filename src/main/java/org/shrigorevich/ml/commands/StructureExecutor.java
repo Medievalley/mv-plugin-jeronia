@@ -6,19 +6,19 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.shrigorevich.ml.domain.structures.LoreStructure;
-import org.shrigorevich.ml.domain.structures.Structure;
+import org.shrigorevich.ml.domain.structure.LoreStructure;
+import org.shrigorevich.ml.domain.structure.Structure;
 import org.shrigorevich.ml.domain.users.User;
-import org.shrigorevich.ml.domain.services.IStructureService;
+import org.shrigorevich.ml.domain.services.StructureService;
 import org.shrigorevich.ml.domain.users.IUserService;
 
 import java.util.Optional;
 
 public class StructureExecutor implements CommandExecutor {
     private final IUserService userService;
-    private final IStructureService structService;
+    private final StructureService structService;
 
-    public StructureExecutor(IUserService userService, IStructureService structService) {
+    public StructureExecutor(IUserService userService, StructureService structService) {
         this.userService = userService;
         this.structService = structService;
     }
@@ -32,10 +32,15 @@ public class StructureExecutor implements CommandExecutor {
                 try {
                     switch (args[0].toLowerCase()) {
 
+                        case "delete":
+                        case "d":
+                            structService.delete(Integer.parseInt(args[1]));
+                            break;
                         case "restore":
-                            Optional<Structure> s = structService.getById(Integer.parseInt(args[1]));
+                        case "r":
+                            Optional<LoreStructure> s = structService.getById(Integer.parseInt(args[1]));
                             if (s.isPresent()) {
-                                LoreStructure ls = (LoreStructure) s.get();
+                                LoreStructure ls = s.get();
                                 ls.restore();
                             }
                             break;

@@ -1,4 +1,4 @@
-package org.shrigorevich.ml.domain.structures;
+package org.shrigorevich.ml.domain.structure;
 
 public interface LoreStructure extends Structure, Nameable, Volumeable {
 

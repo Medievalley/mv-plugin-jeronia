@@ -6,12 +6,12 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.shrigorevich.ml.domain.services.IStructureService;
+import org.shrigorevich.ml.domain.services.StructureService;
 import org.shrigorevich.ml.domain.users.IUserService;
 
 public class NpcExecutor implements CommandExecutor {
 
-    public NpcExecutor(IUserService userService, IStructureService structService) {
+    public NpcExecutor(IUserService userService, StructureService structService) {
     }
 
     @Override

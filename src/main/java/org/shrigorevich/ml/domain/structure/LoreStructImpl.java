@@ -1,31 +1,29 @@
-package org.shrigorevich.ml.domain.structures;
+package org.shrigorevich.ml.domain.structure;
 
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.shrigorevich.ml.db.contexts.IStructureContext;
-import org.shrigorevich.ml.db.models.LoreStructModel;
-import org.shrigorevich.ml.db.models.StructBlock;
-import org.shrigorevich.ml.db.models.StructBlockFull;
-import org.shrigorevich.ml.db.models.VolumeBlock;
+import org.shrigorevich.ml.domain.structure.models.StructBlockDB;
+import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
+import org.shrigorevich.ml.domain.structure.models.LoreStructDB;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class LoreStructImpl extends BaseStructure implements LoreStructure {
-    private int volumeId;
-    private String name;
-    private boolean destructible;
+public class LoreStructImpl extends StructureImpl implements LoreStructure {
+    private final int volumeId;
+    private final String name;
+    private final boolean destructible;
     private int destroyedPercent;
     private final IStructureContext context;
 
-    public LoreStructImpl(LoreStructModel m, IStructureContext context) {
+    public LoreStructImpl(LoreStructDB m, IStructureContext context) {
         super(m);
-        this.volumeId = m.volumeId;
-        this.name = m.name;
-        this.destructible = m.destructible;
-        this.destroyedPercent = m.destroyedPercent;
+        this.volumeId = m.getVolumeId();
+        this.name = m.getName();
+        this.destructible = m.isDestructible();
+        this.destroyedPercent = m.getDestroyedPercent();
         this.context = context;
     }
 
@@ -49,20 +47,20 @@ public class LoreStructImpl extends BaseStructure implements LoreStructure {
     }
 
     @Override
-    public Optional<StructBlockFull> getBrokenBlock() {
+    public Optional<StructBlockModel> getBrokenBlock() {
         return Optional.empty();
     }
 
     @Override
-    public void updateVolume(List<StructBlockFull> blocks) {
+    public void updateVolume(List<StructBlockModel> blocks) {
 
     }
 
     @Override
     public void restoreBlock(int x, int y, int z) {
-        Optional<StructBlockFull> structBlock = context.getStructBlock(x, y, z, getVolumeId(), getId());
+        Optional<StructBlockDB> structBlock = context.getStructBlock(x, y, z, getVolumeId(), getId());
         if (structBlock.isPresent()) {
-            StructBlockFull sb = structBlock.get();
+            StructBlockDB sb = structBlock.get();
             BlockData bd = Bukkit.createBlockData(sb.getBlockData());
             Block b = getWorld().getBlockAt(
                     sb.getX() + getX1(),
@@ -74,15 +72,15 @@ public class LoreStructImpl extends BaseStructure implements LoreStructure {
 
     @Override
     public void restore() {
-        List<StructBlockFull> structBlocks = context.getStructBlocks(getId());
+        context.restore(getId());
+        List<StructBlockDB> structBlocks = context.getStructBlocks(getId());
         for(int i = 0; i < structBlocks.size(); i ++) {
-            StructBlockFull sb = structBlocks.get(i);
+            StructBlockDB sb = structBlocks.get(i);
             BlockData bd = Bukkit.createBlockData(sb.getBlockData());
             Block b = getWorld().getBlockAt(
                     sb.getX() + getX1(),
                     sb.getY() + getY1(),
                     sb.getZ() + getZ1());
-
             b.setBlockData(bd);
         }
     }

@@ -1,8 +1,6 @@
-package org.shrigorevich.ml.db.models;
+package org.shrigorevich.ml.domain.structure.models;
 
-public class LoreStructModel extends StructModel {
-
-    public int id;
+public class LoreStructModel extends StructModel implements LoreStructDB {
     public int volumeId;
     /** ID of base structure */
     public String name;
@@ -12,12 +10,6 @@ public class LoreStructModel extends StructModel {
         super();
     }
 
-    public int getId() {
-        return id;
-    }
-    public void setId(int id) {
-        this.id = id;
-    }
     public int getDestroyedPercent() {
         return destroyedPercent;
     }
