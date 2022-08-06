@@ -1,0 +1,17 @@
+package org.shrigorevich.ml.domain.npc.models;
+
+public interface StructNpcDB {
+
+    int getId();
+    int getX();
+    int getY();
+    int getZ();
+    String getName();
+    int getStructId();
+
+    void setX(int x);
+    void setY(int y);
+    void setZ(int z);
+    void setName(String name);
+    void setStructId(int structId);
+}

@@ -9,5 +9,9 @@ commands:
     usage: "/<command> create | c [type] [name] [isDestructible] \n 
             /<command> save_volume | sv [volumeName] \n
             /<command> apply_volume | av [structId] [volumeId]"
+  npc:
+    description: "Npc management"
+    usage: "/<command> create \n
+            /<command> clear"
 
 

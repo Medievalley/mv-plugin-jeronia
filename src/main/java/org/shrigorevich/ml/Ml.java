@@ -3,13 +3,13 @@ package org.shrigorevich.ml;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.shrigorevich.ml.commands.NpcExecutor;
 import org.shrigorevich.ml.commands.StructureExecutor;
 import org.shrigorevich.ml.config.Configuration;
 import org.shrigorevich.ml.db.DataSourceCreator;
-import org.shrigorevich.ml.db.contexts.IStructureContext;
-import org.shrigorevich.ml.db.contexts.IUserContext;
-import org.shrigorevich.ml.db.contexts.StructureContext;
-import org.shrigorevich.ml.db.contexts.UserContext;
+import org.shrigorevich.ml.db.contexts.*;
+import org.shrigorevich.ml.domain.npc.NpcService;
+import org.shrigorevich.ml.domain.npc.NpcServiceImpl;
 import org.shrigorevich.ml.domain.services.*;
 import org.shrigorevich.ml.domain.users.IUserService;
 import org.shrigorevich.ml.domain.users.UserService;
@@ -25,18 +25,24 @@ public final class Ml extends JavaPlugin {
     private DataSource dataSource;
     private IUserService userService;
     private StructureService structService;
+    private NpcService npcService;
     @Override
     public void onLoad() {
         saveDefaultConfig();
         getConfig().options().copyDefaults(true);
         saveConfig();
+
         config = new Configuration(this);
         dataSource = DataSourceCreator.createDataSource(config);
 
-        IUserContext userContext = new UserContext(this, dataSource);
-        IStructureContext structureContext = new StructureContext(this, dataSource);
+        UserContext userContext = new UserContextImpl(this, dataSource);
+        StructureContext structureContext = new StructContextImpl(this, dataSource);
+        NpcContext npcContext = new NpcContextImpl(this, dataSource);
+
         userService = new UserService(userContext);
         structService = new StructureServiceImpl(structureContext, this);
+        npcService = new NpcServiceImpl(npcContext);
+
     }
     @Override
     public void onEnable() {
@@ -65,5 +71,6 @@ public final class Ml extends JavaPlugin {
 
     private void setupExecutors() {
         getCommand("struct").setExecutor(new StructureExecutor(userService, structService));
+        getCommand("npc").setExecutor(new NpcExecutor(npcService));
     }
 }

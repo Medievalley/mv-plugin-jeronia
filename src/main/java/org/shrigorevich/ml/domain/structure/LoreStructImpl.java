@@ -3,7 +3,7 @@ package org.shrigorevich.ml.domain.structure;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
-import org.shrigorevich.ml.db.contexts.IStructureContext;
+import org.shrigorevich.ml.db.contexts.StructureContext;
 import org.shrigorevich.ml.domain.structure.models.*;
 
 import java.util.ArrayList;
@@ -15,9 +15,9 @@ public class LoreStructImpl extends StructureImpl implements LoreStructure {
     private final String name;
     private final boolean destructible;
     private int destroyedPercent;
-    private final IStructureContext context;
+    private final StructureContext context;
 
-    public LoreStructImpl(LoreStructDB m, IStructureContext context) {
+    public LoreStructImpl(LoreStructDB m, StructureContext context) {
         super(m);
         this.volumeId = m.getVolumeId();
         this.name = m.getName();

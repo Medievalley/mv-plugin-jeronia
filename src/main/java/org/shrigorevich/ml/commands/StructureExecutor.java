@@ -28,7 +28,6 @@ public class StructureExecutor implements CommandExecutor {
         if(args.length > 0){
             if(sender instanceof Player){
                 Player player = (Player) sender;
-
                 try {
                     switch (args[0].toLowerCase()) {
 

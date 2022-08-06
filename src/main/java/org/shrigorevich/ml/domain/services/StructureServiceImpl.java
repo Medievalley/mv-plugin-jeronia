@@ -8,7 +8,7 @@ import org.shrigorevich.ml.domain.structure.models.LoreStructModel;
 import org.shrigorevich.ml.domain.structure.models.VolumeBlockModel;
 import org.shrigorevich.ml.domain.structure.models.VolumeModel;
 import org.shrigorevich.ml.domain.callbacks.IResultCallback;
-import org.shrigorevich.ml.db.contexts.IStructureContext;
+import org.shrigorevich.ml.db.contexts.StructureContext;
 import org.shrigorevich.ml.domain.enums.StructureType;
 import org.shrigorevich.ml.domain.structure.LoreStructImpl;
 import org.shrigorevich.ml.domain.structure.LoreStructure;
@@ -20,12 +20,12 @@ import java.util.*;
 
 public class StructureServiceImpl implements StructureService {
     private final Map<String, ArrayList<Location>> structCorners;
-    private final IStructureContext structContext;
+    private final StructureContext structContext;
     private final Map<Integer, LoreStructure> structures;
     private final Map<String, Structure> selectedStruct;
     private final Plugin plugin;
 
-    public StructureServiceImpl(IStructureContext structureContext, Plugin plugin) {
+    public StructureServiceImpl(StructureContext structureContext, Plugin plugin) {
         this.plugin = plugin;
         this.structContext = structureContext;
         this.structCorners = new HashMap<>();
@@ -67,15 +67,10 @@ public class StructureServiceImpl implements StructureService {
     }
 
     public void setCorner(String key, Location l) {
-        ArrayList<Location> corners = structCorners.get(key);
-        if (corners == null) {
-            corners = new ArrayList<>();
-            structCorners.put(key, corners);
-        }
+        ArrayList<Location> corners = structCorners.computeIfAbsent(key, k -> new ArrayList<>());
         if (corners.size() == 2)
             corners.remove(0);
         corners.add(l);
-
     }
 
     public ArrayList<Location> getStructCorners(String key) {
@@ -209,10 +204,11 @@ public class StructureServiceImpl implements StructureService {
         return Optional.empty();
     }
 
-
     public void delete(int structId) {
         structures.remove(structId);
         structContext.delete(structId);
     }
+
+
 }
 

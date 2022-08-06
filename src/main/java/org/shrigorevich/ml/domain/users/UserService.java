@@ -1,7 +1,7 @@
 package org.shrigorevich.ml.domain.users;
 
 import org.shrigorevich.ml.domain.callbacks.IAccessCheckCallback;
-import org.shrigorevich.ml.db.contexts.IUserContext;
+import org.shrigorevich.ml.db.contexts.UserContext;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,8 +10,8 @@ import java.util.Optional;
 public class UserService implements IUserService {
 
     private final Map<String, User> onlineList;
-    IUserContext userContext;
-    public UserService(IUserContext userContext) {
+    UserContext userContext;
+    public UserService(UserContext userContext) {
         this.userContext = userContext;
         this.onlineList = new HashMap<>();
     }

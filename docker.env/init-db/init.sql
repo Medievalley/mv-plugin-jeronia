@@ -79,6 +79,15 @@ CREATE TABLE IF NOT EXISTS struct_block (
     broken BOOLEAN DEFAULT false NOT NULL
 );
 
+CREATE table IF NOT EXISTS struct_npc (
+    id SERIAL PRIMARY KEY,
+    x integer NOT NULL,
+    y integer NOT NULL,
+    z integer NOT NULL,
+    name VARCHAR(30) NOT NULL,
+    struct_id INTEGER references struct (id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
 INSERT INTO role VALUES (1, 'Admin', 'Most privileged role');
 INSERT INTO struct_type (id, name, description) VALUES
 (1, 'private', 'Private territory that each user can own'),
