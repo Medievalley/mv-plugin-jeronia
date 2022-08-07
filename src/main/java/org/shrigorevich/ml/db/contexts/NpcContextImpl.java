@@ -2,12 +2,18 @@ package org.shrigorevich.ml.db.contexts;
 
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
+import org.apache.commons.dbutils.handlers.BeanHandler;
+import org.apache.commons.dbutils.handlers.BeanListHandler;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.bukkit.plugin.Plugin;
 import org.shrigorevich.ml.domain.npc.models.StructNpcDB;
+import org.shrigorevich.ml.domain.npc.models.StructNpcModel;
+import org.shrigorevich.ml.domain.structure.models.LoreStructDB;
+import org.shrigorevich.ml.domain.structure.models.LoreStructModel;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,18 +37,37 @@ public class NpcContextImpl extends Context implements NpcContext{
             return run.insert(sql, h);
 
         } catch (SQLException ex) {
-            getPlugin().getLogger().severe("StructContext. SaveStructure: " + ex);
+            getPlugin().getLogger().severe("NpcContext. Save: " + ex);
             return 0;
         }
     }
 
     @Override
     public List<StructNpcDB> get() {
-        return null;
+        try {
+            QueryRunner run = new QueryRunner(getDataSource());
+            ResultSetHandler<List<StructNpcDB>> h = new BeanListHandler(StructNpcModel.class);
+            String sql = "select n.id, x, y, z, name, s.world from struct_npc n join struct s on s.id = n.struct_id";
+            return run.query(sql, h);
+        } catch (SQLException ex) {
+            getPlugin().getLogger().severe("NpcContext. Get all: " + ex);
+            return new ArrayList<>(0);
+        }
     }
 
     @Override
     public Optional<StructNpcDB> get(int id) {
-        return Optional.empty();
+        try {
+            QueryRunner run = new QueryRunner(getDataSource());
+            ResultSetHandler<StructNpcDB> h = new BeanHandler(StructNpcModel.class);
+            String sql = String.format("select n.id, x, y, z, name, s.world from struct_npc n join struct s on s.id = n.struct_id where n.id = %d", id);
+
+            StructNpcDB s = run.query(sql, h);
+            return s == null ? Optional.empty() : Optional.of(s);
+
+        } catch (SQLException ex) {
+            getPlugin().getLogger().severe("NpcContext. GetById: " + ex);
+            return Optional.empty();
+        }
     }
 }

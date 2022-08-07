@@ -13,10 +13,7 @@ import org.shrigorevich.ml.domain.npc.NpcServiceImpl;
 import org.shrigorevich.ml.domain.services.*;
 import org.shrigorevich.ml.domain.users.IUserService;
 import org.shrigorevich.ml.domain.users.UserService;
-import org.shrigorevich.ml.listeners.BlockBreak;
-import org.shrigorevich.ml.listeners.BlockExplode;
-import org.shrigorevich.ml.listeners.PlayerInteract;
-import org.shrigorevich.ml.listeners.Auth;
+import org.shrigorevich.ml.listeners.*;
 
 import javax.sql.DataSource;
 
@@ -41,7 +38,7 @@ public final class Ml extends JavaPlugin {
 
         userService = new UserService(userContext);
         structService = new StructureServiceImpl(structureContext, this);
-        npcService = new NpcServiceImpl(npcContext);
+        npcService = new NpcServiceImpl(npcContext, this);
 
     }
     @Override
@@ -49,7 +46,8 @@ public final class Ml extends JavaPlugin {
         setupListeners();
         setupExecutors();
         try {
-            structService.loadStructures();
+            structService.load();
+            npcService.load();
         } catch (IllegalArgumentException ex) {
             Bukkit.getLogger().severe(ex.getMessage());
         }
@@ -59,14 +57,16 @@ public final class Ml extends JavaPlugin {
     public void onDisable() {
         // Plugin shutdown logic
         System.out.println("DISABLED");
+        npcService.unload();
     }
 
     private void setupListeners() {
         PluginManager pm = getServer().getPluginManager();
         pm.registerEvents(new Auth(userService), this);
-        pm.registerEvents(new PlayerInteract(structService), this);
+        pm.registerEvents(new PlayerInteract(structService, npcService), this);
         pm.registerEvents(new BlockExplode(structService), this);
         pm.registerEvents(new BlockBreak(structService), this);
+        pm.registerEvents(new EntitySpawn(npcService), this);
     }
 
     private void setupExecutors() {

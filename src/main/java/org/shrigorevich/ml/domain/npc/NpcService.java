@@ -1,18 +1,17 @@
 package org.shrigorevich.ml.domain.npc;
 
-import org.bukkit.entity.Entity;
+import org.shrigorevich.ml.domain.Service;
+import org.shrigorevich.ml.domain.callbacks.MsgCallback;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
-public interface NpcService {
+public interface NpcService extends Service {
 
-    void draftNpc(int x, int y, int z, int structId, String key);
-    List<Entity> getNpcList();
-    Optional<Entity> getById(int id);
-    void register(int id, Entity entity);
-    void clear();
-    int getSize();
-
+    void draftNpc(int x, int y, int z, int structId, String key, MsgCallback cb);
     void commitNpc(String name, String key) throws IllegalArgumentException;
+    void load();
+    void unload();
+    void clear(UUID id);
+    Optional<StructNpc> getById(UUID id);
 }

@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.plugin.Plugin;
+import org.shrigorevich.ml.domain.BaseService;
 import org.shrigorevich.ml.domain.structure.models.LoreStructModel;
 import org.shrigorevich.ml.domain.structure.models.VolumeBlockModel;
 import org.shrigorevich.ml.domain.structure.models.VolumeModel;
@@ -18,15 +19,14 @@ import org.shrigorevich.ml.domain.users.User;
 
 import java.util.*;
 
-public class StructureServiceImpl implements StructureService {
+public class StructureServiceImpl extends BaseService implements StructureService {
     private final Map<String, ArrayList<Location>> structCorners;
     private final StructureContext structContext;
     private final Map<Integer, LoreStructure> structures;
     private final Map<String, Structure> selectedStruct;
-    private final Plugin plugin;
 
     public StructureServiceImpl(StructureContext structureContext, Plugin plugin) {
-        this.plugin = plugin;
+        super(plugin);
         this.structContext = structureContext;
         this.structCorners = new HashMap<>();
         this.structures = new HashMap<>();
@@ -84,7 +84,7 @@ public class StructureServiceImpl implements StructureService {
         LoreStructure struct = structures.get(id);
         return struct != null ? Optional.of(struct) : Optional.empty();
     }
-    private Optional<Structure> getByLocation(Location l) {
+    public Optional<Structure> getByLocation(Location l) {
         for (Structure s : structures.values()) {
             if(s.contains(l)) {
                 return Optional.of(s);
@@ -145,7 +145,7 @@ public class StructureServiceImpl implements StructureService {
         }
     }
 
-    public void loadStructures() {
+    public void load() {
         List<LoreStructDB> structs = structContext.getStructures();
         for (LoreStructDB s : structs) {
             LoreStructure newStruct = new LoreStructImpl(s, structContext);
@@ -156,7 +156,7 @@ public class StructureServiceImpl implements StructureService {
 
     public void processExplodedBlocksAsync(List<Block> blocks) {
 
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+        Bukkit.getScheduler().runTaskAsynchronously(getPlugin(), () -> {
             List<StructBlockDB> brokenBlocks = new ArrayList<>();
             for (Block block : blocks) {
                 Optional<StructBlockDB> b = getBrokenBlock(block);

@@ -8,10 +8,12 @@ public interface StructNpcDB {
     int getZ();
     String getName();
     int getStructId();
+    String getWorld();
 
     void setX(int x);
     void setY(int y);
     void setZ(int z);
     void setName(String name);
     void setStructId(int structId);
+    void setWorld(String world);
 }

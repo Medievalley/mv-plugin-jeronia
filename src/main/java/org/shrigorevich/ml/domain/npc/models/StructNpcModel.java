@@ -3,7 +3,7 @@ package org.shrigorevich.ml.domain.npc.models;
 public class StructNpcModel implements StructNpcDB{
 
     private int x, y, z, structId, id;
-    private String name;
+    private String name, world;
 
     @Override
     public int getId() {
@@ -36,6 +36,11 @@ public class StructNpcModel implements StructNpcDB{
     }
 
     @Override
+    public String getWorld() {
+        return this.world;
+    }
+
+    @Override
     public void setX(int x) {
         this.x = x;
     }
@@ -58,6 +63,11 @@ public class StructNpcModel implements StructNpcDB{
     @Override
     public void setStructId(int structId) {
         this.structId = structId;
+    }
+
+    @Override
+    public void setWorld(String world) {
+        this.world = world;
     }
 
     public void setId(int id) {

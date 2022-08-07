@@ -4,6 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.shrigorevich.ml.domain.callbacks.IResultCallback;
 import org.shrigorevich.ml.domain.structure.LoreStructure;
+import org.shrigorevich.ml.domain.structure.Structure;
 import org.shrigorevich.ml.domain.users.User;
 
 import java.util.ArrayList;
@@ -17,8 +18,9 @@ public interface StructureService {
     ArrayList<Location> getStructCorners(String key);
     void exportVolume(String userName, String volumeName, IResultCallback cb);
     void selectStructByLocation(String userName, Location l, IResultCallback cb);
-    void loadStructures();
+    void load();
     void processExplodedBlocksAsync(List<Block> blocks);
     Optional<LoreStructure> getById(int id);
+    Optional<Structure> getByLocation(Location location);
     void delete(int structId);
 }

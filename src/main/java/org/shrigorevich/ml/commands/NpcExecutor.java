@@ -32,23 +32,13 @@ public class NpcExecutor implements CommandExecutor {
                     switch (args[0].toLowerCase()) {
                         case "c":
                         case "create":
-                            World w = player.getWorld();
-                            player.sendMessage("" + w.getEntities().size());
-                            Entity entity = w.spawnEntity(player.getLocation(), EntityType.VILLAGER, null);
-
-                            entity.customName(Component.text("Funtik"));
-                            entity.setCustomNameVisible(true);
-
-                            player.sendMessage("" + w.getEntities().size());
+                            npcService.commitNpc(args[1], player.getName());
                             break;
-
                         case "cl":
                         case "clear":
-                            npcService.clear();
                             break;
                         case "size":
                         case "s":
-                            player.sendMessage("Size: " + npcService.getSize());
                             break;
                         default:
                             player.sendMessage(ChatColor.YELLOW + String.format("Command '%s' not found", args[0]));
