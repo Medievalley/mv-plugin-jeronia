@@ -6,23 +6,28 @@ import java.util.UUID;
 
 public class StructNpcImpl implements StructNpc {
 
-    private int x, y, z, structId;
-    private String name, world;
-    private UUID id;
+    private final int x, y, z, id, structId;
+    private final String name, world;
+    private final UUID entityId;
 
-    public StructNpcImpl(StructNpcDB model, UUID id) {
+    public StructNpcImpl(StructNpcDB model, UUID entityId) {
         this.x = model.getX();
         this.y = model.getY();
         this.z = model.getZ();
         this.name = model.getName();
         this.world = model.getWorld();
         this.structId = model.getStructId();
-        this.id = id;
+        this.entityId = entityId;
+        this.id = model.getId();
     }
 
     @Override
-    public UUID getId() {
+    public int getId() {
         return id;
+    }
+    @Override
+    public UUID getEntityId() {
+        return entityId;
     }
 
     @Override

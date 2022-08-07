@@ -47,10 +47,25 @@ public class NpcContextImpl extends Context implements NpcContext{
         try {
             QueryRunner run = new QueryRunner(getDataSource());
             ResultSetHandler<List<StructNpcDB>> h = new BeanListHandler(StructNpcModel.class);
-            String sql = "select n.id, x, y, z, name, s.world from struct_npc n join struct s on s.id = n.struct_id";
+            String sql = "select n.id, x, y, z, struct_id as structid, name, s.world from struct_npc n join struct s on s.id = n.struct_id";
             return run.query(sql, h);
         } catch (SQLException ex) {
             getPlugin().getLogger().severe("NpcContext. Get all: " + ex);
+            return new ArrayList<>(0);
+        }
+    }
+
+    @Override
+    public List<StructNpcDB> getByStructId(int structId) {
+        try {
+            QueryRunner run = new QueryRunner(getDataSource());
+            ResultSetHandler<List<StructNpcDB>> h = new BeanListHandler(StructNpcModel.class);
+            String sql = String.format("select n.id, x, y, z, struct_id as structid, name, s.world \n" +
+                    "from struct_npc n join struct s on s.id = n.struct_id where struct_id = %d", structId);
+
+            return run.query(sql, h);
+        } catch (SQLException ex) {
+            getPlugin().getLogger().severe("NpcContext. Get by structId: " + ex);
             return new ArrayList<>(0);
         }
     }
@@ -60,7 +75,7 @@ public class NpcContextImpl extends Context implements NpcContext{
         try {
             QueryRunner run = new QueryRunner(getDataSource());
             ResultSetHandler<StructNpcDB> h = new BeanHandler(StructNpcModel.class);
-            String sql = String.format("select n.id, x, y, z, name, s.world from struct_npc n join struct s on s.id = n.struct_id where n.id = %d", id);
+            String sql = String.format("select n.id, x, y, z, struct_id as structid, name, s.world from struct_npc n join struct s on s.id = n.struct_id where n.id = %d", id);
 
             StructNpcDB s = run.query(sql, h);
             return s == null ? Optional.empty() : Optional.of(s);

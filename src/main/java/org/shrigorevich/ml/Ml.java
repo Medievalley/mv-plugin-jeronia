@@ -43,6 +43,7 @@ public final class Ml extends JavaPlugin {
     }
     @Override
     public void onEnable() {
+        super.onEnable();
         setupListeners();
         setupExecutors();
         try {

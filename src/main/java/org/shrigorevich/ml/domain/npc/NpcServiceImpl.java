@@ -18,6 +18,7 @@ import org.shrigorevich.ml.domain.npc.models.StructNpcDB;
 import org.shrigorevich.ml.domain.npc.models.StructNpcModel;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class NpcServiceImpl extends BaseService implements NpcService {
 
@@ -50,7 +51,7 @@ public class NpcServiceImpl extends BaseService implements NpcService {
         if (npc != null) {
             npc.setName(name);
             int id = context.save(npc);
-            loadById(id);
+            load(id);
         } else {
             throw new IllegalArgumentException("Please specify npc spawn coordinates first");
         }
@@ -70,9 +71,11 @@ public class NpcServiceImpl extends BaseService implements NpcService {
                     }
             );
             StructNpc npc = new StructNpcImpl(model, entity.getUniqueId());
-            npcList.put(npc.getId(), npc);
+            npcList.put(npc.getEntityId(), npc);
 
             Villager villager = (Villager) entity;
+            villager.setAgeLock(true);
+            //villager.setAI(false); //TODO: handle it
             AfkGoal goal = new AfkGoal(getPlugin(), villager, spawnLocation);
             if (!Bukkit.getMobGoals().hasGoal(villager, goal.getKey())) {
                 Bukkit.getMobGoals().addGoal(villager, 3, goal);
@@ -89,7 +92,7 @@ public class NpcServiceImpl extends BaseService implements NpcService {
         }
     }
 
-    private void loadById(int id) {
+    private void load(int id) {
         Optional<StructNpcDB> npc = context.get(id);
         npc.ifPresent(this::register);
     }
@@ -98,15 +101,45 @@ public class NpcServiceImpl extends BaseService implements NpcService {
     @Override
     public void unload() {
         for (StructNpc npc : npcList.values()) {
-            Entity e = Bukkit.getEntity(npc.getId());
+            Entity e = Bukkit.getEntity(npc.getEntityId());
             if (e != null) e.remove();
-            System.out.printf("Npc loaded: %d%n", e.getMetadata("id").get(0).asInt());
+            System.out.printf("Npc unloaded. Id: %d%n", e.getMetadata("id").get(0).asInt());
         }
+        npcList.clear();
     }
 
     @Override
-    public void clear(UUID id) {
-        npcList.remove(id);
+    public void reload() {
+        List<Entity> entities = Bukkit.getWorld("world").getEntities(); //TODO: fix hardcoded value
+        List<Entity> villagers = entities.stream().filter(e -> e.getType() == EntityType.VILLAGER).collect(Collectors.toList());
+        for (Entity v : villagers) {
+            if (v.getEntitySpawnReason() == CreatureSpawnEvent.SpawnReason.CUSTOM) {
+                v.remove();
+                System.out.printf("Npc unloaded: %s%n", v.customName());
+            }
+        }
+        npcList.clear();
+        load();
+    }
+
+    @Override
+    public void reload(int structId) {
+        List<StructNpc> structNpcList = npcList.values().stream().filter(n -> n.getStructId() == structId).collect(Collectors.toList());
+        for (StructNpc npc : structNpcList) {
+            Entity e = Bukkit.getEntity(npc.getEntityId());
+            if (e != null) {
+                e.remove();
+            }
+            npcList.remove(npc.getEntityId());
+            load(npc.getId());
+        }
+
+        if (structNpcList.size() == 0) {
+            List<StructNpcDB> models = context.getByStructId(structId);
+            for (StructNpcDB m : models) {
+                register(m);
+            }
+        }
     }
 
     @Override

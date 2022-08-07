@@ -12,6 +12,7 @@ public interface NpcService extends Service {
     void commitNpc(String name, String key) throws IllegalArgumentException;
     void load();
     void unload();
-    void clear(UUID id);
+    void reload();
+    void reload(int structId);
     Optional<StructNpc> getById(UUID id);
 }

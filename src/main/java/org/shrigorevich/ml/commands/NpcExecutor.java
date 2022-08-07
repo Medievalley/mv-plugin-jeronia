@@ -36,9 +36,18 @@ public class NpcExecutor implements CommandExecutor {
                             break;
                         case "cl":
                         case "clear":
+                            npcService.unload();
                             break;
                         case "size":
                         case "s":
+                            player.sendMessage("" + Bukkit.getWorld("world").getEntities().size());
+                            break;
+                        case "reload":
+                            if (args.length > 1) {
+                                int id = Integer.parseInt(args[1]);
+                                npcService.reload(id);
+                            }
+                            npcService.reload();
                             break;
                         default:
                             player.sendMessage(ChatColor.YELLOW + String.format("Command '%s' not found", args[0]));

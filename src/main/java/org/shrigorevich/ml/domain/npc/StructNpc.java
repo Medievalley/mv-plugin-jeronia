@@ -3,7 +3,8 @@ package org.shrigorevich.ml.domain.npc;
 import java.util.UUID;
 
 public interface StructNpc {
-    UUID getId();
+    UUID getEntityId();
+    int getId();
     int getX();
     int getY();
     int getZ();
