@@ -6,7 +6,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
-import org.shrigorevich.ml.domain.services.StructureService;
+import org.shrigorevich.ml.domain.structure.StructureService;
 
 public class BlockExplode implements Listener {
 
@@ -17,7 +17,7 @@ public class BlockExplode implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void BlockExploded(BlockExplodeEvent event) {
-        System.out.println("Blocks exploded: " + event.blockList().size());
+
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

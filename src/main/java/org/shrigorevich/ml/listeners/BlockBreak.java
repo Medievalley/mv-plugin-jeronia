@@ -5,7 +5,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.shrigorevich.ml.domain.services.StructureService;
+import org.shrigorevich.ml.domain.structure.StructureService;
 
 import java.util.ArrayList;
 import java.util.Arrays;

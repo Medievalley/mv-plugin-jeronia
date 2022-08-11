@@ -3,6 +3,8 @@ package org.shrigorevich.ml.domain.structure;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.shrigorevich.ml.db.contexts.StructureContext;
 import org.shrigorevich.ml.domain.structure.models.*;
 
@@ -16,6 +18,9 @@ public class LoreStructImpl extends StructureImpl implements LoreStructure {
     private final boolean destructible;
     private int destroyedPercent;
     private final StructureContext context;
+    private Entity laborer;
+
+    private int foodStock; //TODO: store to database and load with rest data
 
     public LoreStructImpl(LoreStructDB m, StructureContext context) {
         super(m);
@@ -26,7 +31,6 @@ public class LoreStructImpl extends StructureImpl implements LoreStructure {
 
         if (m.getBlocks() > 0 && m.getBrokenBlocks() > 0) {
             this.destroyedPercent = m.getBrokenBlocks() * 100 / m.getBlocks();
-            System.out.println(destroyedPercent); //TODO: remove comment
         } else {
             destroyedPercent = 0;
         }
@@ -119,7 +123,22 @@ public class LoreStructImpl extends StructureImpl implements LoreStructure {
 
     @Override
     public int getFoodStock() {
-        return 0;
+        return foodStock;
+    }
+
+    @Override
+    public void updateFoodStock(int foodAmount) {
+        foodStock+=foodAmount;
+    }
+
+    @Override
+    public Optional<Entity> getLaborer() {
+        return laborer == null ? Optional.empty() : Optional.of(laborer);
+    }
+
+    @Override
+    public void setLaborer(Entity e) {
+        this.laborer = e;
     }
 
     private boolean isSizeEqual(VolumeDB volume) {

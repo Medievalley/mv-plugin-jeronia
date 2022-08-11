@@ -1,7 +1,8 @@
-package org.shrigorevich.ml.domain.services;
+package org.shrigorevich.ml.domain.structure;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.shrigorevich.ml.domain.Service;
 import org.shrigorevich.ml.domain.callbacks.IResultCallback;
 import org.shrigorevich.ml.domain.structure.LoreStructure;
 import org.shrigorevich.ml.domain.structure.Structure;
@@ -11,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public interface StructureService {
+public interface StructureService extends Service {
 
     void create(User user, String type, String name, boolean destructible, IResultCallback cb) throws Exception;
     void setCorner(String key, Location l);

@@ -13,9 +13,9 @@ import org.bukkit.plugin.Plugin;
 import org.shrigorevich.ml.db.contexts.NpcContext;
 import org.shrigorevich.ml.domain.BaseService;
 import org.shrigorevich.ml.domain.callbacks.MsgCallback;
-import org.shrigorevich.ml.domain.goals.AfkGoal;
 import org.shrigorevich.ml.domain.npc.models.StructNpcDB;
 import org.shrigorevich.ml.domain.npc.models.StructNpcModel;
+import org.shrigorevich.ml.events.CustomSpawnEvent;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -57,44 +57,35 @@ public class NpcServiceImpl extends BaseService implements NpcService {
         }
     }
 
-    private void register(StructNpcDB model) {
+    private void spawn(StructNpcDB model) {
         World w = Bukkit.getWorld(model.getWorld());
         if (w != null) {
             Location spawnLocation = new Location(w, model.getX(), model.getY(), model.getZ());
             Entity entity = w.spawnEntity(
-                    spawnLocation,
-                    EntityType.VILLAGER, CreatureSpawnEvent.SpawnReason.CUSTOM,
-                    (e) -> {
-                        e.customName(Component.text(model.getName()));
-                        e.setCustomNameVisible(true);
-                        e.setMetadata("id", new FixedMetadataValue(getPlugin(), model.getId()));
-                    }
+                spawnLocation,
+                EntityType.VILLAGER, CreatureSpawnEvent.SpawnReason.CUSTOM,
+                (e) -> {
+                    e.customName(Component.text(model.getName()));
+                    e.setCustomNameVisible(true);
+                    e.setMetadata("id", new FixedMetadataValue(getPlugin(), model.getId()));
+                    ((Villager) e).setAgeLock(true);
+                    //villager.setAI(false); //TODO: handle it
+                }
             );
-            StructNpc npc = new StructNpcImpl(model, entity.getUniqueId());
-            npcList.put(npc.getEntityId(), npc);
-
-            Villager villager = (Villager) entity;
-            villager.setAgeLock(true);
-            //villager.setAI(false); //TODO: handle it
-            AfkGoal goal = new AfkGoal(getPlugin(), villager, spawnLocation);
-            if (!Bukkit.getMobGoals().hasGoal(villager, goal.getKey())) {
-                Bukkit.getMobGoals().addGoal(villager, 3, goal);
-            }
-
-            System.out.printf("Npc loaded: %d%n", model.getId());
+            getPlugin().getServer().getPluginManager().callEvent(new CustomSpawnEvent(entity, model));
         }
     }
 
     public void load() {
         List<StructNpcDB> models = context.get();
         for (StructNpcDB m : models) {
-            register(m);
+            spawn(m);
         }
     }
 
     private void load(int id) {
         Optional<StructNpcDB> npc = context.get(id);
-        npc.ifPresent(this::register);
+        npc.ifPresent(this::spawn);
     }
 
     /** Called when the plugin stops */
@@ -115,7 +106,6 @@ public class NpcServiceImpl extends BaseService implements NpcService {
         for (Entity v : villagers) {
             if (v.getEntitySpawnReason() == CreatureSpawnEvent.SpawnReason.CUSTOM) {
                 v.remove();
-                System.out.printf("Npc unloaded: %s%n", v.customName());
             }
         }
         npcList.clear();
@@ -137,9 +127,14 @@ public class NpcServiceImpl extends BaseService implements NpcService {
         if (structNpcList.size() == 0) {
             List<StructNpcDB> models = context.getByStructId(structId);
             for (StructNpcDB m : models) {
-                register(m);
+                spawn(m);
             }
         }
+    }
+
+    @Override
+    public void register(StructNpc npc) {
+        npcList.put(npc.getEntityId(), npc);
     }
 
     @Override

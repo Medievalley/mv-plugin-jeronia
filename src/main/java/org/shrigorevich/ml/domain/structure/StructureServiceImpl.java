@@ -1,4 +1,4 @@
-package org.shrigorevich.ml.domain.services;
+package org.shrigorevich.ml.domain.structure;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -11,9 +11,6 @@ import org.shrigorevich.ml.domain.structure.models.VolumeModel;
 import org.shrigorevich.ml.domain.callbacks.IResultCallback;
 import org.shrigorevich.ml.db.contexts.StructureContext;
 import org.shrigorevich.ml.domain.enums.StructureType;
-import org.shrigorevich.ml.domain.structure.LoreStructImpl;
-import org.shrigorevich.ml.domain.structure.LoreStructure;
-import org.shrigorevich.ml.domain.structure.Structure;
 import org.shrigorevich.ml.domain.structure.models.*;
 import org.shrigorevich.ml.domain.users.User;
 

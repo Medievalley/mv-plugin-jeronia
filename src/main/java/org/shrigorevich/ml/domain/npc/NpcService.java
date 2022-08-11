@@ -14,5 +14,6 @@ public interface NpcService extends Service {
     void unload();
     void reload();
     void reload(int structId);
+    void register(StructNpc npc);
     Optional<StructNpc> getById(UUID id);
 }

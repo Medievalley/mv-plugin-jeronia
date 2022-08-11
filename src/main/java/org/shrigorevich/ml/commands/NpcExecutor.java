@@ -1,20 +1,12 @@
 package org.shrigorevich.ml.commands;
 
-import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.shrigorevich.ml.domain.npc.NpcService;
-import org.shrigorevich.ml.domain.services.StructureService;
-import org.shrigorevich.ml.domain.users.IUserService;
-
-import java.util.List;
 
 public class NpcExecutor implements CommandExecutor {
 

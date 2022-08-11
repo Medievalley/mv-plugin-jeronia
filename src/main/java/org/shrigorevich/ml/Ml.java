@@ -8,9 +8,12 @@ import org.shrigorevich.ml.commands.StructureExecutor;
 import org.shrigorevich.ml.config.Configuration;
 import org.shrigorevich.ml.db.DataSourceCreator;
 import org.shrigorevich.ml.db.contexts.*;
+import org.shrigorevich.ml.domain.goals.GoalService;
+import org.shrigorevich.ml.domain.goals.GoalServiceImpl;
 import org.shrigorevich.ml.domain.npc.NpcService;
 import org.shrigorevich.ml.domain.npc.NpcServiceImpl;
-import org.shrigorevich.ml.domain.services.*;
+import org.shrigorevich.ml.domain.structure.StructureService;
+import org.shrigorevich.ml.domain.structure.StructureServiceImpl;
 import org.shrigorevich.ml.domain.users.IUserService;
 import org.shrigorevich.ml.domain.users.UserService;
 import org.shrigorevich.ml.listeners.*;
@@ -23,6 +26,7 @@ public final class Ml extends JavaPlugin {
     private IUserService userService;
     private StructureService structService;
     private NpcService npcService;
+    private GoalService goalService;
     @Override
     public void onLoad() {
         saveDefaultConfig();
@@ -39,7 +43,7 @@ public final class Ml extends JavaPlugin {
         userService = new UserService(userContext);
         structService = new StructureServiceImpl(structureContext, this);
         npcService = new NpcServiceImpl(npcContext, this);
-
+        goalService = new GoalServiceImpl(this);
     }
     @Override
     public void onEnable() {
@@ -67,7 +71,9 @@ public final class Ml extends JavaPlugin {
         pm.registerEvents(new PlayerInteract(structService, npcService), this);
         pm.registerEvents(new BlockExplode(structService), this);
         pm.registerEvents(new BlockBreak(structService), this);
-        pm.registerEvents(new EntitySpawn(npcService), this);
+        pm.registerEvents(new CustomSpawn(goalService, npcService, structService), this);
+        pm.registerEvents(new FarmerJobHandler(goalService), this);
+        pm.registerEvents(new PlantGrow(structService), this);
     }
 
     private void setupExecutors() {

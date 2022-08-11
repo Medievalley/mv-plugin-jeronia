@@ -8,7 +8,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.shrigorevich.ml.domain.npc.NpcService;
-import org.shrigorevich.ml.domain.services.StructureService;
+import org.shrigorevich.ml.domain.structure.StructureService;
 import org.shrigorevich.ml.domain.structure.Structure;
 
 import java.util.Optional;

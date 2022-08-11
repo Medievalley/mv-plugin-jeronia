@@ -14,23 +14,23 @@ import org.bukkit.plugin.Plugin;
 
 import java.util.EnumSet;
 
-public class AfkGoal implements Goal<Villager> {
+public class GoGoal implements Goal<Villager> {
     private final GoalKey<Villager> key;
     private final Mob mob;
     private boolean activated = false;
-    private final Location spawn;
+    private final Location target;
 
-    public AfkGoal(Plugin plugin, Mob mob, Location spawn) {
-        this.key = GoalKey.of(Villager.class, new NamespacedKey(plugin, "afk"));
+    public GoGoal(Plugin plugin, Mob mob, Location targetLocation) {
+        this.key = GoalKey.of(Villager.class, new NamespacedKey(plugin, "go"));
         this.mob = mob;
-        this.spawn = spawn;
+        this.target = targetLocation;
     }
 
     @Override
     public boolean shouldActivate() {
         if(!activated) {
             activated = true;
-            Bukkit.broadcast(Component.text(ChatColor.BLUE + "Goal activated"));
+            System.out.println(String.format("GoGoal activated. Target location: %d %d %d", target.getBlockX(), target.getBlockY(), target.getBlockZ()));
         }
         return true;
     }
@@ -42,18 +42,18 @@ public class AfkGoal implements Goal<Villager> {
 
     @Override
     public void start() {
-        mob.getPathfinder().moveTo(spawn, 1.0D);
+        mob.getPathfinder().moveTo(target, 0.8D); //TODO: get from config
     }
 
     @Override
     public void stop() {
-        Bukkit.broadcast(Component.text(ChatColor.BLUE + "Goal stopped"));
+        System.out.println("GoGoal stopped");
         mob.getPathfinder().stopPathfinding();
     }
 
     @Override
     public void tick() {
-        mob.getPathfinder().moveTo(spawn, 1.0D);
+        mob.getPathfinder().moveTo(target, 1.0D);
     }
 
     @Override
@@ -63,6 +63,6 @@ public class AfkGoal implements Goal<Villager> {
 
     @Override
     public EnumSet<GoalType> getTypes() {
-        return EnumSet.of(GoalType.MOVE, GoalType.LOOK);
+        return EnumSet.of(GoalType.MOVE);
     }
 }

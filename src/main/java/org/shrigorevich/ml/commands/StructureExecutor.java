@@ -7,9 +7,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.shrigorevich.ml.domain.structure.LoreStructure;
-import org.shrigorevich.ml.domain.structure.Structure;
 import org.shrigorevich.ml.domain.users.User;
-import org.shrigorevich.ml.domain.services.StructureService;
+import org.shrigorevich.ml.domain.structure.StructureService;
 import org.shrigorevich.ml.domain.users.IUserService;
 
 import java.util.Optional;
