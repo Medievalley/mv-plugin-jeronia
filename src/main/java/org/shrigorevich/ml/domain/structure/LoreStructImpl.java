@@ -5,6 +5,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Villager;
 import org.shrigorevich.ml.db.contexts.StructureContext;
 import org.shrigorevich.ml.domain.structure.models.*;
 
@@ -18,7 +19,7 @@ public class LoreStructImpl extends StructureImpl implements LoreStructure {
     private final boolean destructible;
     private int destroyedPercent;
     private final StructureContext context;
-    private Entity laborer;
+    private Villager laborer;
 
     private int foodStock; //TODO: store to database and load with rest data
 
@@ -132,12 +133,12 @@ public class LoreStructImpl extends StructureImpl implements LoreStructure {
     }
 
     @Override
-    public Optional<Entity> getLaborer() {
+    public Optional<Villager> getLaborer() {
         return laborer == null ? Optional.empty() : Optional.of(laborer);
     }
 
     @Override
-    public void setLaborer(Entity e) {
+    public void setLaborer(Villager e) {
         this.laborer = e;
     }
 

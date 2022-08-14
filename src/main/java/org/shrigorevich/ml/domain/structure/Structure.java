@@ -2,7 +2,6 @@ package org.shrigorevich.ml.domain.structure;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.shrigorevich.ml.domain.enums.StructureType;
 
 import java.util.List;
 

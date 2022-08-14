@@ -1,11 +1,8 @@
-package org.shrigorevich.ml.domain.goals;
+package org.shrigorevich.ml.domain.ai.goals;
 
 import com.destroystokyo.paper.entity.ai.Goal;
 import com.destroystokyo.paper.entity.ai.GoalKey;
 import com.destroystokyo.paper.entity.ai.GoalType;
-import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Mob;
@@ -20,10 +17,10 @@ public class GoGoal implements Goal<Villager> {
     private boolean activated = false;
     private final Location target;
 
-    public GoGoal(Plugin plugin, Mob mob, Location targetLocation) {
-        this.key = GoalKey.of(Villager.class, new NamespacedKey(plugin, "go"));
+    public GoGoal(Plugin plugin, Mob mob, Location target) {
+        this.key = GoalKey.of(Villager.class, new NamespacedKey(plugin, GoalKeys.GO_TO_LOCATION.toString()));
         this.mob = mob;
-        this.target = targetLocation;
+        this.target = target;
     }
 
     @Override
@@ -53,7 +50,7 @@ public class GoGoal implements Goal<Villager> {
 
     @Override
     public void tick() {
-        mob.getPathfinder().moveTo(target, 1.0D);
+        mob.getPathfinder().moveTo(target, 0.1D);
     }
 
     @Override

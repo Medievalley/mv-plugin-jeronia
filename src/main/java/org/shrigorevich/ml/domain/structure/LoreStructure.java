@@ -1,6 +1,7 @@
 package org.shrigorevich.ml.domain.structure;
 
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Villager;
 
 import java.util.Optional;
 
@@ -15,6 +16,6 @@ public interface LoreStructure extends Structure, Nameable, Volumeable {
      * @param foodAmount - The value by which the stock will change
      */
     void updateFoodStock(int foodAmount);
-    Optional<Entity> getLaborer();
-    void setLaborer(Entity e);
+    Optional<Villager> getLaborer();
+    void setLaborer(Villager e);
 }

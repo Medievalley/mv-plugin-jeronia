@@ -1,24 +1,24 @@
 package org.shrigorevich.ml.events;
 
 import org.bukkit.block.Block;
-import org.bukkit.entity.Entity;
+import org.bukkit.entity.Villager;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
-public class FarmerJobStartEvent extends Event implements Cancellable {
+public class StartHarvestEvent extends Event implements Cancellable {
     private static final HandlerList HANDLERS = new HandlerList();
     private boolean cancelled;
-    private final Entity entity;
+    private final Villager entity;
     private final Block block;
 
-    public FarmerJobStartEvent(Entity entity, Block block) {
+    public StartHarvestEvent(Villager entity, Block block) {
         this.entity = entity;
         this.block = block;
     }
 
-    public Entity getEntity() {
+    public Villager getEntity() {
         return entity;
     }
 

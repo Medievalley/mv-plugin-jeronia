@@ -1,4 +1,4 @@
-package org.shrigorevich.ml.domain.enums;
+package org.shrigorevich.ml.domain.structure;
 
 public enum StructureType {
     PRIVATE(1), LORE(2);

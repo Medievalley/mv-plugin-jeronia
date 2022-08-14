@@ -2,16 +2,16 @@ package org.shrigorevich.ml.listeners;
 
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
-import org.bukkit.entity.Entity;
+import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockGrowEvent;
-import org.shrigorevich.ml.domain.enums.StructureType;
+import org.shrigorevich.ml.domain.structure.StructureType;
 import org.shrigorevich.ml.domain.structure.StructureService;
 import org.shrigorevich.ml.domain.structure.LoreStructure;
 import org.shrigorevich.ml.domain.structure.Structure;
-import org.shrigorevich.ml.events.FarmerJobStartEvent;
+import org.shrigorevich.ml.events.StartHarvestEvent;
 
 import java.util.Optional;
 
@@ -35,9 +35,9 @@ public class PlantGrow implements Listener {
                 LoreStructure loreStructure = (LoreStructure) structure.get();
                 System.out.println(String.format("Plant grown (age %d) in struct: %d", plant.getAge(), loreStructure.getId()));
 
-                Optional<Entity> e = loreStructure.getLaborer();
+                Optional<Villager> e = loreStructure.getLaborer();
                 e.ifPresent(entity -> structureService.getPlugin()
-                    .getServer().getPluginManager().callEvent(new FarmerJobStartEvent(entity, b)));
+                    .getServer().getPluginManager().callEvent(new StartHarvestEvent(entity, b)));
             }
         }
     }

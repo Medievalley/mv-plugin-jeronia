@@ -10,7 +10,6 @@ import org.shrigorevich.ml.domain.structure.models.VolumeBlockModel;
 import org.shrigorevich.ml.domain.structure.models.VolumeModel;
 import org.shrigorevich.ml.domain.callbacks.IResultCallback;
 import org.shrigorevich.ml.db.contexts.StructureContext;
-import org.shrigorevich.ml.domain.enums.StructureType;
 import org.shrigorevich.ml.domain.structure.models.*;
 import org.shrigorevich.ml.domain.users.User;
 

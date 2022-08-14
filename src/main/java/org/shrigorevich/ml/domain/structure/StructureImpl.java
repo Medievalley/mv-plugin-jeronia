@@ -7,7 +7,6 @@ import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.shrigorevich.ml.domain.enums.StructureType;
 import org.shrigorevich.ml.domain.structure.models.StructDB;
 
 public abstract class StructureImpl implements Structure {
