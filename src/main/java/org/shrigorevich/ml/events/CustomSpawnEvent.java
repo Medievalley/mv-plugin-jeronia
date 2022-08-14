@@ -12,19 +12,13 @@ public class CustomSpawnEvent extends Event implements Cancellable {
     private static final HandlerList HANDLERS = new HandlerList();
     private boolean cancelled;
     private final Entity entity;
-    private final StructNpcDB npcModel;
 
-    public CustomSpawnEvent(Entity entity, StructNpcDB npcModel) {
+    public CustomSpawnEvent(Entity entity) {
         this.entity = entity;
-        this.npcModel = npcModel;
     }
 
     public Entity getEntity() {
         return entity;
-    }
-
-    public StructNpcDB getNpcModel() {
-        return npcModel;
     }
 
     @Override

@@ -1,5 +1,8 @@
 package org.shrigorevich.ml.listeners;
 
+import com.destroystokyo.paper.entity.ai.Goal;
+import com.destroystokyo.paper.entity.ai.GoalType;
+import com.destroystokyo.paper.entity.ai.MobGoals;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Villager;
@@ -7,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.shrigorevich.ml.domain.ai.TaskService;
+import org.shrigorevich.ml.domain.ai.goals.GoGoal;
 import org.shrigorevich.ml.domain.ai.tasks.GoToLocationTask;
 import org.shrigorevich.ml.domain.ai.TaskPriority;
 import org.shrigorevich.ml.domain.npc.NpcService;
@@ -34,17 +38,15 @@ public class CustomSpawn implements Listener {
     public void OnCustomSpawn(CustomSpawnEvent event) {
         if (event.getEntity() instanceof Villager) {
             Villager entity = (Villager) event.getEntity();
-            StructNpc npc = registerStructNpc(entity, event.getNpcModel());
-            assignToStruct(npc, entity);
-            setTask(npc, entity);
-            System.out.printf("Setup custom entity. Id: %d%n", npc.getId());
-        }
-    }
+            Optional<StructNpc> npc = npcService.getById(entity.getUniqueId());
 
-    private StructNpc registerStructNpc(Entity entity, StructNpcDB model) {
-        StructNpc npc = new StructNpcImpl(model, entity.getUniqueId());
-        npcService.register(npc);
-        return npc;
+            if (npc.isPresent()) {
+                assignToStruct(npc.get(), entity);
+                taskService.setDefaultAI(entity);
+                setTask(npc.get(), entity);
+            }
+            System.out.println("Custom spawned: " + event.getEntity().getMetadata("id").get(0).asInt());
+        }
     }
 
     private void assignToStruct(StructNpc npc, Villager entity) {
@@ -57,7 +59,7 @@ public class CustomSpawn implements Listener {
         taskService.add(
                 new GoToLocationTask(
                         taskService.getPlugin(),
-                        TaskPriority.MIDDLE,
+                        TaskPriority.LOW,
                         entity, location
                 )
         );

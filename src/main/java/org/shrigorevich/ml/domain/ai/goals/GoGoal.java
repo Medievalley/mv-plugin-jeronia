@@ -39,7 +39,7 @@ public class GoGoal implements Goal<Villager> {
 
     @Override
     public void start() {
-        mob.getPathfinder().moveTo(target, 0.8D); //TODO: get from config
+        mob.getPathfinder().moveTo(target, 0.7D); //TODO: get from config
     }
 
     @Override
@@ -50,7 +50,7 @@ public class GoGoal implements Goal<Villager> {
 
     @Override
     public void tick() {
-        mob.getPathfinder().moveTo(target, 0.1D);
+        mob.getPathfinder().moveTo(target, 0.7D);
     }
 
     @Override

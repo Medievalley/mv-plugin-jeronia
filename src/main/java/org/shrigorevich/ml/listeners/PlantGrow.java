@@ -44,6 +44,6 @@ public class PlantGrow implements Listener {
 
     private boolean hasGrown(Block b) {
         Ageable plant = (Ageable) b.getBlockData();
-        return plant.getAge() >= 5;
+        return plant.getAge() >= 3;
     }
 }

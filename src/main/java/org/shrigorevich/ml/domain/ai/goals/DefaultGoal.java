@@ -3,6 +3,7 @@ package org.shrigorevich.ml.domain.ai.goals;
 import com.destroystokyo.paper.entity.ai.Goal;
 import com.destroystokyo.paper.entity.ai.GoalKey;
 import com.destroystokyo.paper.entity.ai.GoalType;
+import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Mob;
 import org.bukkit.entity.Villager;
@@ -18,7 +19,7 @@ public class DefaultGoal implements Goal<Villager> {
 
     public DefaultGoal(TaskService taskService, Mob mob) {
         this.taskService = taskService;
-        this.key = GoalKey.of(Villager.class, new NamespacedKey(taskService.getPlugin(), GoalKeys.GO_TO_LOCATION.toString()));
+        this.key = GoalKey.of(Villager.class, new NamespacedKey(taskService.getPlugin(), GoalKeys.DEFAULT_AI.toString()));
         this.mob = mob;
         this.timer = 0;
     }
@@ -49,7 +50,11 @@ public class DefaultGoal implements Goal<Villager> {
         if (timer == 20) {
             timer = 0;
             boolean shouldChangeTask = taskService.shouldChangeTask(mob.getUniqueId());
-            if (shouldChangeTask) taskService.startTopPriority(mob.getUniqueId());
+            if (shouldChangeTask) {
+                Bukkit.getScheduler().runTask(taskService.getPlugin(), () -> {
+                    taskService.startTopPriority(mob.getUniqueId());
+                });
+            }
         }
     }
 
@@ -60,6 +65,6 @@ public class DefaultGoal implements Goal<Villager> {
 
     @Override
     public EnumSet<GoalType> getTypes() {
-        return EnumSet.of(GoalType.MOVE);
+        return EnumSet.of(GoalType.UNKNOWN_BEHAVIOR);
     }
 }

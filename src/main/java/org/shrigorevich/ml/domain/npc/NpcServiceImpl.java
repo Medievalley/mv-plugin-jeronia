@@ -15,7 +15,6 @@ import org.shrigorevich.ml.domain.BaseService;
 import org.shrigorevich.ml.domain.callbacks.MsgCallback;
 import org.shrigorevich.ml.domain.npc.models.StructNpcDB;
 import org.shrigorevich.ml.domain.npc.models.StructNpcModel;
-import org.shrigorevich.ml.events.CustomSpawnEvent;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -60,8 +59,8 @@ public class NpcServiceImpl extends BaseService implements NpcService {
     private void spawn(StructNpcDB model) {
         World w = Bukkit.getWorld(model.getWorld());
         if (w != null) {
-            Location spawnLocation = new Location(w, model.getX(), model.getY(), model.getZ());
-            Entity entity = w.spawnEntity(
+            Location spawnLocation = new Location(w, model.getX()+5, model.getY()-1, model.getZ());
+            w.spawnEntity(
                 spawnLocation,
                 EntityType.VILLAGER, CreatureSpawnEvent.SpawnReason.CUSTOM,
                 (e) -> {
@@ -69,10 +68,9 @@ public class NpcServiceImpl extends BaseService implements NpcService {
                     e.setCustomNameVisible(true);
                     e.setMetadata("id", new FixedMetadataValue(getPlugin(), model.getId()));
                     ((Villager) e).setAgeLock(true);
-                    //villager.setAI(false); //TODO: handle it
+                    register(new StructNpcImpl(model, e.getUniqueId()));
                 }
             );
-            getPlugin().getServer().getPluginManager().callEvent(new CustomSpawnEvent(entity, model));
         }
     }
 
@@ -91,10 +89,16 @@ public class NpcServiceImpl extends BaseService implements NpcService {
     /** Called when the plugin stops */
     @Override
     public void unload() {
-        for (StructNpc npc : npcList.values()) {
-            Entity e = Bukkit.getEntity(npc.getEntityId());
-            if (e != null) e.remove();
-            System.out.printf("Npc unloaded. Id: %d%n", e.getMetadata("id").get(0).asInt());
+//        for (StructNpc npc : npcList.values()) {
+//            Entity e = Bukkit.getEntity(npc.getEntityId());
+//            if (e != null) e.remove();
+//            System.out.printf("Npc unloaded. Id: %d%n", e.getMetadata("id").get(0).asInt());
+//        }
+        List<Entity> entities = Bukkit.getWorld("world").getEntities(); //TODO: fix hardcoded value
+        for (Entity v : entities) {
+            if (v.getEntitySpawnReason() == CreatureSpawnEvent.SpawnReason.CUSTOM) {
+                v.remove();
+            }
         }
         npcList.clear();
     }

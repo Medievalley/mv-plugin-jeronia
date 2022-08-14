@@ -39,7 +39,7 @@ public abstract class BaseTask implements Task {
 
     @Override
     public int compareTo(@NotNull Task task) {
-        return this.priority.getValue() - task.getPriority().getValue();
+        return task.getPriority().getValue() - this.priority.getValue();
     }
 
     public Plugin getPlugin() {

@@ -1,7 +1,9 @@
 package org.shrigorevich.ml.domain.ai.tasks;
 
 import com.destroystokyo.paper.entity.ai.Goal;
+import com.destroystokyo.paper.entity.ai.GoalType;
 import com.destroystokyo.paper.entity.ai.MobGoals;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Villager;
@@ -30,7 +32,6 @@ public class GoToLocationTask extends BaseTask implements NpcTask {
         if (goals.hasGoal(npc, goal.getKey())) {
             goals.removeGoal(npc, goal.getKey());
         }
-
         goals.addGoal(npc, getPriority().getValue(), goal);
     }
 

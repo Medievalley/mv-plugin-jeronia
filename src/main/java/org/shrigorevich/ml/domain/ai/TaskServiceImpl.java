@@ -1,7 +1,14 @@
 package org.shrigorevich.ml.domain.ai;
 
+import com.destroystokyo.paper.entity.ai.Goal;
+import com.destroystokyo.paper.entity.ai.MobGoals;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Villager;
 import org.bukkit.plugin.Plugin;
 import org.shrigorevich.ml.domain.BaseService;
+import org.shrigorevich.ml.domain.ai.goals.DefaultGoal;
+import org.shrigorevich.ml.domain.ai.goals.GoGoal;
 
 import java.util.*;
 
@@ -23,10 +30,12 @@ public class TaskServiceImpl extends BaseService implements TaskService {
         if (tasksQueues.containsKey(entityId)) {
             PriorityQueue<NpcTask> queue = tasksQueues.get(entityId);
             queue.add(task);
+            System.out.println("Task added");
         } else {
             PriorityQueue<NpcTask> queue = new PriorityQueue<>();
             queue.add(task);
             tasksQueues.put(entityId, queue);
+            System.out.println("Queue with task created");
         }
     }
 
@@ -56,17 +65,31 @@ public class TaskServiceImpl extends BaseService implements TaskService {
         if (queue != null) {
             NpcTask cur = currentTasks.get(entityId);
             NpcTask top = queue.peek();
+            if (cur == null && top != null) {
+                return true;
 
-            if (cur != null && top != null) {
-                System.out.printf("Cur priority: %d. Top priority: %d%n",
-                        cur.getPriority().getValue(), top.getPriority().getValue());
-
+            } else if (cur != null && top != null) {
                 return cur.getPriority().getValue() < top.getPriority().getValue();
             } else {
                 return false;
             }
         } else {
             return false;
+        }
+    }
+
+    @Override
+    public void setDefaultAI(Entity entity) {
+        MobGoals goals = getPlugin().getServer().getMobGoals();
+
+        if (entity != null) {
+            Villager npc = (Villager) entity;
+            Goal<Villager> goal = new DefaultGoal(this, npc);
+
+            if (goals.hasGoal(npc, goal.getKey())) {
+                goals.removeGoal(npc, goal.getKey());
+            }
+            goals.addGoal(npc, 3, goal);
         }
     }
 

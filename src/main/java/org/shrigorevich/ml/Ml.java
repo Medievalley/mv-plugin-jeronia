@@ -26,7 +26,7 @@ public final class Ml extends JavaPlugin {
     private IUserService userService;
     private StructureService structService;
     private NpcService npcService;
-    private TaskService goalService;
+    private TaskService taskService;
     @Override
     public void onLoad() {
         saveDefaultConfig();
@@ -43,7 +43,7 @@ public final class Ml extends JavaPlugin {
         userService = new UserService(userContext);
         structService = new StructureServiceImpl(structureContext, this);
         npcService = new NpcServiceImpl(npcContext, this);
-        goalService = new TaskServiceImpl(this);
+        taskService = new TaskServiceImpl(this);
     }
     @Override
     public void onEnable() {
@@ -71,13 +71,14 @@ public final class Ml extends JavaPlugin {
         pm.registerEvents(new PlayerInteract(structService, npcService), this);
         pm.registerEvents(new BlockExplode(structService), this);
         pm.registerEvents(new BlockBreak(structService), this);
-        pm.registerEvents(new CustomSpawn(goalService, npcService, structService), this);
-        pm.registerEvents(new HarvestHandler(goalService), this);
+        pm.registerEvents(new CustomSpawn(taskService, npcService, structService), this);
+        pm.registerEvents(new HarvestHandler(taskService), this);
         pm.registerEvents(new PlantGrow(structService), this);
+        pm.registerEvents(new EntitySpawn(this), this);
     }
 
     private void setupExecutors() {
         getCommand("struct").setExecutor(new StructureExecutor(userService, structService));
-        getCommand("npc").setExecutor(new NpcExecutor(npcService));
+        getCommand("npc").setExecutor(new NpcExecutor(npcService, taskService));
     }
 }
