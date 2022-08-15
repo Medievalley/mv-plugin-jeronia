@@ -27,13 +27,11 @@ public class PlantGrow implements Listener {
     public void OnGrow(BlockGrowEvent event) {
         Block b = event.getBlock();
 
-        if (hasGrown(b)) {
-            Ageable plant = (Ageable) b.getBlockData();
+        if (isFullyGrown(b)) {
             Optional<Structure> structure = structureService.getByLocation(b.getLocation());
 
             if (structure.isPresent() && structure.get().getType() == StructureType.LORE) {
                 LoreStructure loreStructure = (LoreStructure) structure.get();
-                System.out.println(String.format("Plant grown (age %d) in struct: %d", plant.getAge(), loreStructure.getId()));
 
                 Optional<Villager> e = loreStructure.getLaborer();
                 e.ifPresent(entity -> structureService.getPlugin()
@@ -42,8 +40,8 @@ public class PlantGrow implements Listener {
         }
     }
 
-    private boolean hasGrown(Block b) {
+    private boolean isFullyGrown(Block b) {
         Ageable plant = (Ageable) b.getBlockData();
-        return plant.getAge() >= 3;
+        return plant.getAge() >= 4;
     }
 }

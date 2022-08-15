@@ -1,23 +1,13 @@
 package org.shrigorevich.ml.commands;
 
-import com.destroystokyo.paper.entity.ai.Goal;
-import com.destroystokyo.paper.entity.ai.GoalType;
-import com.destroystokyo.paper.entity.ai.MobGoals;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Villager;
-import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.shrigorevich.ml.domain.ai.TaskService;
-import org.shrigorevich.ml.domain.ai.goals.GoGoal;
 import org.shrigorevich.ml.domain.npc.NpcService;
-
-import java.util.Optional;
 
 public class NpcExecutor implements CommandExecutor {
 

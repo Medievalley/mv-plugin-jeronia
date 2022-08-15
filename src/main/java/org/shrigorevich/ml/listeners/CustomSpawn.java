@@ -1,8 +1,5 @@
 package org.shrigorevich.ml.listeners;
 
-import com.destroystokyo.paper.entity.ai.Goal;
-import com.destroystokyo.paper.entity.ai.GoalType;
-import com.destroystokyo.paper.entity.ai.MobGoals;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Villager;
@@ -10,13 +7,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.shrigorevich.ml.domain.ai.TaskService;
-import org.shrigorevich.ml.domain.ai.goals.GoGoal;
-import org.shrigorevich.ml.domain.ai.tasks.GoToLocationTask;
+import org.shrigorevich.ml.domain.ai.TaskType;
+import org.shrigorevich.ml.domain.ai.tasks.ReachLocationTask;
 import org.shrigorevich.ml.domain.ai.TaskPriority;
 import org.shrigorevich.ml.domain.npc.NpcService;
 import org.shrigorevich.ml.domain.npc.StructNpc;
-import org.shrigorevich.ml.domain.npc.StructNpcImpl;
-import org.shrigorevich.ml.domain.npc.models.StructNpcDB;
 import org.shrigorevich.ml.domain.structure.LoreStructure;
 import org.shrigorevich.ml.domain.structure.StructureService;
 import org.shrigorevich.ml.events.CustomSpawnEvent;
@@ -57,8 +52,9 @@ public class CustomSpawn implements Listener {
     private void setTask(StructNpc npc, Entity entity) {
         Location location = new Location(entity.getWorld(), npc.getX(), npc.getY(), npc.getZ());
         taskService.add(
-                new GoToLocationTask(
+                new ReachLocationTask(
                         taskService.getPlugin(),
+                        TaskType.HOLD_SPAWN,
                         TaskPriority.LOW,
                         entity, location
                 )

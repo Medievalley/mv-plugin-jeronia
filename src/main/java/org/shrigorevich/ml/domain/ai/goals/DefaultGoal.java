@@ -1,7 +1,6 @@
 package org.shrigorevich.ml.domain.ai.goals;
 
 import com.destroystokyo.paper.entity.ai.Goal;
-import com.destroystokyo.paper.entity.ai.GoalKey;
 import com.destroystokyo.paper.entity.ai.GoalType;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
@@ -12,14 +11,14 @@ import org.shrigorevich.ml.domain.ai.TaskService;
 import java.util.EnumSet;
 
 public class DefaultGoal implements Goal<Villager> {
-    private final GoalKey<Villager> key;
+    private final com.destroystokyo.paper.entity.ai.GoalKey<Villager> key;
     private final Mob mob;
     private final TaskService taskService;
     private int timer;
 
     public DefaultGoal(TaskService taskService, Mob mob) {
         this.taskService = taskService;
-        this.key = GoalKey.of(Villager.class, new NamespacedKey(taskService.getPlugin(), GoalKeys.DEFAULT_AI.toString()));
+        this.key = com.destroystokyo.paper.entity.ai.GoalKey.of(Villager.class, new NamespacedKey(taskService.getPlugin(), ActionKey.DEFAULT_AI.toString()));
         this.mob = mob;
         this.timer = 0;
     }
@@ -59,7 +58,7 @@ public class DefaultGoal implements Goal<Villager> {
     }
 
     @Override
-    public GoalKey<Villager> getKey() {
+    public com.destroystokyo.paper.entity.ai.GoalKey<Villager> getKey() {
         return key;
     }
 

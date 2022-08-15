@@ -2,13 +2,11 @@ package org.shrigorevich.ml.domain.ai;
 
 import com.destroystokyo.paper.entity.ai.Goal;
 import com.destroystokyo.paper.entity.ai.MobGoals;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Villager;
 import org.bukkit.plugin.Plugin;
 import org.shrigorevich.ml.domain.BaseService;
 import org.shrigorevich.ml.domain.ai.goals.DefaultGoal;
-import org.shrigorevich.ml.domain.ai.goals.GoGoal;
 
 import java.util.*;
 
@@ -45,6 +43,7 @@ public class TaskServiceImpl extends BaseService implements TaskService {
         if (task != null) {
             task.end();
             tasksQueues.get(entityId).remove(task);
+            currentTasks.remove(entityId);
         }
     }
 
@@ -57,6 +56,7 @@ public class TaskServiceImpl extends BaseService implements TaskService {
             currentTasks.put(entityId, task);
             task.start();
         }
+        System.out.println("Task queue size: " + queue.size());
     }
 
     @Override

@@ -1,24 +1,23 @@
 package org.shrigorevich.ml.domain.ai.tasks;
 
 import com.destroystokyo.paper.entity.ai.Goal;
-import com.destroystokyo.paper.entity.ai.GoalType;
 import com.destroystokyo.paper.entity.ai.MobGoals;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Mob;
 import org.bukkit.entity.Villager;
 import org.bukkit.plugin.Plugin;
 import org.shrigorevich.ml.domain.ai.BaseTask;
 import org.shrigorevich.ml.domain.ai.NpcTask;
 import org.shrigorevich.ml.domain.ai.TaskPriority;
-import org.shrigorevich.ml.domain.ai.goals.GoGoal;
+import org.shrigorevich.ml.domain.ai.TaskType;
+import org.shrigorevich.ml.domain.ai.goals.ReachLocationGoal;
 
-public class GoToLocationTask extends BaseTask implements NpcTask {
+public class ReachLocationTask extends BaseTask implements NpcTask {
     private final Location target;
-    private Goal<Villager> goal;
-
-    public GoToLocationTask(Plugin plugin, TaskPriority priority, Entity entity, Location location) {
-        super(plugin, priority, entity);
+    private Goal<Mob> goal;
+    public ReachLocationTask(Plugin plugin, TaskType type, TaskPriority priority, Entity entity, Location location) {
+        super(plugin, type, priority, entity);
         this.target = location;
     }
     @Override
@@ -27,7 +26,7 @@ public class GoToLocationTask extends BaseTask implements NpcTask {
         Villager npc = (Villager) getEntity();
 
         MobGoals goals = getPlugin().getServer().getMobGoals();
-        goal = new GoGoal(getPlugin(), npc, target);
+        goal = new ReachLocationGoal(getPlugin(), getData(), npc, target);
 
         if (goals.hasGoal(npc, goal.getKey())) {
             goals.removeGoal(npc, goal.getKey());

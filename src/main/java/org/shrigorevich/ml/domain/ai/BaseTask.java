@@ -9,12 +9,14 @@ public abstract class BaseTask implements Task {
     private final Plugin plugin;
     private boolean inProgress;
     private final Entity entity;
+    private final TaskData data;
 
-    public BaseTask(Plugin plugin, TaskPriority priority, Entity entity) {
+    public BaseTask(Plugin plugin, TaskType type, TaskPriority priority, Entity entity) {
         this.priority = priority;
         this.plugin = plugin;
         this.entity = entity;
         this.inProgress = false;
+        this.data = new TaskDataImpl(type);
     }
 
     @Override
@@ -38,9 +40,16 @@ public abstract class BaseTask implements Task {
     }
 
     @Override
+    public TaskData getData() {
+        return data;
+    }
+
+    @Override
     public int compareTo(@NotNull Task task) {
         return task.getPriority().getValue() - this.priority.getValue();
     }
+
+
 
     public Plugin getPlugin() {
         return plugin;

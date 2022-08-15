@@ -1,13 +1,16 @@
 package org.shrigorevich.ml.listeners;
 
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.shrigorevich.ml.domain.ai.tasks.GoToLocationTask;
+import org.shrigorevich.ml.domain.ai.TaskType;
+import org.shrigorevich.ml.domain.ai.tasks.ReachLocationTask;
 import org.shrigorevich.ml.domain.ai.TaskService;
 import org.shrigorevich.ml.domain.ai.TaskPriority;
+import org.shrigorevich.ml.events.LocationReachedEvent;
 import org.shrigorevich.ml.events.StartHarvestEvent;
 
 public class HarvestHandler implements Listener {
@@ -23,11 +26,30 @@ public class HarvestHandler implements Listener {
         Villager entity = event.getEntity();
 
         taskService.add(
-            new GoToLocationTask(
+            new ReachLocationTask(
                 taskService.getPlugin(),
+                TaskType.HARVEST,
                 TaskPriority.MIDDLE,
                 entity, b.getLocation()
             )
         );
+    }
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void OnReachLocation(LocationReachedEvent event) {
+
+        if (event.getTaskData().getType() == TaskType.HARVEST) {
+
+            Block block = event.getLocation().getBlock();
+
+            if (block.getType() == Material.WHEAT) {
+                block.getDrops().clear();
+                boolean broken = block.breakNaturally(true);
+
+                if (broken) {
+                    block.setType(Material.WHEAT);
+                    taskService.finalizeCurrent(event.getEntity().getUniqueId());
+                }
+            }
+        }
     }
 }

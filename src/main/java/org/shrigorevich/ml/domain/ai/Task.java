@@ -7,4 +7,5 @@ public interface Task extends Comparable<Task> {
     Entity getEntity();
     void setInProgress(boolean inProgress);
     boolean isInProgress();
+    TaskData getData();
 }
