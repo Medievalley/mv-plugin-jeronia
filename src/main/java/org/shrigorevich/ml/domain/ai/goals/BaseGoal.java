@@ -21,8 +21,6 @@ public abstract class BaseGoal {
         this.achieved = false;
         this.mob = mob;
         this.plugin = plugin;
-
-        System.out.println(this.key);
     }
 
     protected boolean isAchieved() {

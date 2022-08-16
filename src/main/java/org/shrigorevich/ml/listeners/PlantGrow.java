@@ -6,6 +6,7 @@ import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockFertilizeEvent;
 import org.bukkit.event.block.BlockGrowEvent;
 import org.shrigorevich.ml.domain.structure.StructureType;
 import org.shrigorevich.ml.domain.structure.StructureService;
@@ -26,7 +27,7 @@ public class PlantGrow implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void OnGrow(BlockGrowEvent event) {
         Block b = event.getBlock();
-
+        Ageable plant = (Ageable) b.getBlockData();
         if (isFullyGrown(b)) {
             Optional<Structure> structure = structureService.getByLocation(b.getLocation());
 
@@ -36,6 +37,22 @@ public class PlantGrow implements Listener {
                 Optional<Villager> e = loreStructure.getLaborer();
                 e.ifPresent(entity -> structureService.getPlugin()
                     .getServer().getPluginManager().callEvent(new StartHarvestEvent(entity, b)));
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void OnFertilize(BlockFertilizeEvent event) {
+        Block b = event.getBlock();
+        if (isFullyGrown(b)) {
+            Optional<Structure> structure = structureService.getByLocation(b.getLocation());
+
+            if (structure.isPresent() && structure.get().getType() == StructureType.LORE) {
+                LoreStructure loreStructure = (LoreStructure) structure.get();
+
+                Optional<Villager> e = loreStructure.getLaborer();
+                e.ifPresent(entity -> structureService.getPlugin()
+                        .getServer().getPluginManager().callEvent(new StartHarvestEvent(entity, b)));
             }
         }
     }

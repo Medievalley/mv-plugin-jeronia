@@ -28,24 +28,53 @@ public class PlayerInteract implements Listener {
         Action action = event.getAction();
         Player p = event.getPlayer();
 
-        if(event.getMaterial() == Material.BONE && action.equals(Action.RIGHT_CLICK_BLOCK)) {
-
-            Location l = event.getClickedBlock().getLocation();
-            Optional<Structure> s = structureService.getByLocation(l);
-            s.ifPresent(structure -> npcService.draftNpc(
-                    l.getBlockX(), l.getBlockY() + 1, l.getBlockZ(),
-                    structure.getId(), p.getName(), (p::sendMessage)));
-        }
-        else if(event.getMaterial() == Material.FEATHER && action.equals(Action.RIGHT_CLICK_BLOCK)) {
-            structureService.selectStructByLocation(p.getName(), event.getClickedBlock().getLocation(), ((result, msg) -> {
-                p.sendMessage(msg);
-            }));
-        }
-        else if (event.getMaterial() == Material.STICK && action.equals(Action.RIGHT_CLICK_BLOCK)) {
-            structureService.setCorner(p.getName(), event.getClickedBlock().getLocation());
-            for(Location l : structureService.getStructCorners(p.getName())) {
-                p.sendMessage(String.format("%d, %d, %d", l.getBlockX() + 5, l.getBlockY() - 77, l.getBlockZ() - 37));
+        if (action.equals(Action.RIGHT_CLICK_BLOCK)) {
+            switch (event.getMaterial()) {
+                case BONE:
+                    draftNpc(event);
+                    break;
+                case FEATHER:
+                    selectStructByLocation(event);
+                    break;
+                case STICK:
+                    setStructCorner(event);
+                    break;
+                case COAL:
+                    showBlockType(event);
+                default:
+                    break;
             }
         }
     }
+
+    private void showBlockType(PlayerInteractEvent event) {
+        event.getPlayer().sendMessage(String.format("Block type: %s", event.getClickedBlock().getType()));
+    }
+    private void draftNpc(PlayerInteractEvent event) {
+        Player p = event.getPlayer();
+        Location l = event.getClickedBlock().getLocation();
+
+        Optional<Structure> s = structureService.getByLocation(l);
+
+        s.ifPresent(structure -> npcService.draftNpc(
+                l.getBlockX(), l.getBlockY() + 1, l.getBlockZ(),
+                structure.getId(), p.getName(), (p::sendMessage)));
+    }
+
+    private void selectStructByLocation(PlayerInteractEvent event) {
+        Player p = event.getPlayer();
+        structureService.selectStructByLocation(p.getName(), event.getClickedBlock().getLocation(), ((result, msg) -> {
+            p.sendMessage(msg);
+        }));
+    }
+
+    private void setStructCorner(PlayerInteractEvent event) {
+        Player p = event.getPlayer();
+
+        structureService.setCorner(p.getName(), event.getClickedBlock().getLocation());
+        for(Location l : structureService.getStructCorners(p.getName())) {
+            p.sendMessage(String.format("%d, %d, %d", l.getBlockX(), l.getBlockY(), l.getBlockZ()));
+        }
+    }
+
 }

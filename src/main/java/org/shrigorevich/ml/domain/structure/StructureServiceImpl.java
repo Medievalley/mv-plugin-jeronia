@@ -159,7 +159,6 @@ public class StructureServiceImpl extends BaseService implements StructureServic
                 b.ifPresent(brokenBlocks::add);
             }
             int count = structContext.updateStructBlocksBrokenStatus(brokenBlocks);
-            System.out.println("Broken blocks count: " + count); //TODO: comment
 
             HashMap<Integer, LoreStructure> damagedStructures = new HashMap<>();
             //TODO: create StructDamagedEvent

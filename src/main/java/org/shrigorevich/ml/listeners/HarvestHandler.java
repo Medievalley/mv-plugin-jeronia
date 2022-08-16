@@ -10,14 +10,17 @@ import org.shrigorevich.ml.domain.ai.TaskType;
 import org.shrigorevich.ml.domain.ai.tasks.ReachLocationTask;
 import org.shrigorevich.ml.domain.ai.TaskService;
 import org.shrigorevich.ml.domain.ai.TaskPriority;
+import org.shrigorevich.ml.domain.structure.StructureService;
 import org.shrigorevich.ml.events.LocationReachedEvent;
 import org.shrigorevich.ml.events.StartHarvestEvent;
 
 public class HarvestHandler implements Listener {
     private final TaskService taskService;
+    private final StructureService structService;
 
-    public HarvestHandler(TaskService taskService) {
+    public HarvestHandler(TaskService taskService, StructureService structureService) {
         this.taskService = taskService;
+        this.structService = structureService;
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -40,16 +43,25 @@ public class HarvestHandler implements Listener {
         if (event.getTaskData().getType() == TaskType.HARVEST) {
 
             Block block = event.getLocation().getBlock();
-
-            if (block.getType() == Material.WHEAT) {
+            Material initType = block.getType();
+            if (isPlant(initType)) {
                 block.getDrops().clear();
-                boolean broken = block.breakNaturally(true);
-
-                if (broken) {
-                    block.setType(Material.WHEAT);
-                    taskService.finalizeCurrent(event.getEntity().getUniqueId());
-                }
+                block.breakNaturally(true);
+                block.setType(initType);
             }
+
+            taskService.finalizeCurrent(event.getEntity().getUniqueId());
+        }
+    }
+
+    private boolean isPlant(Material type) {
+        switch (type) {
+            case WHEAT:
+            case POTATOES:
+            case CARROTS:
+                return true;
+            default:
+                return false;
         }
     }
 }
