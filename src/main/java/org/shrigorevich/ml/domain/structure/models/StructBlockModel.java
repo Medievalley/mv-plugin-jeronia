@@ -2,13 +2,13 @@ package org.shrigorevich.ml.domain.structure.models;
 
 public class StructBlockModel extends VolumeBlockModel implements StructBlockDB {
     private int id, structId, volumeBlockId;
-    private boolean broken;
+    private boolean broken, triggerDestruction;
 
-    public StructBlockModel(int structId, int volumeBlockId, boolean broken) {
+    public StructBlockModel(int structId, int volumeBlockId, boolean triggerDestruction) {
         super();
         this.volumeBlockId = volumeBlockId;
         this.structId = structId;
-        this.broken = broken;
+        this.triggerDestruction = triggerDestruction;
     }
     public StructBlockModel() {
         super();
@@ -36,5 +36,15 @@ public class StructBlockModel extends VolumeBlockModel implements StructBlockDB 
     }
     public void setId(int id) {
         this.id = id;
+    }
+
+    @Override
+    public void setTriggerDestruction(boolean triggerDestruction) {
+        this.triggerDestruction = triggerDestruction;
+    }
+
+    @Override
+    public boolean isTriggerDestruction() {
+        return triggerDestruction;
     }
 }

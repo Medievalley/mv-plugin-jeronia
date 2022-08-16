@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class StructContextImpl implements StructureContext {
+public class StructContextImpl implements StructureContext { //TODO: extends abstract context
 
     private final Plugin plugin;
     private final DataSource dataSource;
@@ -186,13 +186,13 @@ public class StructContextImpl implements StructureContext {
                 brokenBlockValues[i] = new Object[] {
                         b.getStructId(),
                         b.getVolumeBlockId(),
-                        b.isBroken()
+                        b.isTriggerDestruction()
                 };
             }
-            String sql = "INSERT INTO struct_block (struct_id, volume_block_id, broken) VALUES (?, ?, ?)";
+            String sql = "INSERT INTO struct_block (struct_id, volume_block_id, trigger_destruction) VALUES (?, ?, ?)";
             int rows[] = run.batch(sql, brokenBlockValues);
         } catch (SQLException ex) {
-            plugin.getLogger().severe("StructContext. SaveBrokenBlocks: " + ex);
+            plugin.getLogger().severe("StructContext. SaveStructBlocks: " + ex);
         }
     }
 
@@ -201,7 +201,7 @@ public class StructContextImpl implements StructureContext {
             QueryRunner run = new QueryRunner(dataSource);
             ResultSetHandler<List<StructBlockDB>> h = new BeanListHandler(StructBlockModel.class);
             String sql = String.format(
-                    "select s.id, v.id as volumeblockid, v.type, v.block_data as blockdata, v.x, v.y, v.z, s.broken \n" +
+                    "select s.id, v.id as volumeBlockId, v.type, v.block_data as blockData, v.x, v.y, v.z, s.broken, s.trigger_destruction as triggerDestruction \n" +
                     "from struct_block s join volume_block v \n" +
                     "ON s.volume_block_id=v.id \n" +
                     "where struct_id=%d", structId);
@@ -219,7 +219,7 @@ public class StructContextImpl implements StructureContext {
             QueryRunner run = new QueryRunner(dataSource);
             ResultSetHandler<StructBlockDB> h = new BeanHandler(StructBlockModel.class);
             String sql = String.format(
-                    "select s.id, s.struct_id as structid, v.id as volumeblockid, v.type, v.block_data as blockdata, v.x, v.y, v.z, s.broken \n" +
+                    "select s.id, s.struct_id as structId, v.id as volumeBlockId, v.type, v.block_data as blockData, v.x, v.y, v.z, s.broken, s.trigger_destruction as triggerDestruction \n" +
                             "from struct_block s join volume_block v \n" +
                             "ON s.volume_block_id=v.id \n" +
                             "where v.x=%d and v.y=%d and v.z=%d and v.volume_id=%d and struct_id=%d",

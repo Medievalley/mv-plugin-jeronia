@@ -9,4 +9,6 @@ public interface StructBlockDB extends VolumeBlockDB {
     void setVolumeBlockId(int volumeBlockId);
     int getId();
     void setId(int id);
+    void setTriggerDestruction(boolean triggerDestruction);
+    boolean isTriggerDestruction();
 }

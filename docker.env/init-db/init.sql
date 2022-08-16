@@ -76,6 +76,7 @@ CREATE TABLE IF NOT EXISTS struct_block (
     id SERIAL PRIMARY KEY,
     struct_id INTEGER references struct (id) ON DELETE CASCADE ON UPDATE CASCADE,
     volume_block_id INTEGER references volume_block (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    trigger_destruction BOOLEAN DEFAULT true,
     broken BOOLEAN DEFAULT false NOT NULL
 );
 
@@ -111,3 +112,9 @@ INSERT INTO struct_type (id, name, description) VALUES
      returning id
  )
  insert into player_data (user_id, role_id, lives) select id, 1, 4 from rows;
+
+
+--UPDATE struct_block AS s
+--SET trigger_destruction = false
+--FROM volume_block AS v
+--WHERE type='WHEAT' and s.volume_block_id = v.id

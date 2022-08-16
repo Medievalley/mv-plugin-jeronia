@@ -115,7 +115,7 @@ public class LoreStructImpl extends StructureImpl implements LoreStructure {
         List<StructBlockDB> structBlocks = new ArrayList<>();
         for(int i = 0; i < volumeBlocks.size(); i ++) {
             VolumeBlockDB vb = volumeBlocks.get(i);
-            structBlocks.add(new StructBlockModel(getId(), vb.getId(), false));
+            structBlocks.add(new StructBlockModel(getId(), vb.getId(), true));
         }
         context.saveStructBlocks(structBlocks);
         this.volumeId = volumeId;

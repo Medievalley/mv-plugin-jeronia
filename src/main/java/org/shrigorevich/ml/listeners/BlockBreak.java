@@ -19,7 +19,7 @@ public class BlockBreak implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void BlockBroken(BlockBreakEvent event) {
         Block b = event.getBlock();
-        //structureService.processExplodedBlocksAsync(new ArrayList<>(Arrays.asList(b)));
+        structureService.processExplodedBlocksAsync(new ArrayList<>(Arrays.asList(b)));
         //TODO: handle event
     }
     @EventHandler(priority = EventPriority.HIGHEST)

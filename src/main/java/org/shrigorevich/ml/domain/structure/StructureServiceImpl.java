@@ -192,7 +192,8 @@ public class StructureServiceImpl extends BaseService implements StructureServic
             int y = block.getY() - s.getY1();
             int z = block.getZ() - s.getZ1();
             Optional<StructBlockDB> sb = structContext.getStructBlock(x, y, z, s.getVolumeId(), s.getId());
-            if (sb.isPresent() && !sb.get().isBroken()) {
+
+            if (sb.isPresent() && !sb.get().isBroken() && sb.get().isTriggerDestruction()) {
                 sb.get().setBroken(true);
                 return sb;
             }
@@ -204,7 +205,5 @@ public class StructureServiceImpl extends BaseService implements StructureServic
         structures.remove(structId);
         structContext.delete(structId);
     }
-
-
 }
 
