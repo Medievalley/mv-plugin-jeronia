@@ -27,7 +27,6 @@ public class PlantGrow implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void OnGrow(BlockGrowEvent event) {
         Block b = event.getBlock();
-        Ageable plant = (Ageable) b.getBlockData();
         if (isFullyGrown(b)) {
             Optional<Structure> structure = structureService.getByLocation(b.getLocation());
 

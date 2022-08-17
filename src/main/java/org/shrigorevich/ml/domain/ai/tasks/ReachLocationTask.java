@@ -7,13 +7,10 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Mob;
 import org.bukkit.entity.Villager;
 import org.bukkit.plugin.Plugin;
-import org.shrigorevich.ml.domain.ai.BaseTask;
-import org.shrigorevich.ml.domain.ai.NpcTask;
-import org.shrigorevich.ml.domain.ai.TaskPriority;
-import org.shrigorevich.ml.domain.ai.TaskType;
+import org.shrigorevich.ml.domain.ai.*;
 import org.shrigorevich.ml.domain.ai.goals.ReachLocationGoal;
 
-public class ReachLocationTask extends BaseTask implements NpcTask {
+public class ReachLocationTask extends BaseTask implements NpcTask, Locationable {
     private final Location target;
     private Goal<Mob> goal;
     public ReachLocationTask(Plugin plugin, TaskType type, TaskPriority priority, Entity entity, Location location) {
@@ -43,5 +40,10 @@ public class ReachLocationTask extends BaseTask implements NpcTask {
                     goal.getKey()
             );
         }
+    }
+
+    @Override
+    public Location getTargetLocation() {
+        return target;
     }
 }

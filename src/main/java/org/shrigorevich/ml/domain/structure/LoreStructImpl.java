@@ -130,6 +130,7 @@ public class LoreStructImpl extends StructureImpl implements LoreStructure {
     @Override
     public void updateFoodStock(int foodAmount) {
         foodStock+=foodAmount;
+        System.out.printf("Struct %d foodStock: %d%n", getId(), foodStock);
     }
 
     @Override

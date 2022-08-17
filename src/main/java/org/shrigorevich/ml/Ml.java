@@ -72,7 +72,7 @@ public final class Ml extends JavaPlugin {
         pm.registerEvents(new BlockExplode(structService), this);
         pm.registerEvents(new BlockBreak(structService), this);
         pm.registerEvents(new CustomSpawn(taskService, npcService, structService), this);
-        pm.registerEvents(new HarvestHandler(taskService, structService), this);
+        pm.registerEvents(new HarvestHandler(taskService, structService, npcService), this);
         pm.registerEvents(new PlantGrow(structService), this);
         pm.registerEvents(new EntitySpawn(this), this);
     }
