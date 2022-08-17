@@ -293,5 +293,17 @@ public class StructContextImpl implements StructureContext { //TODO: extends abs
             plugin.getLogger().severe("StructContext. GetStructBlock: " + ex);
         }
     }
+
+    @Override
+    public void updateStock(int structId, int stockSize) {
+        try {
+            QueryRunner run = new QueryRunner(dataSource);
+            String sql = String.format("UPDATE lore_struct SET stock=%d WHERE struct_id=%d", stockSize, structId);
+            run.update(sql);
+            System.out.printf("Stock updated: %d, %d%n", stockSize, structId);
+        } catch (SQLException ex) {
+            plugin.getLogger().severe("StructContext. UpdateStock: " + ex);
+        }
+    }
 }
 

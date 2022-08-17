@@ -28,4 +28,5 @@ public interface StructureContext {
     void delete(int structId);
     void restore(int structId);
     void removeVolume(int structId);
+    void updateStock(int structId, int stockSize);
 }

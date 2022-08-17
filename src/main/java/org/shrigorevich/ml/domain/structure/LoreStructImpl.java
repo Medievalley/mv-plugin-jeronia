@@ -3,9 +3,8 @@ package org.shrigorevich.ml.domain.structure;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Villager;
+import org.shrigorevich.ml.Ml;
 import org.shrigorevich.ml.db.contexts.StructureContext;
 import org.shrigorevich.ml.domain.structure.models.*;
 
@@ -20,7 +19,6 @@ public class LoreStructImpl extends StructureImpl implements LoreStructure {
     private int destroyedPercent;
     private final StructureContext context;
     private Villager laborer;
-
     private int foodStock; //TODO: store to database and load with rest data
 
     public LoreStructImpl(LoreStructDB m, StructureContext context) {
@@ -130,7 +128,7 @@ public class LoreStructImpl extends StructureImpl implements LoreStructure {
     @Override
     public void updateFoodStock(int foodAmount) {
         foodStock+=foodAmount;
-        System.out.printf("Struct %d foodStock: %d%n", getId(), foodStock);
+        context.updateStock(getId(), foodStock);
     }
 
     @Override

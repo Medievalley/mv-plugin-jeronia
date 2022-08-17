@@ -18,10 +18,12 @@ public class BlockBreak implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void BlockBroken(BlockBreakEvent event) {
+//        System.out.printf("Broken block type: %s%n", event.getBlock().getType());
         //TODO: handle event
     }
     @EventHandler(priority = EventPriority.HIGHEST)
     public void BlockBroken(BlockDestroyEvent event) {
+        System.out.printf("Broken block type: %s%n", event.getBlock().getType());
         Block b = event.getBlock();
         structureService.processExplodedBlocksAsync(new ArrayList<>(Arrays.asList(b)));
     }

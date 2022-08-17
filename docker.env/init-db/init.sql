@@ -62,7 +62,8 @@ CREATE TABLE IF NOT EXISTS lore_struct (
     id SERIAL PRIMARY KEY,
     struct_id INTEGER references struct(id) ON DELETE CASCADE ON UPDATE CASCADE NOT NULL,
     volume_id integer references volume(id) ON DELETE SET NULL ON UPDATE CASCADE,
-    name varchar(100) NOT NULL
+    name varchar(100) NOT NULL,
+    stock INTEGER DEFAULT 0 NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS private_struct (

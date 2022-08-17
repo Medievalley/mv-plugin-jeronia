@@ -28,7 +28,7 @@ public class TaskServiceImpl extends BaseService implements TaskService {
         if (tasksQueues.containsKey(entityId)) {
             PriorityQueue<NpcTask> queue = tasksQueues.get(entityId);
             queue.add(task);
-            System.out.println("Task added");
+            System.out.println("Task added: " + task.getData().getType());
         } else {
             PriorityQueue<NpcTask> queue = new PriorityQueue<>();
             queue.add(task);
@@ -56,7 +56,6 @@ public class TaskServiceImpl extends BaseService implements TaskService {
             currentTasks.put(entityId, task);
             task.start();
         }
-        System.out.println("Task queue size: " + queue.size());
     }
 
     @Override
