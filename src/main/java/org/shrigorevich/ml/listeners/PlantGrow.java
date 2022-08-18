@@ -42,13 +42,14 @@ public class PlantGrow implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void OnFertilize(BlockFertilizeEvent event) {
+
         Block b = event.getBlock();
         if (isFullyGrown(b)) {
             Optional<Structure> structure = structureService.getByLocation(b.getLocation());
 
             if (structure.isPresent() && structure.get().getType() == StructureType.LORE) {
                 LoreStructure loreStructure = (LoreStructure) structure.get();
-
+                System.out.println("Fertilized");
                 Optional<Villager> e = loreStructure.getLaborer();
                 e.ifPresent(entity -> structureService.getPlugin()
                         .getServer().getPluginManager().callEvent(new StartHarvestEvent(entity, b)));

@@ -5,7 +5,7 @@ public class LoreStructModel extends StructModel implements LoreStructDB {
     /** ID of base structure */
     public String name;
     public boolean destructible;
-    public int blocks, brokenBlocks;
+    public int blocks, brokenBlocks, stock;
     public LoreStructModel() {
         super();
     }
@@ -39,5 +39,15 @@ public class LoreStructModel extends StructModel implements LoreStructDB {
     }
     public void setBrokenBlocks(int brokenBlocks) {
         this.brokenBlocks = brokenBlocks;
+    }
+
+    @Override
+    public int getStock() {
+        return stock;
+    }
+
+    @Override
+    public void setStock(int stock) {
+        this.stock = stock;
     }
 }

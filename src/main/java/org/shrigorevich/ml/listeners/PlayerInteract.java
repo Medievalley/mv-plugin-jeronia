@@ -1,6 +1,8 @@
 package org.shrigorevich.ml.listeners;
 
 import org.bukkit.*;
+import org.bukkit.block.Block;
+import org.bukkit.block.data.Ageable;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -48,7 +50,12 @@ public class PlayerInteract implements Listener {
     }
 
     private void showBlockType(PlayerInteractEvent event) {
-        event.getPlayer().sendMessage(String.format("Block type: %s", event.getClickedBlock().getType()));
+        Block b = event.getClickedBlock();
+        event.getPlayer().sendMessage(String.format("Block type: %s", b.getType()));
+
+        if (b.getBlockData() instanceof Ageable) {
+            event.getPlayer().sendMessage(String.format("Age: %s", ((Ageable) b.getBlockData()).getAge()));
+        }
     }
     private void draftNpc(PlayerInteractEvent event) {
         Player p = event.getPlayer();

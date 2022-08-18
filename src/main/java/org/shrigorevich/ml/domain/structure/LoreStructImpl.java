@@ -26,6 +26,7 @@ public class LoreStructImpl extends StructureImpl implements LoreStructure {
         this.volumeId = m.getVolumeId();
         this.name = m.getName();
         this.destructible = m.isDestructible();
+        this.foodStock = m.getStock();
         this.context = context;
 
         if (m.getBlocks() > 0 && m.getBrokenBlocks() > 0) {

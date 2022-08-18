@@ -1,7 +1,6 @@
 package org.shrigorevich.ml;
 
 import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.shrigorevich.ml.commands.NpcExecutor;

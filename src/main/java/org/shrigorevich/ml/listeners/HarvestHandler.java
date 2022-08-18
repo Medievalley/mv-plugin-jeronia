@@ -68,25 +68,28 @@ public class HarvestHandler implements Listener {
             if (isPlant(initType)) {
                 block.breakNaturally(true);
                 block.setType(initType);
+
+                Bukkit.getScheduler().runTaskAsynchronously(taskService.getPlugin(), () ->
+                        updateStock(event.getEntity().getUniqueId()));
             }
 
+            taskService.finalizeCurrent(event.getEntity().getUniqueId());
             //TODO: dangerous (scheduled Bukkit api)
-            Bukkit.getScheduler().runTaskAsynchronously(taskService.getPlugin(), () ->
-                    finalizeHarvesting(event.getEntity().getUniqueId()));
+
         }
     }
     @EventHandler(priority = EventPriority.HIGHEST)
     public void OnReachLocation(EntityPickupItemEvent event) {
+
         npcService.getById(event.getEntity().getUniqueId()).ifPresent(npc -> {
             if (isPlantFood(event.getItem().getItemStack().getType())) {
+                System.out.println("Pickup event canceled");
                 event.setCancelled(true);
                 event.getItem().remove();
             }
         });
     }
-    private void finalizeHarvesting(UUID entityId) {
-        taskService.finalizeCurrent(entityId);
-
+    private void updateStock(UUID entityId) {
         npcService.getById(entityId).flatMap(npc ->
                 structService.getById(npc.getStructId())).ifPresent(loreStructure ->
                 loreStructure.updateFoodStock(1)); //TODO: get from config

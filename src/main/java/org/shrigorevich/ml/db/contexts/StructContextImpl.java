@@ -58,7 +58,6 @@ public class StructContextImpl implements StructureContext { //TODO: extends abs
         }
     }
 
-    @Deprecated
     public Optional<LoreStructDB> getById(int id) {
         try {
             QueryRunner run = new QueryRunner(dataSource);
@@ -130,7 +129,7 @@ public class StructContextImpl implements StructureContext { //TODO: extends abs
             QueryRunner run = new QueryRunner(dataSource);
             ResultSetHandler<List<LoreStructDB>> h = new BeanListHandler(LoreStructModel.class);
             String sql = String.format(
-                    "select ls.struct_id as id, ls.name, ls.volume_id as volumeid, s.type_id as typeid, \n" +
+                    "select ls.struct_id as id, ls.name, ls.volume_id as volumeid, ls.stock, s.type_id as typeid, \n" +
                     "s.world, s.x1, s.y1, s.z1, s.x2, s.y2, s.z2,\n" +
                     "(select count(id)::int from struct_block where struct_id=s.id and broken=true) as brokenBlocks,\n" +
                     "(select count(id)::int from struct_block where struct_id=s.id and broken=false) as blocks\n" +
@@ -138,8 +137,8 @@ public class StructContextImpl implements StructureContext { //TODO: extends abs
 
             List<LoreStructDB> structs = run.query(sql, h);
             for (LoreStructDB s : structs) {
-                System.out.printf("Id: %d, TypeId: %d, World: %s, Name: %s, VolumeId: %d brokenBlocks: %d%n",
-                        s.getId(), s.getTypeId(), s.getWorld(), s.getName(), s.getVolumeId(), s.getBrokenBlocks());
+                System.out.printf("Id: %d, TypeId: %d, Name: %s, VolumeId: %d brokenBlocks: %d, Stock: %d%n",
+                        s.getId(), s.getTypeId(), s.getName(), s.getVolumeId(), s.getBrokenBlocks(), s.getStock());
             }
             return structs;
 
@@ -300,7 +299,6 @@ public class StructContextImpl implements StructureContext { //TODO: extends abs
             QueryRunner run = new QueryRunner(dataSource);
             String sql = String.format("UPDATE lore_struct SET stock=%d WHERE struct_id=%d", stockSize, structId);
             run.update(sql);
-            System.out.printf("Stock updated: %d, %d%n", stockSize, structId);
         } catch (SQLException ex) {
             plugin.getLogger().severe("StructContext. UpdateStock: " + ex);
         }
