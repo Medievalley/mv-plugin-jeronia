@@ -1,12 +1,16 @@
 package org.shrigorevich.ml.commands;
 
+import com.destroystokyo.paper.entity.ai.Goal;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
+import org.shrigorevich.ml.domain.ai.TaskDataImpl;
 import org.shrigorevich.ml.domain.ai.TaskService;
+import org.shrigorevich.ml.domain.ai.TaskType;
+import org.shrigorevich.ml.domain.ai.goals.CustomGoal;
 import org.shrigorevich.ml.domain.npc.NpcService;
 
 public class NpcExecutor implements CommandExecutor {
@@ -43,6 +47,14 @@ public class NpcExecutor implements CommandExecutor {
                                 npcService.reload(id);
                             }
                             npcService.reload();
+                            break;
+
+                        case "test":
+                            Villager e = (Villager) player.getWorld().spawnEntity(player.getLocation().add(10, 0, 0), EntityType.VILLAGER);
+
+                            Goal<Mob> goal = new CustomGoal(npcService.getPlugin(), new TaskDataImpl(TaskType.HARVEST), e, player);
+
+                            npcService.getPlugin().getServer().getMobGoals().addGoal(e, 1, goal);
                             break;
                         default:
                             player.sendMessage(ChatColor.YELLOW + String.format("Command '%s' not found", args[0]));

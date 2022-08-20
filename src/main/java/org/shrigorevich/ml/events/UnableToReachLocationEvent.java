@@ -8,7 +8,7 @@ import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 import org.shrigorevich.ml.domain.ai.TaskData;
 
-public class LocationReachedEvent extends Event implements Cancellable {
+public class UnableToReachLocationEvent extends Event implements Cancellable {
 
     private static final HandlerList HANDLERS = new HandlerList();
     private boolean cancelled;
@@ -16,7 +16,7 @@ public class LocationReachedEvent extends Event implements Cancellable {
     private final Location target;
     private final TaskData taskData;
 
-    public LocationReachedEvent(Entity entity, Location location, TaskData taskData) {
+    public UnableToReachLocationEvent(Entity entity, Location location, TaskData taskData) {
         this.entity = entity;
         this.target = location;
         this.taskData = taskData;

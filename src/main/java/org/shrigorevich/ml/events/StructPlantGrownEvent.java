@@ -1,37 +1,29 @@
 package org.shrigorevich.ml.events;
 
-import org.bukkit.Location;
-import org.bukkit.entity.Entity;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Villager;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
-import org.shrigorevich.ml.domain.ai.TaskData;
 
-public class LocationReachedEvent extends Event implements Cancellable {
-
+public class StructPlantGrownEvent extends Event implements Cancellable {
     private static final HandlerList HANDLERS = new HandlerList();
     private boolean cancelled;
-    private final Entity entity;
-    private final Location target;
-    private final TaskData taskData;
+    private final Villager entity;
+    private final Block block;
 
-    public LocationReachedEvent(Entity entity, Location location, TaskData taskData) {
+    public StructPlantGrownEvent(Villager entity, Block block) {
         this.entity = entity;
-        this.target = location;
-        this.taskData = taskData;
+        this.block = block;
     }
 
-    public Entity getEntity() {
+    public Villager getEntity() {
         return entity;
     }
 
-    public Location getTarget() {
-        return target;
-    }
-
-    public TaskData getTaskData() {
-        return taskData;
+    public Block getBlock() {
+        return block;
     }
 
     @Override

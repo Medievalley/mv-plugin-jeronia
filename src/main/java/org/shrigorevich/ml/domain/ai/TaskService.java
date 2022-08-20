@@ -10,5 +10,7 @@ public interface TaskService extends Service {
     void finalizeCurrent(UUID entityId);
     void startTopPriority(UUID entityId);
     boolean shouldChangeTask(UUID entityId);
+    void blockCurrent(UUID entityId);
+    void checkBlockedTasks(UUID entityId);
     void setDefaultAI(Entity entity);
 }

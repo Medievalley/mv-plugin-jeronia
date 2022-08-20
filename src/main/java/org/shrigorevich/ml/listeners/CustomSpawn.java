@@ -2,6 +2,7 @@ package org.shrigorevich.ml.listeners;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Mob;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -39,8 +40,8 @@ public class CustomSpawn implements Listener {
                 assignToStruct(npc.get(), entity);
                 taskService.setDefaultAI(entity);
                 setTask(npc.get(), entity);
+                System.out.println("Custom spawned: " + event.getEntity().getMetadata("id").get(0).asInt());
             }
-            System.out.println("Custom spawned: " + event.getEntity().getMetadata("id").get(0).asInt());
         }
     }
 
@@ -49,7 +50,7 @@ public class CustomSpawn implements Listener {
         struct.ifPresent(loreStructure -> loreStructure.setLaborer(entity));
     }
 
-    private void setTask(StructNpc npc, Entity entity) {
+    private void setTask(StructNpc npc, Mob entity) {
         Location location = new Location(entity.getWorld(), npc.getX(), npc.getY(), npc.getZ());
         taskService.add(
                 new ReachLocationTask(

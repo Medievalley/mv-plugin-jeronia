@@ -1,6 +1,7 @@
 package org.shrigorevich.ml.domain.ai.goals;
 
 import com.destroystokyo.paper.entity.ai.Goal;
+import com.destroystokyo.paper.entity.ai.GoalKey;
 import com.destroystokyo.paper.entity.ai.GoalType;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
@@ -11,16 +12,18 @@ import org.shrigorevich.ml.domain.ai.TaskService;
 import java.util.EnumSet;
 
 public class DefaultGoal implements Goal<Villager> {
-    private final com.destroystokyo.paper.entity.ai.GoalKey<Villager> key;
+    private final GoalKey<Villager> key;
     private final Mob mob;
     private final TaskService taskService;
-    private int timer;
+    private int checkTasksTimer;
+    private int checkBlockedTasksTimer;
 
     public DefaultGoal(TaskService taskService, Mob mob) {
         this.taskService = taskService;
-        this.key = com.destroystokyo.paper.entity.ai.GoalKey.of(Villager.class, new NamespacedKey(taskService.getPlugin(), ActionKey.DEFAULT_AI.toString()));
+        this.key = GoalKey.of(Villager.class, new NamespacedKey(taskService.getPlugin(), ActionKey.DEFAULT_AI.toString()));
         this.mob = mob;
-        this.timer = 0;
+        this.checkTasksTimer = 0;
+        this.checkBlockedTasksTimer = 0;
     }
 
     @Override
@@ -45,9 +48,11 @@ public class DefaultGoal implements Goal<Villager> {
 
     @Override
     public void tick() {
-        timer+=1;
-        if (timer == 20) {
-            timer = 0;
+        checkTasksTimer+=1;
+        checkBlockedTasksTimer+=1;
+
+        if (checkTasksTimer == 20) {
+            checkTasksTimer = 0;
             boolean shouldChangeTask = taskService.shouldChangeTask(mob.getUniqueId());
             if (shouldChangeTask) {
                 Bukkit.getScheduler().runTask(taskService.getPlugin(), () -> {
@@ -55,10 +60,17 @@ public class DefaultGoal implements Goal<Villager> {
                 });
             }
         }
+
+        if (checkBlockedTasksTimer == 100) {
+            checkBlockedTasksTimer = 0;
+            Bukkit.getScheduler().runTask(taskService.getPlugin(), () -> {
+                taskService.checkBlockedTasks(mob.getUniqueId());
+            });
+        }
     }
 
     @Override
-    public com.destroystokyo.paper.entity.ai.GoalKey<Villager> getKey() {
+    public GoalKey<Villager> getKey() {
         return key;
     }
 

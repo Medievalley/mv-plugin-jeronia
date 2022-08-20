@@ -1,5 +1,6 @@
 package org.shrigorevich.ml.listeners;
 
+import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.entity.Villager;
@@ -11,8 +12,7 @@ import org.bukkit.event.block.BlockGrowEvent;
 import org.shrigorevich.ml.domain.structure.StructureType;
 import org.shrigorevich.ml.domain.structure.StructureService;
 import org.shrigorevich.ml.domain.structure.LoreStructure;
-import org.shrigorevich.ml.domain.structure.Structure;
-import org.shrigorevich.ml.events.StartHarvestEvent;
+import org.shrigorevich.ml.events.StructPlantGrownEvent;
 
 import java.util.Optional;
 
@@ -26,35 +26,25 @@ public class PlantGrow implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void OnGrow(BlockGrowEvent event) {
+
         Block b = event.getBlock();
-        if (isFullyGrown(b)) {
-            Optional<Structure> structure = structureService.getByLocation(b.getLocation());
+        Location l = b.getLocation();
 
-            if (structure.isPresent() && structure.get().getType() == StructureType.LORE) {
-                LoreStructure loreStructure = (LoreStructure) structure.get();
-
+        structureService.getByLocation(b.getLocation()).ifPresent((struct) -> {
+            //System.out.printf("Grown at struct: %d %d %d. Age: %s%n", l.getBlockX(), l.getBlockY(), l.getBlockZ(), ((Ageable) b.getBlockData()).getAge());
+            if (isFullyGrown(b) && struct.getType() == StructureType.LORE) {
+                LoreStructure loreStructure = (LoreStructure) struct;
                 Optional<Villager> e = loreStructure.getLaborer();
                 e.ifPresent(entity -> structureService.getPlugin()
-                    .getServer().getPluginManager().callEvent(new StartHarvestEvent(entity, b)));
+                        .getServer().getPluginManager().callEvent(new StructPlantGrownEvent(entity, b)));
             }
-        }
+        });
+
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void OnFertilize(BlockFertilizeEvent event) {
-
         Block b = event.getBlock();
-        if (isFullyGrown(b)) {
-            Optional<Structure> structure = structureService.getByLocation(b.getLocation());
-
-            if (structure.isPresent() && structure.get().getType() == StructureType.LORE) {
-                LoreStructure loreStructure = (LoreStructure) structure.get();
-                System.out.println("Fertilized");
-                Optional<Villager> e = loreStructure.getLaborer();
-                e.ifPresent(entity -> structureService.getPlugin()
-                        .getServer().getPluginManager().callEvent(new StartHarvestEvent(entity, b)));
-            }
-        }
     }
 
     private boolean isFullyGrown(Block b) {

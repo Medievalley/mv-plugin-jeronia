@@ -8,18 +8,18 @@ import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 import org.shrigorevich.ml.domain.ai.TaskData;
 
-public class LocationReachedEvent extends Event implements Cancellable {
+public class UnableToHarvestEvent extends Event implements Cancellable {
 
-    private static final HandlerList HANDLERS = new HandlerList();
-    private boolean cancelled;
     private final Entity entity;
     private final Location target;
-    private final TaskData taskData;
+    private final TaskData task;
+    private static final HandlerList HANDLERS = new HandlerList();
+    private boolean cancelled;
 
-    public LocationReachedEvent(Entity entity, Location location, TaskData taskData) {
+    public UnableToHarvestEvent(Entity entity, Location target, TaskData task) {
         this.entity = entity;
-        this.target = location;
-        this.taskData = taskData;
+        this.target = target;
+        this.task = task;
     }
 
     public Entity getEntity() {
@@ -30,8 +30,8 @@ public class LocationReachedEvent extends Event implements Cancellable {
         return target;
     }
 
-    public TaskData getTaskData() {
-        return taskData;
+    public TaskData getTask() {
+        return task;
     }
 
     @Override

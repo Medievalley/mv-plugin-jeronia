@@ -69,13 +69,15 @@ public final class Ml extends JavaPlugin {
     private void setupListeners() {
         PluginManager pm = getServer().getPluginManager();
         pm.registerEvents(new Auth(userService), this);
-        pm.registerEvents(new PlayerInteract(structService, npcService), this);
-        pm.registerEvents(new BlockExplode(structService), this);
         pm.registerEvents(new BlockBreak(structService), this);
+        pm.registerEvents(new BlockExplode(structService), this);
         pm.registerEvents(new CustomSpawn(taskService, npcService, structService), this);
-        pm.registerEvents(new HarvestHandler(taskService, structService, npcService), this);
-        pm.registerEvents(new PlantGrow(structService), this);
+        pm.registerEvents(new EntityInventoryHandler(npcService), this);
         pm.registerEvents(new EntitySpawn(this), this);
+        pm.registerEvents(new HarvestHandler(taskService, npcService, structService), this);
+        pm.registerEvents(new PlantGrow(structService), this);
+        pm.registerEvents(new PlayerInteract(structService, npcService), this);
+        pm.registerEvents(new ReachLocationHandler(this), this);
     }
 
     private void setupExecutors() {

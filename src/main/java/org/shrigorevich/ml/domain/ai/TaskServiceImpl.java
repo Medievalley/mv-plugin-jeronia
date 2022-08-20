@@ -2,23 +2,28 @@ package org.shrigorevich.ml.domain.ai;
 
 import com.destroystokyo.paper.entity.ai.Goal;
 import com.destroystokyo.paper.entity.ai.MobGoals;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Mob;
 import org.bukkit.entity.Villager;
 import org.bukkit.plugin.Plugin;
 import org.shrigorevich.ml.domain.BaseService;
 import org.shrigorevich.ml.domain.ai.goals.DefaultGoal;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class TaskServiceImpl extends BaseService implements TaskService {
 
     private final Map<UUID, PriorityQueue<NpcTask>> tasksQueues;
     private final Map<UUID, NpcTask> currentTasks;
+    private final Map<UUID, List<NpcTask>> blockedTasks;
 
     public TaskServiceImpl(Plugin plugin) {
         super(plugin);
         tasksQueues = new HashMap<>();
         currentTasks = new HashMap<>();
+        blockedTasks = new HashMap<>();
     }
 
     @Override
@@ -28,12 +33,10 @@ public class TaskServiceImpl extends BaseService implements TaskService {
         if (tasksQueues.containsKey(entityId)) {
             PriorityQueue<NpcTask> queue = tasksQueues.get(entityId);
             queue.add(task);
-            System.out.println("Task added: " + task.getData().getType());
         } else {
             PriorityQueue<NpcTask> queue = new PriorityQueue<>();
             queue.add(task);
             tasksQueues.put(entityId, queue);
-            System.out.println("Queue with task created");
         }
     }
 
@@ -67,13 +70,46 @@ public class TaskServiceImpl extends BaseService implements TaskService {
             if (cur == null && top != null) {
                 return true;
 
-            } else if (cur != null && top != null) {
+            } else if (cur != null && top != null ) {
                 return cur.getPriority().getValue() < top.getPriority().getValue();
             } else {
                 return false;
             }
         } else {
             return false;
+        }
+    }
+
+    public void checkBlockedTasks(UUID entityId) {
+        if (blockedTasks.containsKey(entityId)) {
+            List<NpcTask> updatedList = new ArrayList<>();
+            for (NpcTask task : blockedTasks.get(entityId)) {
+                if (!task.shouldBeBlocked()) {
+                    task.setBlocked(false);
+                    tasksQueues.get(entityId).add(task);
+                } else {
+                    updatedList.add(task);
+                }
+            }
+            blockedTasks.put(entityId, updatedList);
+            System.out.println("Blocked tasks size: " + blockedTasks.get(entityId).size());
+        }
+    }
+
+    @Override
+    public void blockCurrent(UUID entityId) {
+        NpcTask task = currentTasks.remove(entityId);
+        tasksQueues.get(entityId).remove(task);
+        if (task != null) {
+            task.end();
+            task.setBlocked(true);
+            if (blockedTasks.containsKey(entityId)) {
+                blockedTasks.get(entityId).add(task);
+            } else {
+                List<NpcTask> list = new ArrayList<>();
+                list.add(task);
+                blockedTasks.put(entityId, list);
+            }
         }
     }
 

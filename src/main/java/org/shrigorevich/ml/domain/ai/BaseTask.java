@@ -1,37 +1,29 @@
 package org.shrigorevich.ml.domain.ai;
 
+import com.destroystokyo.paper.entity.ai.Goal;
+import com.destroystokyo.paper.entity.ai.MobGoals;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Mob;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class BaseTask implements Task {
     private final TaskPriority priority;
     private final Plugin plugin;
-    private boolean inProgress;
-    private final Entity entity;
+    private final Mob mob;
     private final TaskData data;
+    private boolean blocked;
 
-    public BaseTask(Plugin plugin, TaskType type, TaskPriority priority, Entity entity) {
+    public BaseTask(Plugin plugin, TaskType type, TaskPriority priority, Mob mob) {
         this.priority = priority;
         this.plugin = plugin;
-        this.entity = entity;
-        this.inProgress = false;
+        this.mob = mob;
         this.data = new TaskDataImpl(type);
     }
 
     @Override
-    public boolean isInProgress() {
-        return inProgress;
-    }
-
-    @Override
-    public void setInProgress(boolean inProgress) {
-        this.inProgress = inProgress;
-    }
-
-    @Override
-    public Entity getEntity() {
-        return entity;
+    public Mob getEntity() {
+        return mob;
     }
 
     @Override
@@ -49,9 +41,22 @@ public abstract class BaseTask implements Task {
         return task.getPriority().getValue() - this.priority.getValue();
     }
 
-
+    @Override
+    public void setBlocked(boolean blocked) {
+        this.blocked = blocked;
+    }
+    @Override
+    public boolean isBlocked() {
+        return this.blocked;
+    }
 
     public Plugin getPlugin() {
         return plugin;
+    }
+    public void setGoal(MobGoals goals, Goal<Mob> goal) {
+        if (goals.hasGoal(mob, goal.getKey())) {
+            goals.removeGoal(mob, goal.getKey());
+        }
+        goals.addGoal(mob, getPriority().getValue(), goal);
     }
 }

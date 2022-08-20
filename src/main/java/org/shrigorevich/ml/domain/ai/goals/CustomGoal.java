@@ -6,21 +6,21 @@ import com.destroystokyo.paper.entity.ai.GoalType;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Mob;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import org.shrigorevich.ml.common.Utils;
 import org.shrigorevich.ml.domain.ai.TaskData;
 import org.shrigorevich.ml.events.LocationReachedEvent;
 
 import java.util.EnumSet;
 
-public class ReachLocationGoal extends BaseGoal implements Goal<Mob> {
-    private final Location target;
+public class CustomGoal extends BaseGoal implements Goal<Mob> {
+    private final Player player;
     private int cooldown = 0;
 
-    public ReachLocationGoal(Plugin plugin, TaskData data, Mob mob, Location target) {
+    public CustomGoal(Plugin plugin, TaskData data, Mob mob, Player player) {
 
         super(mob, plugin, data, ActionKey.REACH_LOCATION);
-        this.target = target;
+        this.player = player;
     }
 
     @Override
@@ -35,28 +35,26 @@ public class ReachLocationGoal extends BaseGoal implements Goal<Mob> {
 
     @Override
     public void start() {
-        System.out.println(String.format("REACH_LOCATION activated. Task: %s. Target location: %d %d %d",
-                getData().getType(), target.getBlockX(), target.getBlockY(), target.getBlockZ()));
-        getMob().getPathfinder().moveTo(target, 0.7D);
-        Location fp = getMob().getPathfinder().getCurrentPath().getFinalPoint();
     }
 
     @Override
     public void stop() {
-//        System.out.println("REACH_LOCATION stopped. Task: " + getData().getType());
         getMob().getPathfinder().stopPathfinding();
     }
 
     @Override
     public void tick() {
         cooldown+=1;
-        getMob().getPathfinder().moveTo(target, 0.7D);
-        Location mobLoc = getMob().getLocation().add(0, 1, 0);
-        if (!isAchieved() && Utils.isLocationsEquals(mobLoc, target)) {
-            setAchieved(true);
-            Bukkit.getScheduler().runTask(getPlugin(), () -> {
-                getPlugin().getServer().getPluginManager().callEvent(new LocationReachedEvent(getMob(), target, getData()));
-            });
+        getMob().getPathfinder().moveTo(player, 0.7D);
+
+        if (cooldown == 10) {
+            cooldown = 0;
+            Location loc = getMob().getPathfinder().getCurrentPath().getFinalPoint();
+            if (loc != null) {
+                player.sendMessage(String.format("Final: %d %d %d", loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()));
+            } else {
+                player.sendMessage(String.format("Final: No point"));
+            }
         }
     }
 
@@ -69,4 +67,5 @@ public class ReachLocationGoal extends BaseGoal implements Goal<Mob> {
     public EnumSet<GoalType> getTypes() {
         return EnumSet.of(GoalType.MOVE);
     }
+
 }
