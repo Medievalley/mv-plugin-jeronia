@@ -21,15 +21,19 @@ import java.util.stream.Collectors;
 
 public class NpcServiceImpl extends BaseService implements NpcService {
 
-    private final HashMap<String, StructNpcDB> draftNpc;
-    private final HashMap<UUID, StructNpc> npcList;
+    private final Map<String, StructNpcDB> draftNpc;
+    private final Map<UUID, StructNpc> npcList;
     private final NpcContext context;
+    private final Queue<SafeLoc> safeLocs;
+    private final Map<UUID, SafeLoc> bookedSafeLocs;
 
     public NpcServiceImpl(NpcContext context, Plugin plugin) {
         super(plugin);
         this.context = context;
         this.draftNpc = new HashMap<>();
         this.npcList = new HashMap<>();
+        this.safeLocs = new ArrayDeque<>();
+        this.bookedSafeLocs = new HashMap<>();
     }
 
     @Override
@@ -145,5 +149,33 @@ public class NpcServiceImpl extends BaseService implements NpcService {
     public Optional<StructNpc> getById(UUID id) {
         StructNpc npc = npcList.get(id);
         return npc == null ? Optional.empty() : Optional.of(npc);
+    }
+
+    @Override
+    public Optional<SafeLoc> bookSafeLoc(UUID entityId) {
+        SafeLoc loc = safeLocs.poll();
+        if (loc != null) {
+            bookedSafeLocs.put(entityId, loc);
+            System.out.println("Safe loc booked. Size: " + safeLocs.size());
+            return Optional.of(loc);
+        } else {
+            System.out.println("No safe locations");
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public void releaseSafeLoc(UUID entityId) {
+        SafeLoc loc = bookedSafeLocs.remove(entityId);
+        if (loc != null) {
+            safeLocs.add(loc);
+        }
+        System.out.println("Safe loc released. Size: " + safeLocs.size());
+    }
+
+    @Override
+    public void regSafeLoc(SafeLoc location) {
+        safeLocs.add(location);
+        System.out.println("Safe loc registered. Size: " + safeLocs.size());
     }
 }

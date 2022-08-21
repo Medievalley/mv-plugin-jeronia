@@ -6,7 +6,6 @@ import com.destroystokyo.paper.entity.ai.MobGoals;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Mob;
-import org.bukkit.entity.Villager;
 import org.bukkit.plugin.Plugin;
 import org.shrigorevich.ml.common.Utils;
 import org.shrigorevich.ml.domain.ai.*;
@@ -30,6 +29,7 @@ public class ReachLocationTask extends BaseTask implements NpcTask {
                 goal = new HarvestGoal(getPlugin(), getData(), getEntity(), target);
                 break;
             case HOLD_SPAWN:
+            case GO_SAFE:
             default:
                 goal = new ReachLocationGoal(getPlugin(), getData(), getEntity(), target);
                 break;

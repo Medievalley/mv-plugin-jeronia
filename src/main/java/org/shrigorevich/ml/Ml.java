@@ -76,8 +76,9 @@ public final class Ml extends JavaPlugin {
         pm.registerEvents(new EntitySpawn(this), this);
         pm.registerEvents(new HarvestHandler(taskService, npcService, structService), this);
         pm.registerEvents(new PlantGrow(structService), this);
-        pm.registerEvents(new PlayerInteract(structService, npcService), this);
+        pm.registerEvents(new PlayerInteract(structService, npcService, taskService), this);
         pm.registerEvents(new ReachLocationHandler(this), this);
+        pm.registerEvents(new DangerHandler(taskService, npcService), this);
     }
 
     private void setupExecutors() {

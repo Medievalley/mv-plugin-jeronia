@@ -16,4 +16,7 @@ public interface NpcService extends Service {
     void reload(int structId);
     void register(StructNpc npc);
     Optional<StructNpc> getById(UUID id);
+    Optional<SafeLoc> bookSafeLoc(UUID entityId);
+    void releaseSafeLoc(UUID entityId);
+    void regSafeLoc(SafeLoc location);
 }

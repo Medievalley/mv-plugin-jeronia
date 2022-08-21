@@ -2,16 +2,13 @@ package org.shrigorevich.ml.domain.ai;
 
 import com.destroystokyo.paper.entity.ai.Goal;
 import com.destroystokyo.paper.entity.ai.MobGoals;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Mob;
 import org.bukkit.entity.Villager;
 import org.bukkit.plugin.Plugin;
 import org.shrigorevich.ml.domain.BaseService;
 import org.shrigorevich.ml.domain.ai.goals.DefaultGoal;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class TaskServiceImpl extends BaseService implements TaskService {
 
@@ -126,6 +123,12 @@ public class TaskServiceImpl extends BaseService implements TaskService {
             }
             goals.addGoal(npc, 3, goal);
         }
+    }
+
+    @Override
+    public Optional<Task> getCurrent(UUID entityId) {
+        Task task = currentTasks.get(entityId);
+        return task == null ? Optional.empty() : Optional.of(task);
     }
 
     private void stopCurrent(UUID entityId) {

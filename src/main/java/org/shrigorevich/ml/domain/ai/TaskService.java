@@ -3,6 +3,7 @@ package org.shrigorevich.ml.domain.ai;
 import org.bukkit.entity.Entity;
 import org.shrigorevich.ml.domain.Service;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public interface TaskService extends Service {
@@ -13,4 +14,5 @@ public interface TaskService extends Service {
     void blockCurrent(UUID entityId);
     void checkBlockedTasks(UUID entityId);
     void setDefaultAI(Entity entity);
+    Optional<Task> getCurrent(UUID entityId);
 }

@@ -3,25 +3,33 @@ package org.shrigorevich.ml.listeners;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
+import org.shrigorevich.ml.domain.ai.TaskService;
 import org.shrigorevich.ml.domain.npc.NpcService;
+import org.shrigorevich.ml.domain.npc.SafeLocImpl;
 import org.shrigorevich.ml.domain.structure.StructureService;
 import org.shrigorevich.ml.domain.structure.Structure;
+import org.shrigorevich.ml.events.DangerIsGoneEvent;
 
 import java.util.Optional;
 
 public class PlayerInteract implements Listener {
 
-    StructureService structureService;
-    NpcService npcService;
-    public PlayerInteract(StructureService structureService, NpcService npcService) {
+    private final StructureService structureService;
+    private final NpcService npcService;
+    private final TaskService taskService;
+    public PlayerInteract(StructureService structureService, NpcService npcService, TaskService taskService) {
         this.structureService = structureService;
         this.npcService = npcService;
+        this.taskService = taskService;
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -43,6 +51,25 @@ public class PlayerInteract implements Listener {
                     break;
                 case COAL:
                     showBlockType(event);
+                case DIAMOND_AXE:
+                    regSafeLocation(event.getClickedBlock().getLocation());
+                default:
+                    break;
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void playerInteract(PlayerInteractEntityEvent event) {
+
+        Entity entity = event.getRightClicked();
+
+        if (event.getHand() == EquipmentSlot.HAND) {
+            System.out.println(event.getPlayer().getActiveItem().getType());
+            switch (event.getPlayer().getInventory().getItemInMainHand().getType()) {
+                case DIAMOND_SWORD:
+                    Bukkit.getPluginManager().callEvent(new DangerIsGoneEvent(entity));
+                    break;
                 default:
                     break;
             }
@@ -84,4 +111,11 @@ public class PlayerInteract implements Listener {
         }
     }
 
+    private void regSafeLocation(Location l) {
+        if (l != null) {
+            structureService.getByLocation(l).ifPresent(struct -> {
+                npcService.regSafeLoc(new SafeLocImpl(l.clone().add(0, 1, 0), struct.getId()));
+            });
+        }
+    }
 }

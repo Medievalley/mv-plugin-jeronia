@@ -10,4 +10,5 @@ public interface Task extends Comparable<Task> {
     void start();
     void end();
     boolean shouldBeBlocked();
+    TaskType getType();
 }

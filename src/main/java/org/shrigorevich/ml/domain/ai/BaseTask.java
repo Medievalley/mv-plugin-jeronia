@@ -50,6 +50,11 @@ public abstract class BaseTask implements Task {
         return this.blocked;
     }
 
+    @Override
+    public TaskType getType() {
+        return data.getType();
+    }
+
     public Plugin getPlugin() {
         return plugin;
     }
@@ -59,4 +64,6 @@ public abstract class BaseTask implements Task {
         }
         goals.addGoal(mob, getPriority().getValue(), goal);
     }
+
+
 }
