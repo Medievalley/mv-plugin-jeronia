@@ -81,7 +81,11 @@ public class NpcServiceImpl extends BaseService implements NpcService {
     public void load() {
         List<StructNpcDB> models = context.get();
         for (StructNpcDB m : models) {
-            spawn(m);
+            if (m.isAlive()) {
+                spawn(m);
+            } else {
+                System.out.println("Dead NPC was not spawned. Id: " + m.getId());
+            }
         }
     }
 

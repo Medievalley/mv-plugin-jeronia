@@ -2,8 +2,9 @@ package org.shrigorevich.ml.domain.npc.models;
 
 public class StructNpcModel implements StructNpcDB{
 
-    private int x, y, z, structId, id;
+    private int x, y, z, structId, id, roleId;
     private String name, world;
+    private boolean alive;
 
     @Override
     public int getId() {
@@ -68,6 +69,26 @@ public class StructNpcModel implements StructNpcDB{
     @Override
     public void setWorld(String world) {
         this.world = world;
+    }
+
+    @Override
+    public void setAlive(boolean alive) {
+        this.alive = alive;
+    }
+
+    @Override
+    public boolean isAlive() {
+        return alive;
+    }
+
+    @Override
+    public void setRoleId(int roleId) {
+        this.roleId = roleId;
+    }
+
+    @Override
+    public int getRoleId() {
+        return roleId;
     }
 
     public void setId(int id) {

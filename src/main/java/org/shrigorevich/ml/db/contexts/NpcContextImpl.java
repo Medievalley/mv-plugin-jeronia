@@ -47,7 +47,7 @@ public class NpcContextImpl extends Context implements NpcContext{
         try {
             QueryRunner run = new QueryRunner(getDataSource());
             ResultSetHandler<List<StructNpcDB>> h = new BeanListHandler(StructNpcModel.class);
-            String sql = "select n.id, x, y, z, struct_id as structid, name, s.world from struct_npc n join struct s on s.id = n.struct_id";
+            String sql = "select n.id, x, y, z, struct_id as structId, n.alive, n.role_id as roleId, name, s.world from struct_npc n join struct s on s.id = n.struct_id";
             return run.query(sql, h);
         } catch (SQLException ex) {
             getPlugin().getLogger().severe("NpcContext. Get all: " + ex);
@@ -60,7 +60,7 @@ public class NpcContextImpl extends Context implements NpcContext{
         try {
             QueryRunner run = new QueryRunner(getDataSource());
             ResultSetHandler<List<StructNpcDB>> h = new BeanListHandler(StructNpcModel.class);
-            String sql = String.format("select n.id, x, y, z, struct_id as structid, name, s.world \n" +
+            String sql = String.format("select n.id, x, y, z, struct_id as structId, n.alive, n.role_id as roleId, name, s.world \n" +
                     "from struct_npc n join struct s on s.id = n.struct_id where struct_id = %d", structId);
 
             return run.query(sql, h);

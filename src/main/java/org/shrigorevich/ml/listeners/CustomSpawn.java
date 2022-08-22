@@ -40,7 +40,8 @@ public class CustomSpawn implements Listener {
                 assignToStruct(npc.get(), entity);
                 taskService.setDefaultAI(entity);
                 setTask(npc.get(), entity);
-                System.out.println("Custom spawned: " + event.getEntity().getMetadata("id").get(0).asInt());
+                System.out.printf("Custom spawned: %d, %s, %s%n",
+                        npc.get().getId(), npc.get().isAlive(), npc.get().getRole());
             }
         }
     }

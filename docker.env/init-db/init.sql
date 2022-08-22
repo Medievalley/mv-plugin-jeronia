@@ -81,19 +81,31 @@ CREATE TABLE IF NOT EXISTS struct_block (
     broken BOOLEAN DEFAULT false NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS npc_role (
+    id INTEGER PRIMARY KEY,
+    name VARCHAR(20) NOT NULL,
+    description TEXT NOT NULL
+);
+
 CREATE table IF NOT EXISTS struct_npc (
     id SERIAL PRIMARY KEY,
+    role_id INTEGER references npc_role(id) ON DELETE SET NULL ON UPDATE CASCADE,
     x integer NOT NULL,
     y integer NOT NULL,
     z integer NOT NULL,
     name VARCHAR(30) NOT NULL,
-    struct_id INTEGER references struct (id) ON DELETE CASCADE ON UPDATE CASCADE
+    struct_id INTEGER references struct (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    alive BOOLEAN DEFAULT true NOT NULL,
 );
 
 INSERT INTO role VALUES (1, 'Admin', 'Most privileged role');
 INSERT INTO struct_type (id, name, description) VALUES
 (1, 'private', 'Private territory that each user can own'),
 (2, 'lore', 'Lore structure that normally cannot be destroyed');
+
+INSERT INTO npc_role (id, name, description) VALUES
+(1, 'harvester', 'The villager who harvests'),
+(2, 'warden', 'The main person in the village');
 
 -- MOCK SCRIPT
  with rows as (

@@ -16,4 +16,8 @@ public interface StructNpcDB {
     void setName(String name);
     void setStructId(int structId);
     void setWorld(String world);
+    void setAlive(boolean alive);
+    boolean isAlive();
+    void setRoleId(int id);
+    int getRoleId();
 }

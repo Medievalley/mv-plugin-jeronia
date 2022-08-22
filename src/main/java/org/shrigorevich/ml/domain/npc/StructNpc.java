@@ -11,4 +11,8 @@ public interface StructNpc {
     String getName();
     int getStructId();
     String getWorld();
+    boolean isAlive();
+    void setAlive(boolean alive);
+    NpcRole getRole();
+
 }
