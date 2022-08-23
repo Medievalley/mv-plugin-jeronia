@@ -49,10 +49,11 @@ public class NpcServiceImpl extends BaseService implements NpcService {
     }
 
     @Override
-    public void commitNpc(String name, String key) throws IllegalArgumentException {
+    public void commitNpc(String name, NpcRole role, String key) throws IllegalArgumentException {
         StructNpcDB npc = draftNpc.get(key);
         if (npc != null) {
             npc.setName(name);
+            npc.setRoleId(role.getRoleId());
             int id = context.save(npc);
             load(id);
         } else {
@@ -63,18 +64,22 @@ public class NpcServiceImpl extends BaseService implements NpcService {
     private void spawn(StructNpcDB model) {
         World w = Bukkit.getWorld(model.getWorld());
         if (w != null) {
-            Location spawnLocation = new Location(w, model.getX()+5, model.getY()-1, model.getZ());
-            w.spawnEntity(
-                spawnLocation,
-                EntityType.VILLAGER, CreatureSpawnEvent.SpawnReason.CUSTOM,
-                (e) -> {
-                    e.customName(Component.text(model.getName()));
-                    e.setCustomNameVisible(true);
-                    e.setMetadata("id", new FixedMetadataValue(getPlugin(), model.getId()));
-                    ((Villager) e).setAgeLock(true);
-                    register(new StructNpcImpl(model, e.getUniqueId()));
-                }
-            );
+            if (model.isAlive()) {
+                Location spawnLocation = new Location(w, model.getX(), model.getY(), model.getZ());
+                w.spawnEntity(
+                        spawnLocation,
+                        EntityType.VILLAGER, CreatureSpawnEvent.SpawnReason.CUSTOM,
+                        (e) -> {
+                            e.customName(Component.text(model.getName()));
+                            e.setCustomNameVisible(true);
+                            e.setMetadata("id", new FixedMetadataValue(getPlugin(), model.getId()));
+                            ((Villager) e).setAgeLock(true);
+                            register(new StructNpcImpl(model, e.getUniqueId()));
+                        }
+                );
+            } else {
+                System.out.println("Skip spawn of dead NPC. Name: " + model.getName());
+            }
         }
     }
 

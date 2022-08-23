@@ -38,21 +38,41 @@ public class TaskServiceImpl extends BaseService implements TaskService {
     }
 
     @Override
-    public void finalizeCurrent(UUID entityId) {
-        NpcTask task = currentTasks.get(entityId);
+    public Optional<Task> get(UUID entityId) {
+        Task task = currentTasks.get(entityId);
+        return task == null ? Optional.empty() : Optional.of(task);
+    }
+
+    @Override
+    public void finalize(UUID entityId) {
+        NpcTask task = currentTasks.remove(entityId);
         if (task != null) {
             task.end();
-            tasksQueues.get(entityId).remove(task);
-            currentTasks.remove(entityId);
+        }
+    }
+
+    @Override
+    public void block(UUID entityId) {
+        NpcTask task = currentTasks.remove(entityId);
+        if (task != null) {
+            task.end();
+            task.setBlocked(true);
+            if (blockedTasks.containsKey(entityId)) {
+                blockedTasks.get(entityId).add(task);
+            } else {
+                List<NpcTask> list = new ArrayList<>();
+                list.add(task);
+                blockedTasks.put(entityId, list);
+            }
         }
     }
 
     @Override
     public void startTopPriority(UUID entityId) {
-        stopCurrent(entityId);
+        postpone(entityId);
         PriorityQueue<NpcTask> queue = tasksQueues.get(entityId);
-        if (queue != null && queue.peek() != null) {
-            NpcTask task = queue.peek();
+        if (queue != null && !queue.isEmpty()) {
+            NpcTask task = queue.poll();
             currentTasks.put(entityId, task);
             task.start();
         }
@@ -94,23 +114,6 @@ public class TaskServiceImpl extends BaseService implements TaskService {
     }
 
     @Override
-    public void blockCurrent(UUID entityId) {
-        NpcTask task = currentTasks.remove(entityId);
-        tasksQueues.get(entityId).remove(task);
-        if (task != null) {
-            task.end();
-            task.setBlocked(true);
-            if (blockedTasks.containsKey(entityId)) {
-                blockedTasks.get(entityId).add(task);
-            } else {
-                List<NpcTask> list = new ArrayList<>();
-                list.add(task);
-                blockedTasks.put(entityId, list);
-            }
-        }
-    }
-
-    @Override
     public void setDefaultAI(Entity entity) {
         MobGoals goals = getPlugin().getServer().getMobGoals();
 
@@ -125,16 +128,11 @@ public class TaskServiceImpl extends BaseService implements TaskService {
         }
     }
 
-    @Override
-    public Optional<Task> getCurrent(UUID entityId) {
-        Task task = currentTasks.get(entityId);
-        return task == null ? Optional.empty() : Optional.of(task);
-    }
-
-    private void stopCurrent(UUID entityId) {
-        NpcTask task = currentTasks.get(entityId);
+    private void postpone(UUID entityId) {
+        NpcTask task = currentTasks.remove(entityId);
         if (task != null) {
             task.end();
+            tasksQueues.get(entityId).add(task);
         }
     }
 }

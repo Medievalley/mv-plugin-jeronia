@@ -8,11 +8,11 @@ import java.util.UUID;
 
 public interface TaskService extends Service {
     void add(NpcTask task);
-    void finalizeCurrent(UUID entityId);
+    Optional<Task> get(UUID entityId);
+    void finalize(UUID entityId);
+    void block(UUID entityId);
     void startTopPriority(UUID entityId);
     boolean shouldChangeTask(UUID entityId);
-    void blockCurrent(UUID entityId);
     void checkBlockedTasks(UUID entityId);
     void setDefaultAI(Entity entity);
-    Optional<Task> getCurrent(UUID entityId);
 }

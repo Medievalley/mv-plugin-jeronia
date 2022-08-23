@@ -29,7 +29,7 @@ public class DangerHandler implements Listener {
     public void NpcInDanger(NpcInDangerEvent event) {
         Mob entity = event.getEntity();
 
-        Optional<Task> task = taskService.getCurrent(entity.getUniqueId());
+        Optional<Task> task = taskService.get(entity.getUniqueId());
         if (task.isPresent() && task.get().getType() != TaskType.GO_SAFE) {
             npcService.bookSafeLoc(entity.getUniqueId()).ifPresent(safeLoc -> {
                 taskService.add(
@@ -47,7 +47,7 @@ public class DangerHandler implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void NpcInDanger(DangerIsGoneEvent event) {
         Entity entity = event.getEntity();
-        taskService.finalizeCurrent(entity.getUniqueId());
+        taskService.finalize(entity.getUniqueId());
         npcService.releaseSafeLoc(entity.getUniqueId());
     }
 }

@@ -31,8 +31,8 @@ public class NpcContextImpl extends Context implements NpcContext{
             QueryRunner run = new QueryRunner(getDataSource());
             ResultSetHandler<Integer> h = new ScalarHandler<>();
             String sql = String.format(
-                    "INSERT INTO struct_npc (x, y, z, struct_id, name) VALUES (%d, %d, %d, %d, '%s') returning id",
-                    npc.getX(), npc.getY(), npc.getZ(), npc.getStructId(), npc.getName());
+                    "INSERT INTO struct_npc (x, y, z, struct_id, role_id, name) VALUES (%d, %d, %d, %d, %d, '%s') returning id",
+                    npc.getX(), npc.getY(), npc.getZ(), npc.getStructId(), npc.getRoleId(), npc.getName());
 
             return run.insert(sql, h);
 

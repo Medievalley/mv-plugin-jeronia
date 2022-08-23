@@ -8,9 +8,7 @@ import java.util.Optional;
 public interface NpcContext {
 
     int save(StructNpcDB npc);
-
     List<StructNpcDB> get();
     List<StructNpcDB> getByStructId(int structId);
-
     Optional<StructNpcDB> get(int id);
 }

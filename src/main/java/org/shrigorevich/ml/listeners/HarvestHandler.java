@@ -58,12 +58,12 @@ public class HarvestHandler implements Listener {
                     updateStock(event.getEntity().getUniqueId()));
         }
 
-        taskService.finalizeCurrent(event.getEntity().getUniqueId());
+        taskService.finalize(event.getEntity().getUniqueId());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void OnUnableToHarvest(UnableToHarvestEvent event) {
-        taskService.blockCurrent(event.getEntity().getUniqueId());
+        taskService.block(event.getEntity().getUniqueId());
     }
 
     private void updateStock(UUID entityId) {

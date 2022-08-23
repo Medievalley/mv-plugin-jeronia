@@ -11,7 +11,10 @@ import org.shrigorevich.ml.domain.ai.TaskDataImpl;
 import org.shrigorevich.ml.domain.ai.TaskService;
 import org.shrigorevich.ml.domain.ai.TaskType;
 import org.shrigorevich.ml.domain.ai.goals.CustomGoal;
+import org.shrigorevich.ml.domain.npc.NpcRole;
 import org.shrigorevich.ml.domain.npc.NpcService;
+
+import javax.management.relation.Role;
 
 public class NpcExecutor implements CommandExecutor {
 
@@ -31,7 +34,8 @@ public class NpcExecutor implements CommandExecutor {
                     switch (args[0].toLowerCase()) {
                         case "c":
                         case "create":
-                            npcService.commitNpc(args[1], player.getName());
+                            NpcRole role = NpcRole.valueOf(args[2].toUpperCase());
+                            npcService.commitNpc(args[1], role, player.getName());
                             break;
                         case "cl":
                         case "clear":
@@ -50,9 +54,9 @@ public class NpcExecutor implements CommandExecutor {
                             break;
 
                         case "test":
-                            Villager e = (Villager) player.getWorld().spawnEntity(player.getLocation().add(10, 0, 0), EntityType.VILLAGER);
+                            Giant e = (Giant) player.getWorld().spawnEntity(player.getLocation().add(10, 0, 0), EntityType.GIANT);
 
-                            Goal<Mob> goal = new CustomGoal(npcService.getPlugin(), new TaskDataImpl(TaskType.HARVEST), e, player);
+                            Goal<Mob> goal = new CustomGoal(npcService.getPlugin(), new TaskDataImpl(TaskType.DEFAULT), e, player);
 
                             npcService.getPlugin().getServer().getMobGoals().addGoal(e, 1, goal);
                             break;
