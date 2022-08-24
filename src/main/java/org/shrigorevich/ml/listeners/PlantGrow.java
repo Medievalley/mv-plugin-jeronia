@@ -31,7 +31,6 @@ public class PlantGrow implements Listener {
         Location l = b.getLocation();
 
         structureService.getByLocation(b.getLocation()).ifPresent((struct) -> {
-            //System.out.printf("Grown at struct: %d %d %d. Age: %s%n", l.getBlockX(), l.getBlockY(), l.getBlockZ(), ((Ageable) b.getBlockData()).getAge());
             if (isFullyGrown(b) && struct.getType() == StructureType.LORE) {
                 LoreStructure loreStructure = (LoreStructure) struct;
                 Optional<Villager> e = loreStructure.getLaborer();

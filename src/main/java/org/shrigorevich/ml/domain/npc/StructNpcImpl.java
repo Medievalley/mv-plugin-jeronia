@@ -14,9 +14,9 @@ public class StructNpcImpl implements StructNpc {
     private NpcRole role;
 
     public StructNpcImpl(StructNpcDB model, UUID entityId) {
-        this.x = model.getX();
-        this.y = model.getY();
-        this.z = model.getZ();
+        this.x = model.getWorkX();
+        this.y = model.getWorkY();
+        this.z = model.getWorkZ();
         this.name = model.getName();
         this.world = model.getWorld();
         this.structId = model.getStructId();

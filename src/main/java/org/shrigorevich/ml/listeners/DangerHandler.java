@@ -47,7 +47,11 @@ public class DangerHandler implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void NpcInDanger(DangerIsGoneEvent event) {
         Entity entity = event.getEntity();
-        taskService.finalize(entity.getUniqueId());
-        npcService.releaseSafeLoc(entity.getUniqueId());
+        taskService.get(entity.getUniqueId()).ifPresent(task -> {
+            if (task.getType() != TaskType.HOLD_SPAWN) {
+                taskService.finalize(entity.getUniqueId());
+                npcService.releaseSafeLoc(entity.getUniqueId());
+            }
+        });
     }
 }

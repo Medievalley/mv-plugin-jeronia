@@ -68,6 +68,11 @@ public class TaskServiceImpl extends BaseService implements TaskService {
     }
 
     @Override
+    public void clear(UUID entityId) {
+        tasksQueues.remove(entityId);
+    }
+
+    @Override
     public void startTopPriority(UUID entityId) {
         postpone(entityId);
         PriorityQueue<NpcTask> queue = tasksQueues.get(entityId);

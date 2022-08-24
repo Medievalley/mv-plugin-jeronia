@@ -14,8 +14,6 @@ import org.shrigorevich.ml.domain.ai.goals.CustomGoal;
 import org.shrigorevich.ml.domain.npc.NpcRole;
 import org.shrigorevich.ml.domain.npc.NpcService;
 
-import javax.management.relation.Role;
-
 public class NpcExecutor implements CommandExecutor {
 
     private final NpcService npcService;
@@ -48,7 +46,7 @@ public class NpcExecutor implements CommandExecutor {
                         case "reload":
                             if (args.length > 1) {
                                 int id = Integer.parseInt(args[1]);
-                                npcService.reload(id);
+                                npcService.reloadByStruct(id);
                             }
                             npcService.reload();
                             break;

@@ -3,16 +3,22 @@ package org.shrigorevich.ml.domain.npc.models;
 public interface StructNpcDB {
 
     int getId();
-    int getX();
-    int getY();
-    int getZ();
+    int getSpawnX();
+    int getSpawnY();
+    int getSpawnZ();
+    int getWorkX();
+    int getWorkY();
+    int getWorkZ();
     String getName();
     int getStructId();
     String getWorld();
 
-    void setX(int x);
-    void setY(int y);
-    void setZ(int z);
+    void setWorkX(int x);
+    void setWorkY(int y);
+    void setWorkZ(int z);
+    void setSpawnX(int x);
+    void setSpawnY(int y);
+    void setSpawnZ(int z);
     void setName(String name);
     void setStructId(int structId);
     void setWorld(String world);

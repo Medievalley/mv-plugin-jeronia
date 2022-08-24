@@ -2,7 +2,8 @@ package org.shrigorevich.ml.domain.npc.models;
 
 public class StructNpcModel implements StructNpcDB{
 
-    private int x, y, z, structId, id, roleId;
+    private int structId, id, roleId;
+    private int spawnX, spawnY, spawnZ, workX, workY, workZ;
     private String name, world;
     private boolean alive;
 
@@ -12,18 +13,32 @@ public class StructNpcModel implements StructNpcDB{
     }
 
     @Override
-    public int getX() {
-        return this.x;
+    public int getWorkX() {
+        return this.workX;
     }
 
     @Override
-    public int getY() {
-        return this.y;
+    public int getWorkY() {
+        return this.workY;
     }
 
     @Override
-    public int getZ() {
-        return this.z;
+    public int getWorkZ() {
+        return this.workZ;
+    }
+    @Override
+    public int getSpawnX() {
+        return this.spawnX;
+    }
+
+    @Override
+    public int getSpawnY() {
+        return this.spawnY;
+    }
+
+    @Override
+    public int getSpawnZ() {
+        return this.spawnZ;
     }
 
     @Override
@@ -42,18 +57,32 @@ public class StructNpcModel implements StructNpcDB{
     }
 
     @Override
-    public void setX(int x) {
-        this.x = x;
+    public void setWorkX(int x) {
+        this.workX = x;
     }
 
     @Override
-    public void setY(int y) {
-        this.y = y;
+    public void setWorkY(int y) {
+        this.workY = y;
     }
 
     @Override
-    public void setZ(int z) {
-        this.z = z;
+    public void setWorkZ(int z) {
+        this.workZ = z;
+    }
+    @Override
+    public void setSpawnX(int x) {
+        this.spawnX = x;
+    }
+
+    @Override
+    public void setSpawnY(int y) {
+        this.spawnY = y;
+    }
+
+    @Override
+    public void setSpawnZ(int z) {
+        this.spawnZ = z;
     }
 
     @Override

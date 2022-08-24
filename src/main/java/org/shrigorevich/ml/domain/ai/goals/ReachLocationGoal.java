@@ -38,7 +38,6 @@ public class ReachLocationGoal extends BaseGoal implements Goal<Mob> {
         System.out.println(String.format("REACH_LOCATION activated. Task: %s. Target location: %d %d %d",
                 getData().getType(), target.getBlockX(), target.getBlockY(), target.getBlockZ()));
         getMob().getPathfinder().moveTo(target, 0.7D);
-        Location fp = getMob().getPathfinder().getCurrentPath().getFinalPoint();
     }
 
     @Override

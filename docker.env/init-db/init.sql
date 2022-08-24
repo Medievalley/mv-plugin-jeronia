@@ -81,6 +81,13 @@ CREATE TABLE IF NOT EXISTS struct_block (
     broken BOOLEAN DEFAULT false NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS location (
+    id SERIAL PRIMARY KEY,
+    x integer NOT NULL,
+    y integer NOT NULL,
+    z integer NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS npc_role (
     id INTEGER PRIMARY KEY,
     name VARCHAR(20) NOT NULL,
@@ -89,13 +96,12 @@ CREATE TABLE IF NOT EXISTS npc_role (
 
 CREATE table IF NOT EXISTS struct_npc (
     id SERIAL PRIMARY KEY,
-    role_id INTEGER references npc_role(id) ON DELETE SET NULL ON UPDATE CASCADE,
-    x integer NOT NULL,
-    y integer NOT NULL,
-    z integer NOT NULL,
+    role_id INTEGER references npc_role(id) ON DELETE SET NULL ON UPDATE CASCADE NOT NULL,
+    spawn INTEGER references location(id) ON DELETE SET NULL ON UPDATE CASCADE NOT NULL,
+    work INTEGER references location(id) ON DELETE SET NULL ON UPDATE CASCADE NOT NULL,
     name VARCHAR(30) NOT NULL,
     struct_id INTEGER references struct (id) ON DELETE CASCADE ON UPDATE CASCADE,
-    alive BOOLEAN DEFAULT true NOT NULL,
+    alive BOOLEAN DEFAULT true NOT NULL
 );
 
 INSERT INTO role VALUES (1, 'Admin', 'Most privileged role');

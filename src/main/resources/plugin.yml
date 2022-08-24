@@ -13,5 +13,7 @@ commands:
     description: "Npc management"
     usage: "/<command> create \n
             /<command> clear"
-
+  score:
+    description: "Show scoreboards"
+    usage: "/<command> village"
 

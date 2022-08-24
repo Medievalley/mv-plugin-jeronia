@@ -27,13 +27,21 @@ public class NpcContextImpl extends Context implements NpcContext{
     @Override
     public int save(StructNpcDB npc) {
         try {
-
             QueryRunner run = new QueryRunner(getDataSource());
             ResultSetHandler<Integer> h = new ScalarHandler<>();
-            String sql = String.format(
-                    "INSERT INTO struct_npc (x, y, z, struct_id, role_id, name) VALUES (%d, %d, %d, %d, %d, '%s') returning id",
-                    npc.getX(), npc.getY(), npc.getZ(), npc.getStructId(), npc.getRoleId(), npc.getName());
+            String workLocSql = String.format(
+                    "INSERT INTO location (x, y, z) VALUES (%d, %d, %d) returning id",
+                    npc.getWorkX(), npc.getWorkY(), npc.getWorkZ());
+            String spawnLocSql = String.format(
+                    "INSERT INTO location (x, y, z) VALUES (%d, %d, %d) returning id",
+                    npc.getSpawnX(), npc.getSpawnY(), npc.getSpawnZ());
 
+            int workLocId = run.insert(workLocSql, h);
+            int spawnLocId = run.insert(spawnLocSql, h);
+
+            String sql = String.format(
+                    "INSERT INTO struct_npc (name, role_id, struct_id, spawn, work) VALUES ('%s', %d, %d, %d, %d) returning id",
+                    npc.getName(), npc.getRoleId(), npc.getStructId(), spawnLocId, workLocId);
             return run.insert(sql, h);
 
         } catch (SQLException ex) {
@@ -47,7 +55,12 @@ public class NpcContextImpl extends Context implements NpcContext{
         try {
             QueryRunner run = new QueryRunner(getDataSource());
             ResultSetHandler<List<StructNpcDB>> h = new BeanListHandler(StructNpcModel.class);
-            String sql = "select n.id, x, y, z, struct_id as structId, n.alive, n.role_id as roleId, name, s.world from struct_npc n join struct s on s.id = n.struct_id";
+            String sql = "select n.id, n.name, struct_id as structId, n.alive, n.role_id as roleId, s.world,\n" +
+            "sl.x as spawnX, sl.y as spawnY, sl.z as spawnZ, wl.x as workX, wl.y as workY, wl.z as workZ\n" +
+            "from struct_npc n \n" +
+            "join struct s on s.id = n.struct_id\n" +
+            "join location sl on sl.id = n.spawn\n" +
+            "join location wl on wl.id = n.work";
             return run.query(sql, h);
         } catch (SQLException ex) {
             getPlugin().getLogger().severe("NpcContext. Get all: " + ex);
@@ -60,8 +73,14 @@ public class NpcContextImpl extends Context implements NpcContext{
         try {
             QueryRunner run = new QueryRunner(getDataSource());
             ResultSetHandler<List<StructNpcDB>> h = new BeanListHandler(StructNpcModel.class);
-            String sql = String.format("select n.id, x, y, z, struct_id as structId, n.alive, n.role_id as roleId, name, s.world \n" +
-                    "from struct_npc n join struct s on s.id = n.struct_id where struct_id = %d", structId);
+            String sql = String.format(
+                    "select n.id, n.name, struct_id as structId, n.alive, n.role_id as roleId, s.world,\n" +
+                    "sl.x as spawnX, sl.y as spawnY, sl.z as spawnZ, wl.x as workX, wl.y as workY, wl.z as workZ\n" +
+                    "from struct_npc n \n" +
+                    "join struct s on s.id = n.struct_id\n" +
+                    "join location sl on sl.id = n.spawn\n" +
+                    "join location wl on wl.id = n.work\n" +
+                    "where n.struct_id = %d", structId);
 
             return run.query(sql, h);
         } catch (SQLException ex) {
@@ -75,7 +94,14 @@ public class NpcContextImpl extends Context implements NpcContext{
         try {
             QueryRunner run = new QueryRunner(getDataSource());
             ResultSetHandler<StructNpcDB> h = new BeanHandler(StructNpcModel.class);
-            String sql = String.format("select n.id, x, y, z, struct_id as structid, name, s.world from struct_npc n join struct s on s.id = n.struct_id where n.id = %d", id);
+            String sql = String.format(
+                    "select n.id, n.name, struct_id as structId, n.alive, n.role_id as roleId, s.world,\n" +
+                    "sl.x as spawnX, sl.y as spawnY, sl.z as spawnZ, wl.x as workX, wl.y as workY, wl.z as workZ\n" +
+                    "from struct_npc n \n" +
+                    "join struct s on s.id = n.struct_id\n" +
+                    "join location sl on sl.id = n.spawn\n" +
+                    "join location wl on wl.id = n.work\n" +
+                    "where n.id = %d", id);
 
             StructNpcDB s = run.query(sql, h);
             return s == null ? Optional.empty() : Optional.of(s);

@@ -39,13 +39,23 @@ public class NpcServiceImpl extends BaseService implements NpcService {
     @Override
     public void draftNpc(int x, int y, int z, int structId, String key, MsgCallback cb) {
         StructNpcDB npc = new StructNpcModel();
-        npc.setX(x);
-        npc.setY(y);
-        npc.setZ(z);
+        npc.setWorkX(x);
+        npc.setWorkY(y);
+        npc.setWorkZ(z);
         npc.setStructId(structId);
         draftNpc.put(key, npc);
-        cb.onDraft(String.format("Draft npc created. x: %d, y: %d, z: %d, Struct: %d",
-                npc.getX(), npc.getY(), npc.getZ(), npc.getStructId()));
+        cb.onDraft(String.format("Draft npc created. Work loc: %d %d %d, Struct: %d",
+                npc.getWorkX(), npc.getWorkY(), npc.getWorkZ(), npc.getStructId()));
+    }
+
+    @Override
+    public void draftNpcSetSpawn(int x, int y, int z, String key, MsgCallback cb) {
+        StructNpcDB npc = draftNpc.get(key);
+        npc.setSpawnX(x);
+        npc.setSpawnY(y);
+        npc.setSpawnZ(z);
+        cb.onDraft(String.format("Draft npc spawn loc: %d %d %d",
+                npc.getSpawnX(), npc.getSpawnY(), npc.getSpawnZ()));
     }
 
     @Override
@@ -64,22 +74,18 @@ public class NpcServiceImpl extends BaseService implements NpcService {
     private void spawn(StructNpcDB model) {
         World w = Bukkit.getWorld(model.getWorld());
         if (w != null) {
-            if (model.isAlive()) {
-                Location spawnLocation = new Location(w, model.getX(), model.getY(), model.getZ());
-                w.spawnEntity(
-                        spawnLocation,
-                        EntityType.VILLAGER, CreatureSpawnEvent.SpawnReason.CUSTOM,
-                        (e) -> {
-                            e.customName(Component.text(model.getName()));
-                            e.setCustomNameVisible(true);
-                            e.setMetadata("id", new FixedMetadataValue(getPlugin(), model.getId()));
-                            ((Villager) e).setAgeLock(true);
-                            register(new StructNpcImpl(model, e.getUniqueId()));
-                        }
-                );
-            } else {
-                System.out.println("Skip spawn of dead NPC. Name: " + model.getName());
-            }
+            Location spawnLocation = new Location(w, model.getSpawnX(), model.getSpawnY(), model.getSpawnZ());
+            w.spawnEntity(
+                spawnLocation,
+                EntityType.VILLAGER, CreatureSpawnEvent.SpawnReason.CUSTOM,
+                (e) -> {
+                    e.customName(Component.text(model.getName()));
+                    e.setCustomNameVisible(true);
+                    e.setMetadata("id", new FixedMetadataValue(getPlugin(), model.getId()));
+                    ((Villager) e).setAgeLock(true);
+                    register(new StructNpcImpl(model, e.getUniqueId()));
+                }
+            );
         }
     }
 
@@ -94,7 +100,7 @@ public class NpcServiceImpl extends BaseService implements NpcService {
         }
     }
 
-    private void load(int id) {
+    public void load(int id) {
         Optional<StructNpcDB> npc = context.get(id);
         npc.ifPresent(this::spawn);
     }
@@ -102,11 +108,6 @@ public class NpcServiceImpl extends BaseService implements NpcService {
     /** Called when the plugin stops */
     @Override
     public void unload() {
-//        for (StructNpc npc : npcList.values()) {
-//            Entity e = Bukkit.getEntity(npc.getEntityId());
-//            if (e != null) e.remove();
-//            System.out.printf("Npc unloaded. Id: %d%n", e.getMetadata("id").get(0).asInt());
-//        }
         List<Entity> entities = Bukkit.getWorld("world").getEntities(); //TODO: fix hardcoded value
         for (Entity v : entities) {
             if (v.getEntitySpawnReason() == CreatureSpawnEvent.SpawnReason.CUSTOM) {
@@ -114,6 +115,11 @@ public class NpcServiceImpl extends BaseService implements NpcService {
             }
         }
         npcList.clear();
+    }
+
+    @Override
+    public void remove(UUID entityId) {
+        npcList.remove(entityId);
     }
 
     @Override
@@ -130,7 +136,7 @@ public class NpcServiceImpl extends BaseService implements NpcService {
     }
 
     @Override
-    public void reload(int structId) {
+    public void reloadByStruct(int structId) {
         List<StructNpc> structNpcList = npcList.values().stream().filter(n -> n.getStructId() == structId).collect(Collectors.toList());
         for (StructNpc npc : structNpcList) {
             Entity e = Bukkit.getEntity(npc.getEntityId());
@@ -162,13 +168,17 @@ public class NpcServiceImpl extends BaseService implements NpcService {
 
     @Override
     public Optional<SafeLoc> bookSafeLoc(UUID entityId) {
-        SafeLoc loc = safeLocs.poll();
-        if (loc != null) {
-            bookedSafeLocs.put(entityId, loc);
-            System.out.println("Safe loc booked. Size: " + safeLocs.size());
-            return Optional.of(loc);
+        if (!bookedSafeLocs.containsKey(entityId)) {
+            SafeLoc loc = safeLocs.poll();
+            if (loc != null) {
+                bookedSafeLocs.put(entityId, loc);
+                System.out.println("Safe loc booked. Size: " + safeLocs.size());
+                return Optional.of(loc);
+            } else {
+                System.out.println("No safe locations");
+                return Optional.empty();
+            }
         } else {
-            System.out.println("No safe locations");
             return Optional.empty();
         }
     }
