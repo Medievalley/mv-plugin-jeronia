@@ -4,7 +4,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Villager;
-import org.shrigorevich.ml.Ml;
 import org.shrigorevich.ml.db.contexts.StructureContext;
 import org.shrigorevich.ml.domain.structure.models.*;
 
@@ -61,14 +60,9 @@ public class LoreStructImpl extends StructureImpl implements LoreStructure {
     }
 
     @Override
-    public Optional<StructBlockModel> getBrokenBlock() {
-        return Optional.empty();
-    }
-
-    @Override
     public void updateVolume(List<StructBlockModel> blocks) {
 
-    }
+    } //TODO: replace class to interface
 
     @Override
     public void restoreBlock(int x, int y, int z) {
@@ -88,13 +82,9 @@ public class LoreStructImpl extends StructureImpl implements LoreStructure {
     public void restore() {
         context.restore(getId());
         List<StructBlockDB> structBlocks = context.getStructBlocks(getId());
-        for(int i = 0; i < structBlocks.size(); i ++) {
-            StructBlockDB sb = structBlocks.get(i);
+        for (StructBlockDB sb : structBlocks) {
             BlockData bd = Bukkit.createBlockData(sb.getBlockData());
-            Block b = getWorld().getBlockAt(
-                    sb.getX() + getX1(),
-                    sb.getY() + getY1(),
-                    sb.getZ() + getZ1());
+            Block b = getWorld().getBlockAt(sb.getX(), sb.getY(), sb.getZ());
             b.setBlockData(bd);
         }
     }
@@ -119,6 +109,11 @@ public class LoreStructImpl extends StructureImpl implements LoreStructure {
         context.saveStructBlocks(structBlocks);
         this.volumeId = volumeId;
         this.restore();
+    }
+
+    @Override
+    public List<StructBlockDB> getStructBlocks() {
+        return context.getStructBlocks(getId());
     }
 
     @Override

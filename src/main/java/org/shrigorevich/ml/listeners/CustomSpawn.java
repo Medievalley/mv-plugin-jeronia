@@ -1,7 +1,8 @@
 package org.shrigorevich.ml.listeners;
 
 import org.bukkit.Location;
-import org.bukkit.entity.Entity;
+import org.bukkit.block.Block;
+import org.bukkit.block.data.Ageable;
 import org.bukkit.entity.Mob;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
@@ -11,13 +12,18 @@ import org.shrigorevich.ml.domain.ai.TaskService;
 import org.shrigorevich.ml.domain.ai.TaskType;
 import org.shrigorevich.ml.domain.ai.tasks.ReachLocationTask;
 import org.shrigorevich.ml.domain.ai.TaskPriority;
+import org.shrigorevich.ml.domain.npc.NpcRole;
 import org.shrigorevich.ml.domain.npc.NpcService;
 import org.shrigorevich.ml.domain.npc.StructNpc;
 import org.shrigorevich.ml.domain.structure.LoreStructure;
 import org.shrigorevich.ml.domain.structure.StructureService;
+import org.shrigorevich.ml.domain.structure.models.StructBlockDB;
 import org.shrigorevich.ml.events.CustomSpawnEvent;
 
+import java.util.List;
 import java.util.Optional;
+
+import static org.shrigorevich.ml.common.Utils.isStructPlant;
 
 public class CustomSpawn implements Listener {
     private final TaskService taskService;
@@ -47,19 +53,43 @@ public class CustomSpawn implements Listener {
     }
 
     private void assignToStruct(StructNpc npc, Villager entity) {
-        Optional<LoreStructure> struct = structService.getById(npc.getStructId());
-        struct.ifPresent(loreStructure -> loreStructure.setLaborer(entity));
+        structService.getById(npc.getStructId()).ifPresent(loreStructure -> {
+            loreStructure.setLaborer(entity);
+            if (npc.getRole() == NpcRole.HARVESTER) {
+                scanStructForTasks(loreStructure, entity);
+            }
+        });
     }
 
     private void setTask(StructNpc npc, Mob entity) {
         Location location = new Location(entity.getWorld(), npc.getX(), npc.getY(), npc.getZ());
         taskService.add(
-                new ReachLocationTask(
-                        taskService.getPlugin(),
-                        TaskType.HOLD_SPAWN,
-                        TaskPriority.LOW,
-                        entity, location
-                )
+            new ReachLocationTask(
+                taskService.getPlugin(),
+                TaskType.HOLD_SPAWN,
+                TaskPriority.LOW,
+                entity, location
+            )
         );
+    }
+
+    private void scanStructForTasks(LoreStructure structure, Villager entity) {
+        List<StructBlockDB> structBlocks = structure.getStructBlocks();
+        structBlocks.forEach(b -> {
+            Block wBlock = structure.getWorld().getBlockAt(b.getX(), b.getY(), b.getZ());
+            if (isStructPlant(wBlock.getType())) {
+                Ageable plant = (Ageable) wBlock.getBlockData();
+                if (plant.getAge() == plant.getMaximumAge() ) { //TODO: get from config
+                    taskService.add(
+                        new ReachLocationTask(
+                            taskService.getPlugin(),
+                            TaskType.HARVEST,
+                            TaskPriority.MIDDLE,
+                            entity, wBlock.getLocation()
+                        )
+                    );
+                }
+            }
+        });
     }
 }

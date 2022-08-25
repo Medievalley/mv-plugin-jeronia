@@ -200,9 +200,11 @@ public class StructContextImpl implements StructureContext { //TODO: extends abs
             QueryRunner run = new QueryRunner(dataSource);
             ResultSetHandler<List<StructBlockDB>> h = new BeanListHandler(StructBlockModel.class);
             String sql = String.format(
-                    "select s.id, v.id as volumeBlockId, v.type, v.block_data as blockData, v.x, v.y, v.z, s.broken, s.trigger_destruction as triggerDestruction \n" +
-                    "from struct_block s join volume_block v \n" +
-                    "ON s.volume_block_id=v.id \n" +
+                    "select b.id, v.id as volumeBlockId, v.type, v.block_data as blockData, b.broken, b.trigger_destruction as triggerDestruction,\n" +
+                    "v.x+s.x1 as x, v.y+s.y1 as y, v.z+s.z1 as z\n" +
+                    "from struct_block b \n" +
+                    "join volume_block v ON b.volume_block_id=v.id\n" +
+                    "join struct s ON b.struct_id = s.id\n" +
                     "where struct_id=%d", structId);
 
             return run.query(sql, h);

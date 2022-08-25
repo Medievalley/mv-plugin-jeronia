@@ -44,12 +44,12 @@ public class DefaultGoal implements Goal<Villager> {
 
     @Override
     public void start() {
-        System.out.println("DefaultGoal activated");
+//        System.out.println("DefaultGoal activated");
     }
 
     @Override
     public void stop() {
-        System.out.println("DefaultGoal stopped");
+//        System.out.println("DefaultGoal stopped");
     }
 
     @Override

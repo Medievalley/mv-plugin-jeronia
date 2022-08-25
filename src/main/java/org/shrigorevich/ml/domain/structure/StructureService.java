@@ -4,8 +4,6 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.shrigorevich.ml.domain.Service;
 import org.shrigorevich.ml.domain.callbacks.IResultCallback;
-import org.shrigorevich.ml.domain.structure.LoreStructure;
-import org.shrigorevich.ml.domain.structure.Structure;
 import org.shrigorevich.ml.domain.users.User;
 
 import java.util.ArrayList;
