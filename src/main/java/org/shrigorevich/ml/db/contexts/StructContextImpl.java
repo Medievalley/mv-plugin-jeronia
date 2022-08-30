@@ -62,7 +62,7 @@ public class StructContextImpl implements StructureContext { //TODO: extends abs
         try {
             QueryRunner run = new QueryRunner(dataSource);
             ResultSetHandler<LoreStructModel> h = new BeanHandler(LoreStructModel.class);
-            String sql = String.format("select ls.struct_id as id, ls.name, ls.volume_id as volumeid, s.type_id as typeid, s.world, s.x1, s.y1, s.z1, s.x2, s.y2, s.z2\n" +
+            String sql = String.format("select ls.struct_id as id, ls.name, ls.volume_id as volumeId, ls.priority, s.type_id as typeId, s.world, s.x1, s.y1, s.z1, s.x2, s.y2, s.z2\n" +
                     "from lore_struct ls JOIN struct s ON s.id = ls.struct_id where ls.struct_id=%d ", id);
 
             LoreStructModel s = run.query(sql, h);
@@ -129,7 +129,7 @@ public class StructContextImpl implements StructureContext { //TODO: extends abs
             QueryRunner run = new QueryRunner(dataSource);
             ResultSetHandler<List<LoreStructDB>> h = new BeanListHandler(LoreStructModel.class);
             String sql = String.format(
-                    "select ls.struct_id as id, ls.name, ls.volume_id as volumeid, ls.stock, s.type_id as typeid, \n" +
+                    "select ls.struct_id as id, ls.name, ls.volume_id as volumeId, ls.priority, ls.stock, s.type_id as typeId, \n" +
                     "s.world, s.x1, s.y1, s.z1, s.x2, s.y2, s.z2,\n" +
                     "(select count(id)::int from struct_block where struct_id=s.id and broken=true) as brokenBlocks,\n" +
                     "(select count(id)::int from struct_block where struct_id=s.id and broken=false) as blocks\n" +

@@ -10,12 +10,10 @@ public abstract class Context {
 
     private final Plugin plugin;
     private final DataSource dataSource;
-    private final BukkitScheduler scheduler;
 
     protected Context(Plugin plugin, DataSource dataSource) {
         this.plugin = plugin;
         this.dataSource = dataSource;
-        this.scheduler = Bukkit.getScheduler();
     }
 
     public Plugin getPlugin() {
@@ -24,9 +22,5 @@ public abstract class Context {
 
     public DataSource getDataSource() {
         return dataSource;
-    }
-
-    public BukkitScheduler getScheduler() {
-        return scheduler;
     }
 }

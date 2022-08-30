@@ -18,7 +18,7 @@ public class ReachLocationTask extends BaseTask implements NpcTask {
     public ReachLocationTask(Plugin plugin, TaskType type, TaskPriority priority, Mob entity, Location l) {
         super(plugin, type, priority, entity);
         this.target = l;
-        System.out.printf("Task added: %s. At: %d %d %d%n", type, l.getBlockX(), l.getBlockY(), l.getBlockZ());
+//        System.out.printf("Task added: %s. At: %d %d %d%n", type, l.getBlockX(), l.getBlockY(), l.getBlockZ()); //TODO: comment
     }
     @Override
     public void start() {

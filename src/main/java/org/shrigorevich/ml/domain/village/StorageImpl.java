@@ -1,29 +1,22 @@
 package org.shrigorevich.ml.domain.village;
 
 import org.bukkit.Material;
+import org.shrigorevich.ml.domain.village.models.ResourceModel;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-public class TreasuryImpl implements Treasury {
-
-    private int deposit;
+public class StorageImpl implements Storage {
     private final Map<Material, Integer> resources;
 
-    public TreasuryImpl(int deposit, Map<Material, Integer> resources) {
-        this.deposit = deposit;
-        this.resources = resources;
-    }
-
-    @Override
-    public int getDeposit() {
-        return deposit;
-    }
-
-    @Override
-    public void updateDeposit(int number) {
-        deposit+=number;
-        System.out.println("Deposit: " + deposit);
-    }
+    public StorageImpl(List<ResourceModel> resList) {
+        this.resources = new HashMap<>();
+        for (ResourceModel model : resList) {
+            Material type = Material.valueOf(model.getType());
+            resources.put(type, model.getNumber());
+        }
+     }
 
     @Override
     public int getResource(Material material) {

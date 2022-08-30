@@ -44,12 +44,13 @@ public final class Ml extends JavaPlugin {
         UserContext userContext = new UserContextImpl(this, dataSource);
         StructureContext structureContext = new StructContextImpl(this, dataSource);
         NpcContext npcContext = new NpcContextImpl(this, dataSource);
+        VillageContext villageContext = new VillageContextImpl(this, dataSource);
 
         userService = new UserService(userContext);
         structService = new StructureServiceImpl(structureContext, this);
         npcService = new NpcServiceImpl(npcContext, this);
         taskService = new TaskServiceImpl(this);
-        villageService = new VillageServiceImpl(this);
+        villageService = new VillageServiceImpl(this, villageContext);
     }
     @Override
     public void onEnable() {
@@ -85,6 +86,7 @@ public final class Ml extends JavaPlugin {
         pm.registerEvents(new ReachLocationHandler(this), this);
         pm.registerEvents(new DangerHandler(taskService, npcService), this);
         pm.registerEvents(new EntityDeathHandler(npcService, villageService, taskService, structService), this);
+        pm.registerEvents(new StructHealthHandler(structService), this);
 
     }
 

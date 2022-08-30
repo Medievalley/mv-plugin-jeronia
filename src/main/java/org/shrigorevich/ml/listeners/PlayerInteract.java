@@ -17,6 +17,7 @@ import org.bukkit.inventory.InventoryHolder;
 import org.shrigorevich.ml.domain.ai.TaskService;
 import org.shrigorevich.ml.domain.npc.NpcService;
 import org.shrigorevich.ml.domain.npc.SafeLocImpl;
+import org.shrigorevich.ml.domain.structure.LoreStructure;
 import org.shrigorevich.ml.domain.structure.StructureService;
 import org.shrigorevich.ml.domain.structure.Structure;
 import org.shrigorevich.ml.events.DangerIsGoneEvent;
@@ -94,14 +95,16 @@ public class PlayerInteract implements Listener {
         }
     }
     private void draftNpc(PlayerInteractEvent event) {
-        Player p = event.getPlayer();
-        Location l = event.getClickedBlock().getLocation();
+        if (event.getClickedBlock() != null) {
+            Player p = event.getPlayer();
+            Location l = event.getClickedBlock().getLocation();
 
-        Optional<Structure> s = structureService.getByLocation(l);
+            Optional<LoreStructure> s = structureService.getByLocation(l);
 
-        s.ifPresent(structure -> npcService.draftNpc(
-                l.getBlockX(), l.getBlockY() + 1, l.getBlockZ(),
-                structure.getId(), p.getName(), (p::sendMessage)));
+            s.ifPresent(structure -> npcService.draftNpc(
+                    l.getBlockX(), l.getBlockY() + 1, l.getBlockZ(),
+                    structure.getId(), p.getName(), (p::sendMessage)));
+        }
     }
     private void draftNpcSetSpawn(PlayerInteractEvent event) {
         Player p = event.getPlayer();

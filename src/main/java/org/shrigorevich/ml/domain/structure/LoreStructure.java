@@ -5,7 +5,7 @@ import org.bukkit.entity.Villager;
 
 import java.util.Optional;
 
-public interface LoreStructure extends Structure, Nameable, Volumeable {
+public interface LoreStructure extends Structure, Volumeable, Comparable<LoreStructure> {
 
     long getDestructionPercent();
     void setDestroyedPercent(int destroyedPercent);
@@ -18,4 +18,5 @@ public interface LoreStructure extends Structure, Nameable, Volumeable {
     void updateFoodStock(int foodAmount);
     Optional<Villager> getLaborer();
     void setLaborer(Villager e);
+    int getPriority();
 }

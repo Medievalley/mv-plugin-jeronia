@@ -2,10 +2,9 @@ package org.shrigorevich.ml.domain.structure.models;
 
 public class LoreStructModel extends StructModel implements LoreStructDB {
     public int volumeId;
-    /** ID of base structure */
     public String name;
     public boolean destructible;
-    public int blocks, brokenBlocks, stock;
+    public int blocks, brokenBlocks, stock, priority;
     public LoreStructModel() {
         super();
     }
@@ -49,5 +48,13 @@ public class LoreStructModel extends StructModel implements LoreStructDB {
     @Override
     public void setStock(int stock) {
         this.stock = stock;
+    }
+
+    @Override
+    public int getPriority() {
+        return priority;
+    }
+    public void setPriority(int priority) {
+        this.priority = priority;
     }
 }

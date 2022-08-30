@@ -32,12 +32,12 @@ public class EntityDeathHandler implements Listener {
         if (entity.getEntitySpawnReason() == CreatureSpawnEvent.SpawnReason.CUSTOM) {
             npcService.getById(entity.getUniqueId()).ifPresent(npc -> {
                 clearNpcData(npc);
-                if (villageService.getDeposit() >= 30) { //TODO: get from config
-                    npcService.load(npc.getId());
-                    villageService.updateDeposit(-30);
-                } else {
-                    System.out.println("Not enough gold");
-                }
+//                if (villageService.getDeposit() >= 30) { //TODO: get from config
+//                    npcService.load(npc.getId());
+//                    villageService.updateDeposit(-30);
+//                } else {
+//                    System.out.println("Not enough gold");
+//                }
             });
         }
     }

@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Villager;
+import org.jetbrains.annotations.NotNull;
 import org.shrigorevich.ml.db.contexts.StructureContext;
 import org.shrigorevich.ml.domain.structure.models.*;
 
@@ -18,7 +19,8 @@ public class LoreStructImpl extends StructureImpl implements LoreStructure {
     private int destroyedPercent;
     private final StructureContext context;
     private Villager laborer;
-    private int foodStock; //TODO: store to database and load with rest data
+    private final int priority;
+    private int foodStock;
 
     public LoreStructImpl(LoreStructDB m, StructureContext context) {
         super(m);
@@ -27,6 +29,7 @@ public class LoreStructImpl extends StructureImpl implements LoreStructure {
         this.destructible = m.isDestructible();
         this.foodStock = m.getStock();
         this.context = context;
+        this.priority = m.getPriority();
 
         if (m.getBlocks() > 0 && m.getBrokenBlocks() > 0) {
             this.destroyedPercent = m.getBrokenBlocks() * 100 / m.getBlocks();
@@ -49,7 +52,6 @@ public class LoreStructImpl extends StructureImpl implements LoreStructure {
         return destructible;
     }
 
-    @Override
     public String getName() {
         return this.name;
     }
@@ -137,8 +139,18 @@ public class LoreStructImpl extends StructureImpl implements LoreStructure {
         this.laborer = e;
     }
 
+    @Override
+    public int getPriority() {
+        return priority;
+    }
+
     private boolean isSizeEqual(VolumeDB volume) {
         return this.getSizeX() == volume.getSizeX() && this.getSizeY() == volume.getSizeY() &&
                 this.getSizeZ() == volume.getSizeZ();
+    }
+
+    @Override
+    public int compareTo(@NotNull LoreStructure struct) {
+        return struct.getPriority() - this.priority;
     }
 }

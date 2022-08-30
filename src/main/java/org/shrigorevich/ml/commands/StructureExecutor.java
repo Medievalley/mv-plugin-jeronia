@@ -29,11 +29,6 @@ public class StructureExecutor implements CommandExecutor {
                 Player player = (Player) sender;
                 try {
                     switch (args[0].toLowerCase()) {
-
-                        case "delete":
-                        case "d":
-                            structService.delete(Integer.parseInt(args[1]));
-                            break;
                         case "restore":
                         case "r":
                             Optional<LoreStructure> s = structService.getById(Integer.parseInt(args[1]));
@@ -71,16 +66,7 @@ public class StructureExecutor implements CommandExecutor {
                             player.sendMessage(ChatColor.YELLOW + String.format("Command '%s' not found", args[0]));
                             break;
                     }
-                }
-                catch (ArrayIndexOutOfBoundsException ex) {
-                    Bukkit.getLogger().severe(ex.toString());
-                    player.sendMessage(ChatColor.RED + ex.getMessage());
-                }
-                catch (IllegalArgumentException ex) {
-                    Bukkit.getLogger().severe(ex.toString());
-                    player.sendMessage(ChatColor.RED + ex.getMessage());
-                }
-                catch (Exception ex) {
+                } catch (Exception ex) {
                     Bukkit.getLogger().severe(ex.toString());
                     player.sendMessage(ChatColor.RED + ex.getMessage());
                 }

@@ -12,7 +12,7 @@ import org.shrigorevich.ml.domain.callbacks.IResultCallback;
 import org.shrigorevich.ml.db.contexts.StructureContext;
 import org.shrigorevich.ml.domain.structure.models.*;
 import org.shrigorevich.ml.domain.users.User;
-
+import org.shrigorevich.ml.events.ProjectUpdatedEvent;
 import java.util.*;
 
 public class StructureServiceImpl extends BaseService implements StructureService {
@@ -20,6 +20,8 @@ public class StructureServiceImpl extends BaseService implements StructureServic
     private final StructureContext structContext;
     private final Map<Integer, LoreStructure> structures;
     private final Map<String, Structure> selectedStruct;
+    private final PriorityQueue<LoreStructure> buildPlan;
+    private LoreStructure currentProject;
 
     public StructureServiceImpl(StructureContext structureContext, Plugin plugin) {
         super(plugin);
@@ -27,8 +29,10 @@ public class StructureServiceImpl extends BaseService implements StructureServic
         this.structCorners = new HashMap<>();
         this.structures = new HashMap<>();
         this.selectedStruct = new HashMap<>();
+        this.buildPlan = new PriorityQueue<>();
     }
 
+    @Override
     public void create(
             User user, String type,
             String name, boolean destructible,
@@ -75,13 +79,17 @@ public class StructureServiceImpl extends BaseService implements StructureServic
 
     private void registerStructure(LoreStructure s) {
         structures.put(s.getId(), s);
+        if (s.getDestructionPercent() > 0) {
+            buildPlan.add(s);
+        }
     }
     public Optional<LoreStructure> getById (int id) {
         LoreStructure struct = structures.get(id);
         return struct != null ? Optional.of(struct) : Optional.empty();
     }
-    public Optional<Structure> getByLocation(Location l) {
-        for (Structure s : structures.values()) {
+    @Override
+    public Optional<LoreStructure> getByLocation(Location l) {
+        for (LoreStructure s : structures.values()) {
             if(s.contains(l)) {
                 return Optional.of(s);
             }
@@ -89,8 +97,9 @@ public class StructureServiceImpl extends BaseService implements StructureServic
         return Optional.empty();
     }
 
+    @Override
     public void selectStructByLocation(String userName, Location l, IResultCallback cb) {
-        Optional<Structure> struct = this.getByLocation(l);
+        Optional<LoreStructure> struct = this.getByLocation(l);
         if (struct.isPresent()) {
             Structure s = struct.get();
             selectedStruct.put(userName, s);
@@ -106,6 +115,7 @@ public class StructureServiceImpl extends BaseService implements StructureServic
         }
     }
 
+    @Override
     public void exportVolume(String userName, String volumeName, IResultCallback cb) {
         Structure s = selectedStruct.get(userName);
         if (s != null) {
@@ -141,52 +151,81 @@ public class StructureServiceImpl extends BaseService implements StructureServic
         }
     }
 
+    @Override
     public void load() {
         List<LoreStructDB> structs = structContext.getStructures();
         for (LoreStructDB s : structs) {
             LoreStructure newStruct = new LoreStructImpl(s, structContext);
             registerStructure(newStruct);
         }
-        Bukkit.getLogger().info("Loaded structs number: " + structures.size());
+        if (!buildPlan.isEmpty()) {
+            System.out.printf("Plan size: %d%n", buildPlan.size());
+            currentProject = buildPlan.poll();
+            Bukkit.getScheduler().runTask(getPlugin(),
+                () -> Bukkit.getPluginManager().callEvent(new ProjectUpdatedEvent(currentProject)));
+        }
     }
 
+    @Override
     public void processExplodedBlocksAsync(List<Block> blocks) {
-
         Bukkit.getScheduler().runTaskAsynchronously(getPlugin(), () -> {
             List<StructBlockDB> brokenBlocks = new ArrayList<>();
             for (Block block : blocks) {
                 Optional<StructBlockDB> b = getBrokenBlock(block);
                 b.ifPresent(brokenBlocks::add);
             }
-            int count = structContext.updateStructBlocksBrokenStatus(brokenBlocks);
+            structContext.updateStructBlocksBrokenStatus(brokenBlocks);
 
-            HashMap<Integer, LoreStructure> damagedStructures = new HashMap<>();
-            //TODO: create StructDamagedEvent
+            List<LoreStructure> damagedStructures = new ArrayList<>();
             for (StructBlockDB b : brokenBlocks) {
-                if(damagedStructures.get(b.getStructId()) == null) {
-                    LoreStructure s = structures.get(b.getStructId());
-                    damagedStructures.put(s.getId(), s);
+                boolean exists = damagedStructures.stream().anyMatch(s -> s.getId() == b.getStructId());
+                if(!exists && getById(b.getStructId()).isPresent()) {
+                    damagedStructures.add(getById(b.getStructId()).get());
                 }
             }
-
-            for (LoreStructure s : damagedStructures.values()) {
-                List<StructBlockDB> structBlocks = structContext.getStructBlocks(s.getId());
-                int brokenCounter = 0;
-                for (StructBlockDB b : structBlocks) {
-                    if (b.isBroken()) brokenCounter += 1;
-                }
-
-                int destroyedPercent = brokenCounter * 100 / structBlocks.size();
-                s.setDestroyedPercent(destroyedPercent);
-            }
+            updateBuildPlan(damagedStructures);
         });
     }
 
-    private Optional<StructBlockDB> getBrokenBlock(Block block) {
-        Optional<Structure> struct = getByLocation(block.getLocation());
+    @Override
+    public Optional<LoreStructure> getProject() {
+        return currentProject == null ? Optional.empty() : Optional.of(currentProject);
+    }
 
-        if (struct.isPresent() && struct.get() instanceof LoreStructure) {
-            LoreStructure s = (LoreStructure) struct.get();
+    private void postponeProject() {
+        buildPlan.add(currentProject);
+        currentProject = null;
+    }
+
+    private void updateBuildPlan(List<LoreStructure> damagedStructs) {
+        if (!damagedStructs.isEmpty()) {
+            boolean isProjectExists = currentProject != null;
+            for (LoreStructure ls : damagedStructs) {
+                boolean alreadyInPlan = buildPlan.stream().noneMatch(s -> s.getId() == ls.getId());
+                boolean matchCurrent = isProjectExists && currentProject.getId() != ls.getId();
+                if (alreadyInPlan && matchCurrent) {
+                    buildPlan.add(ls);
+                }
+            }
+            if (!isProjectExists) {
+                currentProject = buildPlan.poll();
+            } else if (buildPlan.peek().getPriority() > currentProject.getPriority()){
+                postponeProject();
+                currentProject = buildPlan.poll();
+            }
+            if (!buildPlan.isEmpty()) {
+                System.out.printf("Plan size after updating: %d. Id: %d%n", buildPlan.size(), buildPlan.peek().getId());
+            }
+            if (damagedStructs.stream().anyMatch(s -> s.getId() == currentProject.getId())) {
+                Bukkit.getScheduler().runTask(getPlugin(),
+                        () -> Bukkit.getPluginManager().callEvent(new ProjectUpdatedEvent(currentProject)));
+            }
+        }
+    }
+    private Optional<StructBlockDB> getBrokenBlock(Block block) {
+        Optional<LoreStructure> struct = getByLocation(block.getLocation());
+        if (struct.isPresent()) {
+            LoreStructure s = struct.get();
             int x = block.getX() - s.getX1();
             int y = block.getY() - s.getY1();
             int z = block.getZ() - s.getZ1();
@@ -198,11 +237,6 @@ public class StructureServiceImpl extends BaseService implements StructureServic
             }
         }
         return Optional.empty();
-    }
-
-    public void delete(int structId) {
-        structures.remove(structId);
-        structContext.delete(structId);
     }
 }
 

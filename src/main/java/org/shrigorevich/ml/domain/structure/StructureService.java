@@ -20,6 +20,6 @@ public interface StructureService extends Service {
     void load();
     void processExplodedBlocksAsync(List<Block> blocks);
     Optional<LoreStructure> getById(int id);
-    Optional<Structure> getByLocation(Location location);
-    void delete(int structId);
+    Optional<LoreStructure> getByLocation(Location location);
+    Optional<LoreStructure> getProject();
 }

@@ -13,4 +13,5 @@ public interface LoreStructDB extends StructDB {
     void setBrokenBlocks(int brokenBlocks);
     int getStock();
     void setStock(int stock);
+    int getPriority();
 }
