@@ -198,25 +198,24 @@ public class StructureServiceImpl extends BaseService implements StructureServic
     }
 
     private void updateBuildPlan(List<LoreStructure> damagedStructs) {
-        if (!damagedStructs.isEmpty()) {
-            boolean isProjectExists = currentProject != null;
-            for (LoreStructure ls : damagedStructs) {
-                boolean alreadyInPlan = buildPlan.stream().noneMatch(s -> s.getId() == ls.getId());
-                boolean matchCurrent = isProjectExists && currentProject.getId() != ls.getId();
-                if (alreadyInPlan && matchCurrent) {
-                    buildPlan.add(ls);
-                }
+        boolean isProjectExists = currentProject != null;
+        for (LoreStructure ls : damagedStructs) {
+            boolean alreadyInPlan = buildPlan.stream().anyMatch(s -> s.getId() == ls.getId());
+            boolean matchCurrent = isProjectExists && currentProject.getId() == ls.getId();
+            if (!alreadyInPlan && !matchCurrent) {
+                buildPlan.add(ls);
             }
-            if (!isProjectExists) {
-                currentProject = buildPlan.poll();
-            } else if (buildPlan.peek().getPriority() > currentProject.getPriority()){
-                postponeProject();
-                currentProject = buildPlan.poll();
-            }
-            if (damagedStructs.stream().anyMatch(s -> s.getId() == currentProject.getId())) {
-                Bukkit.getScheduler().runTask(getPlugin(),
-                        () -> Bukkit.getPluginManager().callEvent(new ProjectUpdatedEvent(currentProject)));
-            }
+        }
+
+        if (!isProjectExists) {
+            currentProject = buildPlan.poll();
+        } else if (!buildPlan.isEmpty() && buildPlan.peek().getPriority() > currentProject.getPriority()){
+            postponeProject();
+            currentProject = buildPlan.poll();
+        }
+        if (damagedStructs.stream().anyMatch(s -> s.getId() == currentProject.getId())) {
+            Bukkit.getScheduler().runTask(getPlugin(),
+                    () -> Bukkit.getPluginManager().callEvent(new ProjectUpdatedEvent(currentProject)));
         }
     }
     private Optional<StructBlockDB> getBrokenBlock(Block block) {

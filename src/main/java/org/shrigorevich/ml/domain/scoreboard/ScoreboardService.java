@@ -7,5 +7,5 @@ import org.shrigorevich.ml.domain.Service;
 
 public interface ScoreboardService extends Service {
     Scoreboard getScoreboard(BoardType type);
-    Objective createObjective(BoardType type, DisplaySlot slot);
+    Objective createObjective(BoardType type, DisplaySlot slot, String displayName);
 }

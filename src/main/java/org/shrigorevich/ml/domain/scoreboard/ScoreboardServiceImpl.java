@@ -28,11 +28,11 @@ public class ScoreboardServiceImpl extends BaseService implements ScoreboardServ
     }
 
     @Override
-    public Objective createObjective(BoardType type, DisplaySlot slot) {
+    public Objective createObjective(BoardType type, DisplaySlot slot, String displayName) {
         Objective objective = getScoreboard(type).registerNewObjective(
                 type.toString(),
                 "dummy",
-                Component.text(ChatColor.BLUE + type.getName()),
+                Component.text(ChatColor.RED + displayName),
                 RenderType.INTEGER);
         objective.setDisplaySlot(slot);
         return objective;

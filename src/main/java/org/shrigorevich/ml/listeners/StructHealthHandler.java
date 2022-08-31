@@ -35,36 +35,30 @@ public class StructHealthHandler implements Listener {
     public void OnProjectUpdated(ProjectUpdatedEvent event) {
         LoreStructure struct = event.getStructure();
         List<StructBlockDB> blocks = struct.getStructBlocks();
-        Map<Material, Integer> materials = new HashMap<>();
 
         List<StructBlockDB> brokenBlocks = blocks.stream().filter(StructBlockDB::isBroken).collect(Collectors.toList());
-        for (StructBlockDB b : brokenBlocks) {
-            Material material = Material.valueOf(b.getType());
-            if (materials.containsKey(material)) {
-                materials.compute(material, (m, v) -> v+1);
-            } else {
-                materials.put(material, 1);
-            }
-        }
+
         System.out.printf("Current project: %d. Broken blocks: %d%n", struct.getId(), brokenBlocks.size());
-        updateScoreboard(materials);
+        updateScoreboard(struct, blocks.size(), brokenBlocks.size());
     }
 
-    private void updateScoreboard(Map<Material, Integer> materials) {
+    private void updateScoreboard(LoreStructure struct, int blocks, int brokenBlocks) {
         Scoreboard board = scoreboardService.getScoreboard(BoardType.PROJECT);
         Objective curObjective = board.getObjective(BoardType.PROJECT.toString());
 
         if (curObjective != null) {
             curObjective.unregister();
         }
+        Objective objective = scoreboardService.createObjective(BoardType.PROJECT, DisplaySlot.SIDEBAR, "Project: " + struct.getName());
 
-        Objective objective = scoreboardService.createObjective(BoardType.PROJECT, DisplaySlot.SIDEBAR);
-        for (Material m : materials.keySet()) {
-            Score score = objective.getScore(m.toString());
-            score.setScore(materials.get(m));
-        }
+        int health = 100 - (brokenBlocks > 0 ? brokenBlocks * 100 / blocks : 0);
+        objective.getScore("Resources needed:").setScore(brokenBlocks);
+        objective.getScore("Health:").setScore(health);
         for (Player p : Bukkit.getOnlinePlayers()) {
-            p.setScoreboard(board);
+            Objective obj = p.getScoreboard().getObjective(BoardType.PROJECT.getName());
+            if (obj != null) {
+                p.setScoreboard(board);
+            }
         }
     }
 }

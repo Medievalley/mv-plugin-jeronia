@@ -1,7 +1,7 @@
 package org.shrigorevich.ml.domain.scoreboard;
 
 public enum BoardType {
-    PROJECT("Current project");
+    PROJECT("Project:");
 
     private final String name;
     BoardType(String name) {

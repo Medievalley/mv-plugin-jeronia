@@ -7,6 +7,8 @@ import java.util.Optional;
 
 public interface LoreStructure extends Structure, Volumeable, Comparable<LoreStructure> {
 
+    String getName();
+    int getPriority();
     long getDestructionPercent();
     void setDestroyedPercent(int destroyedPercent);
     int getFoodStock();
@@ -18,5 +20,4 @@ public interface LoreStructure extends Structure, Volumeable, Comparable<LoreStr
     void updateFoodStock(int foodAmount);
     Optional<Villager> getLaborer();
     void setLaborer(Villager e);
-    int getPriority();
 }
