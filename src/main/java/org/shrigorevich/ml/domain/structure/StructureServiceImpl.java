@@ -213,9 +213,6 @@ public class StructureServiceImpl extends BaseService implements StructureServic
                 postponeProject();
                 currentProject = buildPlan.poll();
             }
-            if (!buildPlan.isEmpty()) {
-                System.out.printf("Plan size after updating: %d. Id: %d%n", buildPlan.size(), buildPlan.peek().getId());
-            }
             if (damagedStructs.stream().anyMatch(s -> s.getId() == currentProject.getId())) {
                 Bukkit.getScheduler().runTask(getPlugin(),
                         () -> Bukkit.getPluginManager().callEvent(new ProjectUpdatedEvent(currentProject)));

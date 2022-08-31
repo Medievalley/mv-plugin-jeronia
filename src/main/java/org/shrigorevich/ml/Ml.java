@@ -13,6 +13,8 @@ import org.shrigorevich.ml.domain.ai.TaskService;
 import org.shrigorevich.ml.domain.ai.TaskServiceImpl;
 import org.shrigorevich.ml.domain.npc.NpcService;
 import org.shrigorevich.ml.domain.npc.NpcServiceImpl;
+import org.shrigorevich.ml.domain.scoreboard.ScoreboardService;
+import org.shrigorevich.ml.domain.scoreboard.ScoreboardServiceImpl;
 import org.shrigorevich.ml.domain.structure.StructureService;
 import org.shrigorevich.ml.domain.structure.StructureServiceImpl;
 import org.shrigorevich.ml.domain.users.IUserService;
@@ -32,6 +34,8 @@ public final class Ml extends JavaPlugin {
     private NpcService npcService;
     private TaskService taskService;
     private VillageService villageService;
+    private ScoreboardService scoreboardService;
+
     @Override
     public void onLoad() {
         saveDefaultConfig();
@@ -51,6 +55,8 @@ public final class Ml extends JavaPlugin {
         npcService = new NpcServiceImpl(npcContext, this);
         taskService = new TaskServiceImpl(this);
         villageService = new VillageServiceImpl(this, villageContext);
+        scoreboardService = new ScoreboardServiceImpl(this);
+
     }
     @Override
     public void onEnable() {
@@ -86,13 +92,13 @@ public final class Ml extends JavaPlugin {
         pm.registerEvents(new ReachLocationHandler(this), this);
         pm.registerEvents(new DangerHandler(taskService, npcService), this);
         pm.registerEvents(new EntityDeathHandler(npcService, villageService, taskService, structService), this);
-        pm.registerEvents(new StructHealthHandler(structService), this);
+        pm.registerEvents(new StructHealthHandler(structService, scoreboardService), this);
 
     }
 
     private void setupExecutors() {
         getCommand("struct").setExecutor(new StructureExecutor(userService, structService));
         getCommand("npc").setExecutor(new NpcExecutor(npcService, taskService));
-        getCommand("score").setExecutor(new ScoreBoardExecutor());
+        getCommand("score").setExecutor(new ScoreBoardExecutor(scoreboardService));
     }
 }

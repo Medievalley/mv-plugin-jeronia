@@ -9,6 +9,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.scoreboard.*;
+import org.shrigorevich.ml.domain.scoreboard.BoardType;
+import org.shrigorevich.ml.domain.scoreboard.ScoreboardService;
 import org.shrigorevich.ml.domain.structure.LoreStructure;
 import org.shrigorevich.ml.domain.structure.StructureService;
 import org.shrigorevich.ml.domain.structure.models.StructBlockDB;
@@ -22,13 +24,15 @@ import java.util.stream.Collectors;
 public class StructHealthHandler implements Listener {
 
     private final StructureService structService;
+    private final ScoreboardService scoreboardService;
 
-    public StructHealthHandler(StructureService structService) {
+    public StructHealthHandler(StructureService structService, ScoreboardService scoreboardService) {
         this.structService = structService;
+        this.scoreboardService = scoreboardService;
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void OnStructLoaded(ProjectUpdatedEvent event) {
+    public void OnProjectUpdated(ProjectUpdatedEvent event) {
         LoreStructure struct = event.getStructure();
         List<StructBlockDB> blocks = struct.getStructBlocks();
         Map<Material, Integer> materials = new HashMap<>();
@@ -42,16 +46,19 @@ public class StructHealthHandler implements Listener {
                 materials.put(material, 1);
             }
         }
-
         System.out.printf("Current project: %d. Broken blocks: %d%n", struct.getId(), brokenBlocks.size());
-        ScoreboardManager manager = Bukkit.getScoreboardManager();
-        Scoreboard board = manager.getNewScoreboard();
-        Objective objective = board.registerNewObjective(
-                "Village",
-                "dummy",
-                Component.text(ChatColor.BLUE+"Village"),
-                RenderType.INTEGER);
-        objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+        updateScoreboard(materials);
+    }
+
+    private void updateScoreboard(Map<Material, Integer> materials) {
+        Scoreboard board = scoreboardService.getScoreboard(BoardType.PROJECT);
+        Objective curObjective = board.getObjective(BoardType.PROJECT.toString());
+
+        if (curObjective != null) {
+            curObjective.unregister();
+        }
+
+        Objective objective = scoreboardService.createObjective(BoardType.PROJECT, DisplaySlot.SIDEBAR);
         for (Material m : materials.keySet()) {
             Score score = objective.getScore(m.toString());
             score.setScore(materials.get(m));

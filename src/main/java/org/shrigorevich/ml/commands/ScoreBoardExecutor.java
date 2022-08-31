@@ -8,10 +8,14 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.*;
 import org.bukkit.scoreboard.*;
+import org.shrigorevich.ml.domain.scoreboard.BoardType;
+import org.shrigorevich.ml.domain.scoreboard.ScoreboardService;
 
 public class ScoreBoardExecutor implements CommandExecutor {
 
-    public ScoreBoardExecutor() {
+    private final ScoreboardService scoreboardService;
+    public ScoreBoardExecutor(ScoreboardService scoreboardService) {
+        this.scoreboardService = scoreboardService;
     }
 
     @Override
@@ -21,7 +25,7 @@ public class ScoreBoardExecutor implements CommandExecutor {
                 Player player = (Player) sender;
                 try {
                     switch (args[0].toLowerCase()) {
-                        case "village":
+                        case "project":
                             showScoreboard(player);
                             break;
                         default:
@@ -41,16 +45,6 @@ public class ScoreBoardExecutor implements CommandExecutor {
     }
 
     private void showScoreboard(Player player) {
-        ScoreboardManager manager = Bukkit.getScoreboardManager();
-        Scoreboard board = manager.getNewScoreboard();
-        Objective objective = board.registerNewObjective(
-                "Village",
-                "dummy",
-                Component.text(ChatColor.BLUE+"Village"),
-                RenderType.INTEGER);
-        objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-        Score score = objective.getScore("Counter");
-        score.setScore(5);
-        player.setScoreboard(board);
+        player.setScoreboard(scoreboardService.getScoreboard(BoardType.PROJECT));
     }
 }
