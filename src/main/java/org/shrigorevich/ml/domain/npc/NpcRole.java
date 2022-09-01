@@ -1,7 +1,7 @@
 package org.shrigorevich.ml.domain.npc;
 
 public enum NpcRole {
-    HARVESTER(1), WARDEN(2);
+    HARVESTER(1), WARDEN(2), BUILDER(3);
 
     private final int roleId;
 

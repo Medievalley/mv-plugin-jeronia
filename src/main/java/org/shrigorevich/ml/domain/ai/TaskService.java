@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface TaskService extends Service {
-    void add(NpcTask task);
+    void add(Task task);
     Optional<Task> get(UUID entityId);
     void finalize(UUID entityId);
     void block(UUID entityId);

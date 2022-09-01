@@ -22,11 +22,6 @@ public class BlockExplode implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void BlockExploded(EntityExplodeEvent event) {
-
-        if (event.getEntity() instanceof TNTPrimed) { //TODO: Implement logic
-
-        }
-        System.out.println("Blocks exploded: " + event.blockList().size()); //TODO: remove comment
         structureService.processExplodedBlocksAsync(event.blockList());
     }
 }

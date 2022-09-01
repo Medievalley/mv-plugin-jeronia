@@ -16,7 +16,6 @@ public class LoreStructImpl extends StructureImpl implements LoreStructure {
     private int volumeId;
     private final String name;
     private final boolean destructible;
-    private int destroyedPercent;
     private final StructureContext context;
     private Villager laborer;
     private final int priority;
@@ -30,22 +29,6 @@ public class LoreStructImpl extends StructureImpl implements LoreStructure {
         this.foodStock = m.getStock();
         this.context = context;
         this.priority = m.getPriority();
-
-        if (m.getBlocks() > 0 && m.getBrokenBlocks() > 0) {
-            this.destroyedPercent = m.getBrokenBlocks() * 100 / m.getBlocks();
-        } else {
-            destroyedPercent = 0;
-        }
-    }
-
-    @Override
-    public long getDestructionPercent() {
-        return this.destroyedPercent;
-    }
-
-    public void setDestroyedPercent(int destroyedPercent) {
-        this.destroyedPercent = destroyedPercent;
-        System.out.printf("Destroyed percent updated: %d%%%n", destroyedPercent);
     }
 
     public boolean isDestructible() {

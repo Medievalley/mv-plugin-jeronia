@@ -15,4 +15,5 @@ public interface StructNpc {
     void setAlive(boolean alive);
     NpcRole getRole();
 
+
 }

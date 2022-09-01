@@ -12,7 +12,9 @@ import org.shrigorevich.ml.domain.callbacks.IResultCallback;
 import org.shrigorevich.ml.db.contexts.StructureContext;
 import org.shrigorevich.ml.domain.structure.models.*;
 import org.shrigorevich.ml.domain.users.User;
-import org.shrigorevich.ml.events.ProjectUpdatedEvent;
+import org.shrigorevich.ml.events.BuildPlanUpdatedEvent;
+import org.shrigorevich.ml.events.ProjectRestoreEvent;
+
 import java.util.*;
 
 public class StructureServiceImpl extends BaseService implements StructureService {
@@ -52,7 +54,7 @@ public class StructureServiceImpl extends BaseService implements StructureServic
         int structId = structContext.save(m);
         if (structId != 0) {
             Optional<LoreStructDB> model = structContext.getById(structId);
-            model.ifPresent(loreStructDB -> registerStructure(new LoreStructImpl(loreStructDB, structContext)));
+            model.ifPresent(this::registerStructure);
             cb.sendResult(true, String.format("StructId: %d", structId));
         }
     }
@@ -77,12 +79,6 @@ public class StructureServiceImpl extends BaseService implements StructureServic
         return structCorners.get(key);
     }
 
-    private void registerStructure(LoreStructure s) {
-        structures.put(s.getId(), s);
-        if (s.getDestructionPercent() > 0) {
-            buildPlan.add(s);
-        }
-    }
     public Optional<LoreStructure> getById (int id) {
         LoreStructure struct = structures.get(id);
         return struct != null ? Optional.of(struct) : Optional.empty();
@@ -155,14 +151,23 @@ public class StructureServiceImpl extends BaseService implements StructureServic
     public void load() {
         List<LoreStructDB> structs = structContext.getStructures();
         for (LoreStructDB s : structs) {
-            LoreStructure newStruct = new LoreStructImpl(s, structContext);
-            registerStructure(newStruct);
+
+            registerStructure(s);
         }
         if (!buildPlan.isEmpty()) {
             System.out.printf("Plan size: %d%n", buildPlan.size());
             currentProject = buildPlan.poll();
             Bukkit.getScheduler().runTask(getPlugin(),
-                () -> Bukkit.getPluginManager().callEvent(new ProjectUpdatedEvent(currentProject)));
+                () -> Bukkit.getPluginManager().callEvent(new ProjectRestoreEvent(currentProject)));
+        }
+    }
+
+    private void registerStructure(LoreStructDB s) {
+        LoreStructure newStruct = new LoreStructImpl(s, structContext);
+        structures.put(newStruct.getId(), newStruct);
+
+        if (s.getBlocks() > 0 && s.getBrokenBlocks() > 0) {
+            buildPlan.add(newStruct);
         }
     }
 
@@ -176,14 +181,15 @@ public class StructureServiceImpl extends BaseService implements StructureServic
             }
             structContext.updateStructBlocksBrokenStatus(brokenBlocks);
 
-            List<LoreStructure> damagedStructures = new ArrayList<>();
+            Map<Integer, List<StructBlockDB>> blocksPerStruct = new HashMap<>();
             for (StructBlockDB b : brokenBlocks) {
-                boolean exists = damagedStructures.stream().anyMatch(s -> s.getId() == b.getStructId());
-                if(!exists && getById(b.getStructId()).isPresent()) {
-                    damagedStructures.add(getById(b.getStructId()).get());
+                if(blocksPerStruct.containsKey(b.getStructId())) {
+                    blocksPerStruct.get(b.getStructId()).add(b);
+                } else {
+                    blocksPerStruct.put(b.getStructId(), new ArrayList<>(Collections.singletonList(b)));
                 }
             }
-            updateBuildPlan(damagedStructures);
+            updateBuildPlan(blocksPerStruct);
         });
     }
 
@@ -197,13 +203,13 @@ public class StructureServiceImpl extends BaseService implements StructureServic
         currentProject = null;
     }
 
-    private void updateBuildPlan(List<LoreStructure> damagedStructs) {
+    private void updateBuildPlan(Map<Integer, List<StructBlockDB>> blocksPerStruct) {
         boolean isProjectExists = currentProject != null;
-        for (LoreStructure ls : damagedStructs) {
-            boolean alreadyInPlan = buildPlan.stream().anyMatch(s -> s.getId() == ls.getId());
-            boolean matchCurrent = isProjectExists && currentProject.getId() == ls.getId();
+        for (Integer structId : blocksPerStruct.keySet()) {
+            boolean alreadyInPlan = buildPlan.stream().anyMatch(s -> s.getId() == structId);
+            boolean matchCurrent = isProjectExists && currentProject.getId() == structId;
             if (!alreadyInPlan && !matchCurrent) {
-                buildPlan.add(ls);
+                getById(structId).ifPresent(buildPlan::add);
             }
         }
 
@@ -213,9 +219,11 @@ public class StructureServiceImpl extends BaseService implements StructureServic
             postponeProject();
             currentProject = buildPlan.poll();
         }
-        if (damagedStructs.stream().anyMatch(s -> s.getId() == currentProject.getId())) {
+
+        if (blocksPerStruct.containsKey(currentProject.getId())) {
             Bukkit.getScheduler().runTask(getPlugin(),
-                    () -> Bukkit.getPluginManager().callEvent(new ProjectUpdatedEvent(currentProject)));
+                    () -> Bukkit.getPluginManager().callEvent(
+                            new BuildPlanUpdatedEvent(currentProject, blocksPerStruct.get(currentProject.getId()))));
         }
     }
     private Optional<StructBlockDB> getBrokenBlock(Block block) {

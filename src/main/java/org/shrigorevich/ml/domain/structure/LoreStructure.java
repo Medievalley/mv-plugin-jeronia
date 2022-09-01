@@ -9,8 +9,6 @@ public interface LoreStructure extends Structure, Volumeable, Comparable<LoreStr
 
     String getName();
     int getPriority();
-    long getDestructionPercent();
-    void setDestroyedPercent(int destroyedPercent);
     int getFoodStock();
     /** <p>Replenish or reduce food stock by the value passed</p>
      * Negative value - reduce food stock <br>

@@ -1,4 +1,4 @@
-package org.shrigorevich.ml.domain.village;
+package org.shrigorevich.ml.domain.project;
 
 import org.bukkit.Material;
 

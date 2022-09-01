@@ -19,8 +19,8 @@ import org.shrigorevich.ml.domain.structure.StructureService;
 import org.shrigorevich.ml.domain.structure.StructureServiceImpl;
 import org.shrigorevich.ml.domain.users.IUserService;
 import org.shrigorevich.ml.domain.users.UserService;
-import org.shrigorevich.ml.domain.village.VillageService;
-import org.shrigorevich.ml.domain.village.VillageServiceImpl;
+import org.shrigorevich.ml.domain.project.ProjectService;
+import org.shrigorevich.ml.domain.project.ProjectServiceImpl;
 import org.shrigorevich.ml.listeners.*;
 
 import javax.sql.DataSource;
@@ -33,7 +33,7 @@ public final class Ml extends JavaPlugin {
     private StructureService structService;
     private NpcService npcService;
     private TaskService taskService;
-    private VillageService villageService;
+    private ProjectService projectService;
     private ScoreboardService scoreboardService;
 
     @Override
@@ -48,13 +48,13 @@ public final class Ml extends JavaPlugin {
         UserContext userContext = new UserContextImpl(this, dataSource);
         StructureContext structureContext = new StructContextImpl(this, dataSource);
         NpcContext npcContext = new NpcContextImpl(this, dataSource);
-        VillageContext villageContext = new VillageContextImpl(this, dataSource);
+        ProjectContext projectContext = new ProjectContextImpl(this, dataSource);
 
         userService = new UserService(userContext);
         structService = new StructureServiceImpl(structureContext, this);
         npcService = new NpcServiceImpl(npcContext, this);
         taskService = new TaskServiceImpl(this);
-        villageService = new VillageServiceImpl(this, villageContext);
+        projectService = new ProjectServiceImpl(this, projectContext);
         scoreboardService = new ScoreboardServiceImpl(this);
 
     }
@@ -91,8 +91,8 @@ public final class Ml extends JavaPlugin {
         pm.registerEvents(new PlayerInteract(structService, npcService, taskService), this);
         pm.registerEvents(new ReachLocationHandler(this), this);
         pm.registerEvents(new DangerHandler(taskService, npcService), this);
-        pm.registerEvents(new EntityDeathHandler(npcService, villageService, taskService, structService), this);
-        pm.registerEvents(new StructHealthHandler(structService, scoreboardService), this);
+        pm.registerEvents(new EntityDeathHandler(npcService, projectService, taskService, structService), this);
+        pm.registerEvents(new StructHealthHandler(projectService, scoreboardService, npcService), this);
 
     }
 

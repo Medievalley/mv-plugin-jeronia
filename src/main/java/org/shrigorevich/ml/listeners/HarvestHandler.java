@@ -7,10 +7,8 @@ import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.shrigorevich.ml.domain.ai.TaskPriority;
 import org.shrigorevich.ml.domain.ai.TaskService;
-import org.shrigorevich.ml.domain.ai.TaskType;
-import org.shrigorevich.ml.domain.ai.tasks.ReachLocationTask;
+import org.shrigorevich.ml.domain.ai.tasks.HarvestTask;
 import org.shrigorevich.ml.domain.npc.NpcService;
 import org.shrigorevich.ml.domain.structure.StructureService;
 import org.shrigorevich.ml.events.HarvestEvent;
@@ -34,12 +32,9 @@ public class HarvestHandler implements Listener {
     public void OnPlantGrown(StructPlantGrownEvent event) {
         Block b = event.getBlock();
         Villager entity = event.getEntity();
-
         taskService.add(
-            new ReachLocationTask(
+            new HarvestTask(
                 taskService.getPlugin(),
-                TaskType.HARVEST,
-                TaskPriority.MIDDLE,
                 entity, b.getLocation()
             )
         );

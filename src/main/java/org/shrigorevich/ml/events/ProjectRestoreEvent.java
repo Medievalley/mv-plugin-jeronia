@@ -5,12 +5,12 @@ import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 import org.shrigorevich.ml.domain.structure.LoreStructure;
 
-public class ProjectUpdatedEvent extends Event {
+public class ProjectRestoreEvent extends Event {
 
     private static final HandlerList HANDLERS = new HandlerList();
     private final LoreStructure structure;
 
-    public ProjectUpdatedEvent(LoreStructure structure) {
+    public ProjectRestoreEvent(LoreStructure structure) {
 
         this.structure = structure;
     }

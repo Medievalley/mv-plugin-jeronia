@@ -10,18 +10,18 @@ import org.shrigorevich.ml.domain.ai.TaskService;
 import org.shrigorevich.ml.domain.npc.NpcService;
 import org.shrigorevich.ml.domain.npc.StructNpc;
 import org.shrigorevich.ml.domain.structure.StructureService;
-import org.shrigorevich.ml.domain.village.VillageService;
+import org.shrigorevich.ml.domain.project.ProjectService;
 
 public class EntityDeathHandler implements Listener {
 
     private final NpcService npcService;
-    private final VillageService villageService;
+    private final ProjectService projectService;
     private final TaskService taskService;
     private final StructureService structService;
 
-    public EntityDeathHandler(NpcService npcService, VillageService villageService, TaskService taskService, StructureService structService) {
+    public EntityDeathHandler(NpcService npcService, ProjectService projectService, TaskService taskService, StructureService structService) {
         this.npcService = npcService;
-        this.villageService = villageService;
+        this.projectService = projectService;
         this.taskService = taskService;
         this.structService = structService;
     }

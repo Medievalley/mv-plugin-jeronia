@@ -155,8 +155,7 @@ public class NpcServiceImpl extends BaseService implements NpcService {
         }
     }
 
-    @Override
-    public void register(StructNpc npc) {
+    private void register(StructNpc npc) {
         npcList.put(npc.getEntityId(), npc);
     }
 
@@ -196,5 +195,10 @@ public class NpcServiceImpl extends BaseService implements NpcService {
     public void regSafeLoc(SafeLoc location) {
         safeLocs.add(location);
         System.out.println("Safe loc registered. Size: " + safeLocs.size());
+    }
+
+    @Override
+    public List<StructNpc> getNpcByRole(NpcRole role) {
+        return npcList.values().stream().filter(n -> n.getRole() == role).collect(Collectors.toList());
     }
 }
