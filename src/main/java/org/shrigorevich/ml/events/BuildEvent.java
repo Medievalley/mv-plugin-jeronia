@@ -2,23 +2,21 @@ package org.shrigorevich.ml.events;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
-import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
-import org.shrigorevich.ml.domain.ai.Task;
+import org.shrigorevich.ml.domain.ai.BuildTask;
 
-public class LocationReachedEvent extends Event implements Cancellable {
-
-    private static final HandlerList HANDLERS = new HandlerList();
-    private boolean cancelled;
+public class BuildEvent extends Event {
     private final Entity entity;
     private final Location target;
-    private final Task task;
+    private static final HandlerList HANDLERS = new HandlerList();
+    private boolean cancelled;
+    private final BuildTask task;
 
-    public LocationReachedEvent(Entity entity, Location location, Task task) {
+    public BuildEvent(Entity entity, Location target, BuildTask task) {
         this.entity = entity;
-        this.target = location;
+        this.target = target;
         this.task = task;
     }
 
@@ -30,18 +28,8 @@ public class LocationReachedEvent extends Event implements Cancellable {
         return target;
     }
 
-    public Task getTask() {
+    public BuildTask getTask() {
         return task;
-    }
-
-    @Override
-    public boolean isCancelled() {
-        return cancelled;
-    }
-
-    @Override
-    public void setCancelled(boolean result) {
-        this.cancelled = result;
     }
 
     @Override

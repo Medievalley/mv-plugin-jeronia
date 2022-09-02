@@ -3,24 +3,24 @@ package org.shrigorevich.ml.domain.ai.goals;
 import com.destroystokyo.paper.entity.ai.Goal;
 import com.destroystokyo.paper.entity.ai.GoalKey;
 import com.destroystokyo.paper.entity.ai.GoalType;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import org.shrigorevich.ml.domain.ai.TaskData;
-import org.shrigorevich.ml.events.LocationReachedEvent;
+import org.shrigorevich.ml.domain.ai.Task;
 
 import java.util.EnumSet;
 
 public class CustomGoal extends BaseGoal implements Goal<Mob> {
     private final Player player;
     private int cooldown = 0;
+    private final Task task;
 
-    public CustomGoal(Plugin plugin, TaskData data, Mob mob, Player player) {
+    public CustomGoal(Plugin plugin, Task task, Mob mob, Player player) {
 
-        super(mob, plugin, data, ActionKey.REACH_LOCATION);
+        super(mob, plugin, ActionKey.REACH_LOCATION);
         this.player = player;
+        this.task = task;
     }
 
     @Override

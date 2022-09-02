@@ -1,7 +1,7 @@
 package org.shrigorevich.ml.db.contexts;
 import org.shrigorevich.ml.domain.callbacks.*;
 import org.shrigorevich.ml.domain.structure.models.LoreStructDB;
-import org.shrigorevich.ml.domain.structure.models.StructBlockDB;
+import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
 import org.shrigorevich.ml.domain.structure.models.VolumeBlockDB;
 import org.shrigorevich.ml.domain.structure.models.VolumeDB;
 
@@ -21,10 +21,10 @@ public interface StructureContext {
      * @param structId Structure identifier
      */
     void setStructVolume(int structId, int volumeId);
-    Optional<StructBlockDB> getStructBlock(int x, int y, int z, int volumeId, int structId);
-    void saveStructBlocks(List<StructBlockDB> blocks);
-    List<StructBlockDB> getStructBlocks(int structId);
-    int updateStructBlocksBrokenStatus(List<StructBlockDB> blocks);
+    Optional<StructBlockModel> getStructBlock(int x, int y, int z, int volumeId, int structId);
+    void saveStructBlocks(List<StructBlockModel> blocks);
+    List<StructBlockModel> getStructBlocks(int structId);
+    int updateStructBlocksBrokenStatus(List<StructBlockModel> blocks);
     void delete(int structId);
     void restore(int structId);
     void removeVolume(int structId);

@@ -1,6 +1,6 @@
 package org.shrigorevich.ml.domain.project;
 
-import org.shrigorevich.ml.domain.structure.models.StructBlockDB;
+import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
 
 import java.util.*;
 
@@ -8,7 +8,7 @@ public class BuildProjectImpl implements BuildProject {
     private final int structId;
     private final int size;
     private int brokenSize;
-    private final Queue<StructBlockDB> plannedBlocks;
+    private final Queue<StructBlockModel> plannedBlocks;
 
     public BuildProjectImpl(int structId, int size) {
         this.structId = structId;
@@ -33,13 +33,13 @@ public class BuildProjectImpl implements BuildProject {
     }
 
     @Override
-    public void addPlannedBlock(StructBlockDB block) {
+    public void addPlannedBlock(StructBlockModel block) {
         brokenSize+=1;
         plannedBlocks.add(block);
     }
 
     @Override
-    public StructBlockDB getPlannedBlock() {
+    public StructBlockModel getPlannedBlock() {
         return plannedBlocks.poll();
     }
 

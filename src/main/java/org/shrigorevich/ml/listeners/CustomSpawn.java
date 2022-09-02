@@ -16,7 +16,7 @@ import org.shrigorevich.ml.domain.npc.NpcService;
 import org.shrigorevich.ml.domain.npc.StructNpc;
 import org.shrigorevich.ml.domain.structure.LoreStructure;
 import org.shrigorevich.ml.domain.structure.StructureService;
-import org.shrigorevich.ml.domain.structure.models.StructBlockDB;
+import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
 import org.shrigorevich.ml.events.CustomSpawnEvent;
 
 import java.util.List;
@@ -42,11 +42,18 @@ public class CustomSpawn implements Listener {
             Optional<StructNpc> npc = npcService.getById(entity.getUniqueId());
 
             if (npc.isPresent()) {
-                assignToStruct(npc.get(), entity);
                 taskService.setDefaultAI(entity);
                 setTask(npc.get(), entity);
                 System.out.printf("Custom spawned: %d, %s, %s%n",
                         npc.get().getId(), npc.get().isAlive(), npc.get().getRole());
+
+                switch (npc.get().getRole()) {
+                    case HARVESTER:
+                        assignToStruct(npc.get(), entity);
+                        break;
+                    default:
+                        break;
+                }
             }
         }
     }
@@ -71,7 +78,7 @@ public class CustomSpawn implements Listener {
     }
 
     private void scanStructForTasks(LoreStructure structure, Villager entity) {
-        List<StructBlockDB> structBlocks = structure.getStructBlocks();
+        List<StructBlockModel> structBlocks = structure.getStructBlocks();
         structBlocks.forEach(b -> {
             Block wBlock = structure.getWorld().getBlockAt(b.getX(), b.getY(), b.getZ());
             if (isStructPlant(wBlock.getType())) {

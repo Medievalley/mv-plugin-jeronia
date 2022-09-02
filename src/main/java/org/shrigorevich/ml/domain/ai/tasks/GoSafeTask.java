@@ -24,7 +24,7 @@ public class GoSafeTask extends BaseTask implements Task {
     @Override
     public void start() {
         MobGoals goals = getPlugin().getServer().getMobGoals();
-        goal = new ReachLocationGoal(getPlugin(), getData(), getEntity(), target);
+        goal = new ReachLocationGoal(getPlugin(), this, getEntity(), target);
         setGoal(goals, goal);
     }
 

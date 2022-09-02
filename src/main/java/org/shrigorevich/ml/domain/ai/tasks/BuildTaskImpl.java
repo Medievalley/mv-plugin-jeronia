@@ -6,25 +6,30 @@ import com.destroystokyo.paper.entity.ai.MobGoals;
 import org.bukkit.Location;
 import org.bukkit.entity.Mob;
 import org.bukkit.plugin.Plugin;
-import org.shrigorevich.ml.common.Utils;
-import org.shrigorevich.ml.domain.ai.BaseTask;
-import org.shrigorevich.ml.domain.ai.Task;
-import org.shrigorevich.ml.domain.ai.TaskPriority;
-import org.shrigorevich.ml.domain.ai.TaskType;
-import org.shrigorevich.ml.domain.ai.goals.HarvestGoal;
-import org.shrigorevich.ml.domain.ai.goals.ReachLocationGoal;
+import org.shrigorevich.ml.domain.ai.*;
+import org.shrigorevich.ml.domain.ai.goals.BuildGoal;
+import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
 
-public class HoldSpawnTask extends BaseTask implements Task {
+public class BuildTaskImpl extends BaseTask implements BuildTask {
     private final Location target;
     private Goal<Mob> goal;
-    public HoldSpawnTask(Plugin plugin, Mob entity, Location l) {
-        super(plugin, TaskType.HOLD_SPAWN, TaskPriority.LOW, entity);
+    private final StructBlockModel block;
+
+    public BuildTaskImpl(Plugin plugin, Mob entity, StructBlockModel block, Location l) {
+        super(plugin, TaskType.BUILD, TaskPriority.MIDDLE, entity);
+        this.block = block;
         this.target = l;
     }
+
+    @Override
+    public StructBlockModel getBlock() {
+        return block;
+    }
+
     @Override
     public void start() {
         MobGoals goals = getPlugin().getServer().getMobGoals();
-        goal = new ReachLocationGoal(getPlugin(), this, getEntity(), target);
+        goal = new BuildGoal(getPlugin(), this, getEntity(), target);
         setGoal(goals, goal);
     }
 
@@ -40,7 +45,6 @@ public class HoldSpawnTask extends BaseTask implements Task {
 
     @Override
     public boolean shouldBeBlocked() {
-        Pathfinder.PathResult rp = getEntity().getPathfinder().findPath(target);
-        return rp.getFinalPoint() == null || !Utils.isLocationsEquals(rp.getFinalPoint(), target);
+        return false;
     }
 }

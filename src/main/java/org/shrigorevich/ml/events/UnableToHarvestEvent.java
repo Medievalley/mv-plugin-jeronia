@@ -6,17 +6,17 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
-import org.shrigorevich.ml.domain.ai.TaskData;
+import org.shrigorevich.ml.domain.ai.Task;
 
 public class UnableToHarvestEvent extends Event implements Cancellable {
 
     private final Entity entity;
     private final Location target;
-    private final TaskData task;
+    private final Task task;
     private static final HandlerList HANDLERS = new HandlerList();
     private boolean cancelled;
 
-    public UnableToHarvestEvent(Entity entity, Location target, TaskData task) {
+    public UnableToHarvestEvent(Entity entity, Location target, Task task) {
         this.entity = entity;
         this.target = target;
         this.task = task;
@@ -30,7 +30,7 @@ public class UnableToHarvestEvent extends Event implements Cancellable {
         return target;
     }
 
-    public TaskData getTask() {
+    public Task getTask() {
         return task;
     }
 

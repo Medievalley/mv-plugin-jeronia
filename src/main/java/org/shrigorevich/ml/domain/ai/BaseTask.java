@@ -11,14 +11,14 @@ public abstract class BaseTask implements Task {
     private final TaskPriority priority;
     private final Plugin plugin;
     private final Mob mob;
-    private final TaskData data;
+    private final TaskType type;
     private boolean blocked;
 
     public BaseTask(Plugin plugin, TaskType type, TaskPriority priority, Mob mob) {
         this.priority = priority;
         this.plugin = plugin;
         this.mob = mob;
-        this.data = new TaskDataImpl(type);
+        this.type = type;
     }
 
     @Override
@@ -29,11 +29,6 @@ public abstract class BaseTask implements Task {
     @Override
     public TaskPriority getPriority() {
         return priority;
-    }
-
-    @Override
-    public TaskData getData() {
-        return data;
     }
 
     @Override
@@ -52,7 +47,7 @@ public abstract class BaseTask implements Task {
 
     @Override
     public TaskType getType() {
-        return data.getType();
+        return type;
     }
 
     public Plugin getPlugin() {

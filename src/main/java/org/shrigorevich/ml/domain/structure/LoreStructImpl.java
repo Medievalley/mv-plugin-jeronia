@@ -45,29 +45,33 @@ public class LoreStructImpl extends StructureImpl implements LoreStructure {
     }
 
     @Override
-    public void updateVolume(List<StructBlockModel> blocks) {
+    public void updateVolume(List<StructBlockModelImpl> blocks) {
 
     } //TODO: replace class to interface
 
     @Override
-    public void restoreBlock(int x, int y, int z) {
-        Optional<StructBlockDB> structBlock = context.getStructBlock(x, y, z, getVolumeId(), getId());
-        if (structBlock.isPresent()) {
-            StructBlockDB sb = structBlock.get();
-            BlockData bd = Bukkit.createBlockData(sb.getBlockData());
-            Block b = getWorld().getBlockAt(
-                    sb.getX() + getX1(),
-                    sb.getY() + getY1(),
-                    sb.getZ() + getZ1());
-            b.setBlockData(bd);
-        }
+    public void restoreBlock(StructBlockModel block) {
+        restoreBlock(
+            block.getX()-getX1(),
+            block.getY()-getY1(),
+            block.getZ()-getZ1()
+        );
+    }
+
+    private void restoreBlock(int x, int y, int z) {
+        context.getStructBlock(x, y, z, getVolumeId(), getId())
+            .ifPresent(sb -> {
+                BlockData bd = Bukkit.createBlockData(sb.getBlockData());
+                Block b = getWorld().getBlockAt(sb.getX(), sb.getY(), sb.getZ());
+                b.setBlockData(bd);
+            });
     }
 
     @Override
     public void restore() {
         context.restore(getId());
-        List<StructBlockDB> structBlocks = context.getStructBlocks(getId());
-        for (StructBlockDB sb : structBlocks) {
+        List<StructBlockModel> structBlocks = context.getStructBlocks(getId());
+        for (StructBlockModel sb : structBlocks) {
             BlockData bd = Bukkit.createBlockData(sb.getBlockData());
             Block b = getWorld().getBlockAt(sb.getX(), sb.getY(), sb.getZ());
             b.setBlockData(bd);
@@ -86,10 +90,10 @@ public class LoreStructImpl extends StructureImpl implements LoreStructure {
         context.setStructVolume(getId(), volumeId);
 
         List<VolumeBlockDB> volumeBlocks = context.getVolumeBlocks(volumeId);
-        List<StructBlockDB> structBlocks = new ArrayList<>();
+        List<StructBlockModel> structBlocks = new ArrayList<>();
         for(int i = 0; i < volumeBlocks.size(); i ++) {
             VolumeBlockDB vb = volumeBlocks.get(i);
-            structBlocks.add(new StructBlockModel(getId(), vb.getId(), true));
+            structBlocks.add(new StructBlockModelImpl(getId(), vb.getId(), true));
         }
         context.saveStructBlocks(structBlocks);
         this.volumeId = volumeId;
@@ -97,7 +101,7 @@ public class LoreStructImpl extends StructureImpl implements LoreStructure {
     }
 
     @Override
-    public List<StructBlockDB> getStructBlocks() {
+    public List<StructBlockModel> getStructBlocks() {
         return context.getStructBlocks(getId());
     }
 

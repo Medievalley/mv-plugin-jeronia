@@ -92,7 +92,8 @@ public final class Ml extends JavaPlugin {
         pm.registerEvents(new ReachLocationHandler(this), this);
         pm.registerEvents(new DangerHandler(taskService, npcService), this);
         pm.registerEvents(new EntityDeathHandler(npcService, projectService, taskService, structService), this);
-        pm.registerEvents(new StructHealthHandler(projectService, scoreboardService, npcService), this);
+        pm.registerEvents(new StructHealthHandler(projectService, scoreboardService, npcService, taskService), this);
+        pm.registerEvents(new BuildHandler(taskService, projectService, structService), this);
 
     }
 

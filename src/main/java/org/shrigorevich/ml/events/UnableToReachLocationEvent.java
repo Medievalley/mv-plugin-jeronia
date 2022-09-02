@@ -6,7 +6,7 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
-import org.shrigorevich.ml.domain.ai.TaskData;
+import org.shrigorevich.ml.domain.ai.Task;
 
 public class UnableToReachLocationEvent extends Event implements Cancellable {
 
@@ -14,12 +14,12 @@ public class UnableToReachLocationEvent extends Event implements Cancellable {
     private boolean cancelled;
     private final Entity entity;
     private final Location target;
-    private final TaskData taskData;
+    private final Task task;
 
-    public UnableToReachLocationEvent(Entity entity, Location location, TaskData taskData) {
+    public UnableToReachLocationEvent(Entity entity, Location location, Task task) {
         this.entity = entity;
         this.target = location;
-        this.taskData = taskData;
+        this.task = task;
     }
 
     public Entity getEntity() {
@@ -30,8 +30,8 @@ public class UnableToReachLocationEvent extends Event implements Cancellable {
         return target;
     }
 
-    public TaskData getTaskData() {
-        return taskData;
+    public Task getTask() {
+        return task;
     }
 
     @Override

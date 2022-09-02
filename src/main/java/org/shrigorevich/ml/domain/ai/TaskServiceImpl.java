@@ -26,7 +26,6 @@ public class TaskServiceImpl extends BaseService implements TaskService {
     @Override
     public void add(Task task) {
         UUID entityId = task.getEntity().getUniqueId();
-
         if (tasksQueues.containsKey(entityId)) {
             PriorityQueue<Task> queue = tasksQueues.get(entityId);
             queue.add(task);

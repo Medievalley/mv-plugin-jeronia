@@ -9,7 +9,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.shrigorevich.ml.domain.structure.models.LoreStructModel;
-import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
+import org.shrigorevich.ml.domain.structure.models.StructBlockModelImpl;
 import org.shrigorevich.ml.domain.structure.models.VolumeBlockModel;
 import org.shrigorevich.ml.domain.structure.models.VolumeModel;
 import org.shrigorevich.ml.domain.callbacks.*;
@@ -175,13 +175,13 @@ public class StructContextImpl implements StructureContext { //TODO: extends abs
         }
     }
 
-    public void saveStructBlocks(List<StructBlockDB> blocks) {
+    public void saveStructBlocks(List<StructBlockModel> blocks) {
         try {
             QueryRunner run = new QueryRunner(dataSource);
             Object[][] brokenBlockValues = new Object[blocks.size()][3];
 
             for (int i = 0; i < blocks.size(); i++) {
-                StructBlockDB b = blocks.get(i);
+                StructBlockModel b = blocks.get(i);
                 brokenBlockValues[i] = new Object[] {
                         b.getStructId(),
                         b.getVolumeBlockId(),
@@ -195,12 +195,12 @@ public class StructContextImpl implements StructureContext { //TODO: extends abs
         }
     }
 
-    public List<StructBlockDB> getStructBlocks(int structId) {
+    public List<StructBlockModel> getStructBlocks(int structId) {
         try {
             QueryRunner run = new QueryRunner(dataSource);
-            ResultSetHandler<List<StructBlockDB>> h = new BeanListHandler(StructBlockModel.class);
+            ResultSetHandler<List<StructBlockModel>> h = new BeanListHandler(StructBlockModelImpl.class);
             String sql = String.format(
-                    "select b.id, v.id as volumeBlockId, v.type, v.block_data as blockData, b.broken, b.trigger_destruction as triggerDestruction,\n" +
+                    "select b.id, s.id as structId, v.id as volumeBlockId, v.type, v.block_data as blockData, b.broken, b.trigger_destruction as triggerDestruction,\n" +
                     "v.x+s.x1 as x, v.y+s.y1 as y, v.z+s.z1 as z\n" +
                     "from struct_block b \n" +
                     "join volume_block v ON b.volume_block_id=v.id\n" +
@@ -215,22 +215,23 @@ public class StructContextImpl implements StructureContext { //TODO: extends abs
     }
 
     //TODO: Maybe create new db index
-    public Optional<StructBlockDB> getStructBlock(int x, int y, int z, int volumeId, int structId) {
+    public Optional<StructBlockModel> getStructBlock(int x, int y, int z, int volumeId, int structId) {
         try {
             QueryRunner run = new QueryRunner(dataSource);
-            ResultSetHandler<StructBlockDB> h = new BeanHandler(StructBlockModel.class);
+            ResultSetHandler<StructBlockModel> h = new BeanHandler(StructBlockModelImpl.class);
             String sql = String.format(
-                    "select s.id, s.struct_id as structId, v.id as volumeBlockId, v.type, v.block_data as blockData, v.x, v.y, v.z, s.broken, s.trigger_destruction as triggerDestruction \n" +
-                            "from struct_block s join volume_block v \n" +
-                            "ON s.volume_block_id=v.id \n" +
-                            "where v.x=%d and v.y=%d and v.z=%d and v.volume_id=%d and struct_id=%d",
+                    "select b.id, s.id as structId, v.id as volumeBlockId, v.type, v.block_data as blockData, b.broken, b.trigger_destruction as triggerDestruction,\n" +
+                    "v.x+s.x1 as x, v.y+s.y1 as y, v.z+s.z1 as z\n" +
+                    "from struct_block b \n" +
+                    "join volume_block v ON b.volume_block_id=v.id\n" +
+                    "join struct s ON b.struct_id = s.id\n" +
+                    "where v.x=%d and v.y=%d and v.z=%d and v.volume_id=%d and struct_id=%d",
                     x, y, z, volumeId, structId);
 
-            StructBlockDB block = run.query(sql, h);
+            StructBlockModel block = run.query(sql, h);
             if (block == null) {
-                System.out.println(String.format("Null block: %s, %s, %s, %s, %s", x, y, z, volumeId, structId));
+                System.out.printf("Null block: %s, %s, %s, %s, %s%n", x, y, z, volumeId, structId);
             }
-
             return block == null ? Optional.empty() : Optional.of(block);
 
         } catch (SQLException ex) {
@@ -239,13 +240,13 @@ public class StructContextImpl implements StructureContext { //TODO: extends abs
         }
     }
 
-    public int updateStructBlocksBrokenStatus(List<StructBlockDB> blocks) {
+    public int updateStructBlocksBrokenStatus(List<StructBlockModel> blocks) {
         try {
             QueryRunner run = new QueryRunner(dataSource);
             Object[][] blockValues = new Object[blocks.size()][2];
 
             for (int i = 0; i < blocks.size(); i++) {
-                StructBlockDB b = blocks.get(i);
+                StructBlockModel b = blocks.get(i);
                 blockValues[i] = new Object[] {
                         b.isBroken(),
                         b.getId()

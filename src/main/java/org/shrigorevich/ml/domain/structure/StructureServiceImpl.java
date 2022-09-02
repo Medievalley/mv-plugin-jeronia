@@ -160,6 +160,9 @@ public class StructureServiceImpl extends BaseService implements StructureServic
             Bukkit.getScheduler().runTask(getPlugin(),
                 () -> Bukkit.getPluginManager().callEvent(new ProjectRestoreEvent(currentProject)));
         }
+        for (Integer ls : structures.keySet()) {
+            System.out.println("Ls: " + structures.get(ls).getId());
+        }
     }
 
     private void registerStructure(LoreStructDB s) {
@@ -174,15 +177,15 @@ public class StructureServiceImpl extends BaseService implements StructureServic
     @Override
     public void processExplodedBlocksAsync(List<Block> blocks) {
         Bukkit.getScheduler().runTaskAsynchronously(getPlugin(), () -> {
-            List<StructBlockDB> brokenBlocks = new ArrayList<>();
+            List<StructBlockModel> brokenBlocks = new ArrayList<>();
             for (Block block : blocks) {
-                Optional<StructBlockDB> b = getBrokenBlock(block);
+                Optional<StructBlockModel> b = getBrokenBlock(block);
                 b.ifPresent(brokenBlocks::add);
             }
             structContext.updateStructBlocksBrokenStatus(brokenBlocks);
 
-            Map<Integer, List<StructBlockDB>> blocksPerStruct = new HashMap<>();
-            for (StructBlockDB b : brokenBlocks) {
+            Map<Integer, List<StructBlockModel>> blocksPerStruct = new HashMap<>();
+            for (StructBlockModel b : brokenBlocks) {
                 if(blocksPerStruct.containsKey(b.getStructId())) {
                     blocksPerStruct.get(b.getStructId()).add(b);
                 } else {
@@ -203,7 +206,7 @@ public class StructureServiceImpl extends BaseService implements StructureServic
         currentProject = null;
     }
 
-    private void updateBuildPlan(Map<Integer, List<StructBlockDB>> blocksPerStruct) {
+    private void updateBuildPlan(Map<Integer, List<StructBlockModel>> blocksPerStruct) {
         boolean isProjectExists = currentProject != null;
         for (Integer structId : blocksPerStruct.keySet()) {
             boolean alreadyInPlan = buildPlan.stream().anyMatch(s -> s.getId() == structId);
@@ -220,20 +223,20 @@ public class StructureServiceImpl extends BaseService implements StructureServic
             currentProject = buildPlan.poll();
         }
 
-        if (blocksPerStruct.containsKey(currentProject.getId())) {
+        if (currentProject != null && blocksPerStruct.containsKey(currentProject.getId())) {
             Bukkit.getScheduler().runTask(getPlugin(),
                     () -> Bukkit.getPluginManager().callEvent(
                             new BuildPlanUpdatedEvent(currentProject, blocksPerStruct.get(currentProject.getId()))));
         }
     }
-    private Optional<StructBlockDB> getBrokenBlock(Block block) {
+    private Optional<StructBlockModel> getBrokenBlock(Block block) {
         Optional<LoreStructure> struct = getByLocation(block.getLocation());
         if (struct.isPresent()) {
             LoreStructure s = struct.get();
             int x = block.getX() - s.getX1();
             int y = block.getY() - s.getY1();
             int z = block.getZ() - s.getZ1();
-            Optional<StructBlockDB> sb = structContext.getStructBlock(x, y, z, s.getVolumeId(), s.getId());
+            Optional<StructBlockModel> sb = structContext.getStructBlock(x, y, z, s.getVolumeId(), s.getId());
 
             if (sb.isPresent() && !sb.get().isBroken() && sb.get().isTriggerDestruction()) {
                 sb.get().setBroken(true);

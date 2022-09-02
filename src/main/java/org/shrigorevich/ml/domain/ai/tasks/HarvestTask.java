@@ -24,7 +24,7 @@ public class HarvestTask extends BaseTask implements Task {
     @Override
     public void start() {
         MobGoals goals = getPlugin().getServer().getMobGoals();
-        goal = new HarvestGoal(getPlugin(), getData(), getEntity(), target);
+        goal = new HarvestGoal(getPlugin(), this, getEntity(), target);
         setGoal(goals, goal);
     }
 

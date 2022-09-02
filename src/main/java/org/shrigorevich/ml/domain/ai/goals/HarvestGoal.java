@@ -3,15 +3,12 @@ package org.shrigorevich.ml.domain.ai.goals;
 import com.destroystokyo.paper.entity.ai.Goal;
 import com.destroystokyo.paper.entity.ai.GoalKey;
 import com.destroystokyo.paper.entity.ai.GoalType;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Mob;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.shrigorevich.ml.common.Utils;
-import org.shrigorevich.ml.domain.ai.TaskData;
+import org.shrigorevich.ml.domain.ai.Task;
 import org.shrigorevich.ml.events.LocationReachedEvent;
 import org.shrigorevich.ml.events.UnableToReachLocationEvent;
 
@@ -19,12 +16,13 @@ import java.util.EnumSet;
 
 public class HarvestGoal extends BaseGoal implements Goal<Mob> {
     private final Location target;
+    private final Task task;
     private int cooldown = 0;
 
-    public HarvestGoal(Plugin plugin, TaskData data, Mob mob, Location target) {
-
-        super(mob, plugin, data, ActionKey.REACH_LOCATION);
+    public HarvestGoal(Plugin plugin, Task task, Mob mob, Location target) {
+        super(mob, plugin, ActionKey.REACH_LOCATION);
         this.target = target;
+        this.task = task;
     }
 
     @Override
@@ -59,13 +57,13 @@ public class HarvestGoal extends BaseGoal implements Goal<Mob> {
         PluginManager pm = getPlugin().getServer().getPluginManager();
         if (!isAchieved() && Utils.isLocationsEquals(mLoc, tLoc)) {
             setAchieved(true);
-            pm.callEvent(new LocationReachedEvent(getMob(), target, getData()));
+            pm.callEvent(new LocationReachedEvent(getMob(), target, task));
         }
         else if (cooldown == 10) {
             cooldown = 0;
             Location np = getMob().getPathfinder().getCurrentPath().getNextPoint();
             if (np == null) {
-                pm.callEvent(new UnableToReachLocationEvent(getMob(), target, getData()));
+                pm.callEvent(new UnableToReachLocationEvent(getMob(), target, task));
             }
         }
     }
