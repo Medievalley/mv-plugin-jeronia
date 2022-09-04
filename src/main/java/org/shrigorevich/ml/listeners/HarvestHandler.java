@@ -11,7 +11,7 @@ import org.shrigorevich.ml.domain.ai.TaskService;
 import org.shrigorevich.ml.domain.ai.tasks.HarvestTask;
 import org.shrigorevich.ml.domain.npc.NpcService;
 import org.shrigorevich.ml.domain.structure.StructureService;
-import org.shrigorevich.ml.events.HarvestEvent;
+import org.shrigorevich.ml.events.HarvestStartedEvent;
 import org.shrigorevich.ml.events.StructPlantGrownEvent;
 import org.shrigorevich.ml.events.UnableToHarvestEvent;
 
@@ -41,7 +41,7 @@ public class HarvestHandler implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void OnHarvest(HarvestEvent event) {
+    public void OnHarvest(HarvestStartedEvent event) {
         Block block = event.getTarget().getBlock();
         Material initType = block.getType();
 

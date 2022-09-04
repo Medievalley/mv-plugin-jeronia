@@ -106,6 +106,11 @@ public class LoreStructImpl extends StructureImpl implements LoreStructure {
     }
 
     @Override
+    public Optional<StructBlockModel> getBlock(int x, int y, int z) {
+        return context.getStructBlock(x, y, z, volumeId, getId());
+    }
+
+    @Override
     public int getFoodStock() {
         return foodStock;
     }
@@ -134,10 +139,5 @@ public class LoreStructImpl extends StructureImpl implements LoreStructure {
     private boolean isSizeEqual(VolumeDB volume) {
         return this.getSizeX() == volume.getSizeX() && this.getSizeY() == volume.getSizeY() &&
                 this.getSizeZ() == volume.getSizeZ();
-    }
-
-    @Override
-    public int compareTo(@NotNull LoreStructure struct) {
-        return struct.getPriority() - this.priority;
     }
 }

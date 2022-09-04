@@ -66,6 +66,7 @@ public final class Ml extends JavaPlugin {
         try {
             structService.load();
             npcService.load();
+            projectService.load();
         } catch (IllegalArgumentException ex) {
             Bukkit.getLogger().severe(ex.getMessage());
         }
@@ -82,7 +83,6 @@ public final class Ml extends JavaPlugin {
         PluginManager pm = getServer().getPluginManager();
         pm.registerEvents(new Auth(userService), this);
         pm.registerEvents(new BlockBreak(structService), this);
-        pm.registerEvents(new BlockExplode(structService), this);
         pm.registerEvents(new CustomSpawn(taskService, npcService, structService), this);
         pm.registerEvents(new EntityInventoryHandler(npcService), this);
         pm.registerEvents(new EntitySpawn(this), this);
@@ -92,9 +92,7 @@ public final class Ml extends JavaPlugin {
         pm.registerEvents(new ReachLocationHandler(this), this);
         pm.registerEvents(new DangerHandler(taskService, npcService), this);
         pm.registerEvents(new EntityDeathHandler(npcService, projectService, taskService, structService), this);
-        pm.registerEvents(new StructHealthHandler(projectService, scoreboardService, npcService, taskService), this);
-        pm.registerEvents(new BuildHandler(taskService, projectService, structService), this);
-
+        pm.registerEvents(new BuildProjectHandler(projectService, scoreboardService, npcService, taskService, structService), this);
     }
 
     private void setupExecutors() {

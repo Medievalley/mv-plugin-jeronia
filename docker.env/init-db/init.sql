@@ -105,12 +105,12 @@ CREATE table IF NOT EXISTS struct_npc (
     alive BOOLEAN DEFAULT true NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS resource (
+CREATE TABLE IF NOT EXISTS storage (
     id SERIAL PRIMARY KEY,
-    dep_id INTEGER references department(id) ON DELETE CASCADE ON UPDATE CASCADE,
-    type VARCHAR(50) NOT NULL,
-    number INTEGER DEFAULT 0 NOT NULL
+    deposit INTEGER DEFAULT 0 NOT NULL,
+    resources INTEGER DEFAULT 0 NOT NULL
 );
+
 CREATE UNIQUE INDEX res_uniq_idx ON resource(dep_id, type);
 
 INSERT INTO role VALUES (1, 'Admin', 'Most privileged role');
@@ -123,6 +123,8 @@ INSERT INTO npc_role (id, name, description) VALUES
 (1, 'harvester', 'A villager who harvests'),
 (2, 'warden', 'The main person in the village'),
 (3, 'builder', 'A villager who builds and repairs structures');
+
+INSERT INTO storage (deposit, resources) VALUES (100, 3);
 
 -- MOCK SCRIPT
  with rows as (
@@ -142,9 +144,3 @@ INSERT INTO npc_role (id, name, description) VALUES
      returning id
  )
  insert into player_data (user_id, role_id, lives) select id, 1, 4 from rows;
-
-
---UPDATE struct_block AS s
---SET trigger_destruction = false
---FROM volume_block AS v
---WHERE type='WHEAT' and s.volume_block_id = v.id

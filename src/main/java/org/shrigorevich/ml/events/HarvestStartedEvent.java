@@ -8,7 +8,7 @@ import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 import org.shrigorevich.ml.domain.ai.Task;
 
-public class HarvestEvent extends Event implements Cancellable {
+public class HarvestStartedEvent extends Event implements Cancellable {
 
     private final Entity entity;
     private final Location target;
@@ -16,7 +16,7 @@ public class HarvestEvent extends Event implements Cancellable {
     private boolean cancelled;
     private final Task task;
 
-    public HarvestEvent(Entity entity, Location target, Task task) {
+    public HarvestStartedEvent(Entity entity, Location target, Task task) {
         this.entity = entity;
         this.target = target;
         this.task = task;

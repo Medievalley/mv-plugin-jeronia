@@ -12,8 +12,7 @@ import org.shrigorevich.ml.domain.callbacks.IResultCallback;
 import org.shrigorevich.ml.db.contexts.StructureContext;
 import org.shrigorevich.ml.domain.structure.models.*;
 import org.shrigorevich.ml.domain.users.User;
-import org.shrigorevich.ml.events.BuildPlanUpdatedEvent;
-import org.shrigorevich.ml.events.ProjectRestoreEvent;
+import org.shrigorevich.ml.events.StructsLoadedEvent;
 
 import java.util.*;
 
@@ -22,7 +21,6 @@ public class StructureServiceImpl extends BaseService implements StructureServic
     private final StructureContext structContext;
     private final Map<Integer, LoreStructure> structures;
     private final Map<String, Structure> selectedStruct;
-    private final PriorityQueue<LoreStructure> buildPlan;
     private LoreStructure currentProject;
 
     public StructureServiceImpl(StructureContext structureContext, Plugin plugin) {
@@ -31,7 +29,7 @@ public class StructureServiceImpl extends BaseService implements StructureServic
         this.structCorners = new HashMap<>();
         this.structures = new HashMap<>();
         this.selectedStruct = new HashMap<>();
-        this.buildPlan = new PriorityQueue<>();
+
     }
 
     @Override
@@ -150,100 +148,28 @@ public class StructureServiceImpl extends BaseService implements StructureServic
     @Override
     public void load() {
         List<LoreStructDB> structs = structContext.getStructures();
+        List<LoreStructure> damagedStructs = new ArrayList<>();
         for (LoreStructDB s : structs) {
-
-            registerStructure(s);
+            LoreStructure struct = registerStructure(s);
+            if (s.getBlocks() > 0 && s.getBrokenBlocks() > 0) {
+                damagedStructs.add(struct);
+            }
         }
-        if (!buildPlan.isEmpty()) {
-            System.out.printf("Plan size: %d%n", buildPlan.size());
-            currentProject = buildPlan.poll();
+        if (!damagedStructs.isEmpty()) {
             Bukkit.getScheduler().runTask(getPlugin(),
-                () -> Bukkit.getPluginManager().callEvent(new ProjectRestoreEvent(currentProject)));
-        }
-        for (Integer ls : structures.keySet()) {
-            System.out.println("Ls: " + structures.get(ls).getId());
+                () -> Bukkit.getPluginManager().callEvent(new StructsLoadedEvent(damagedStructs)));
         }
     }
 
-    private void registerStructure(LoreStructDB s) {
+    private LoreStructure registerStructure(LoreStructDB s) {
         LoreStructure newStruct = new LoreStructImpl(s, structContext);
         structures.put(newStruct.getId(), newStruct);
-
-        if (s.getBlocks() > 0 && s.getBrokenBlocks() > 0) {
-            buildPlan.add(newStruct);
-        }
+        return newStruct;
     }
 
     @Override
-    public void processExplodedBlocksAsync(List<Block> blocks) {
-        Bukkit.getScheduler().runTaskAsynchronously(getPlugin(), () -> {
-            List<StructBlockModel> brokenBlocks = new ArrayList<>();
-            for (Block block : blocks) {
-                Optional<StructBlockModel> b = getBrokenBlock(block);
-                b.ifPresent(brokenBlocks::add);
-            }
-            structContext.updateStructBlocksBrokenStatus(brokenBlocks);
-
-            Map<Integer, List<StructBlockModel>> blocksPerStruct = new HashMap<>();
-            for (StructBlockModel b : brokenBlocks) {
-                if(blocksPerStruct.containsKey(b.getStructId())) {
-                    blocksPerStruct.get(b.getStructId()).add(b);
-                } else {
-                    blocksPerStruct.put(b.getStructId(), new ArrayList<>(Collections.singletonList(b)));
-                }
-            }
-            updateBuildPlan(blocksPerStruct);
-        });
-    }
-
-    @Override
-    public Optional<LoreStructure> getProject() {
-        return currentProject == null ? Optional.empty() : Optional.of(currentProject);
-    }
-
-    private void postponeProject() {
-        buildPlan.add(currentProject);
-        currentProject = null;
-    }
-
-    private void updateBuildPlan(Map<Integer, List<StructBlockModel>> blocksPerStruct) {
-        boolean isProjectExists = currentProject != null;
-        for (Integer structId : blocksPerStruct.keySet()) {
-            boolean alreadyInPlan = buildPlan.stream().anyMatch(s -> s.getId() == structId);
-            boolean matchCurrent = isProjectExists && currentProject.getId() == structId;
-            if (!alreadyInPlan && !matchCurrent) {
-                getById(structId).ifPresent(buildPlan::add);
-            }
-        }
-
-        if (!isProjectExists) {
-            currentProject = buildPlan.poll();
-        } else if (!buildPlan.isEmpty() && buildPlan.peek().getPriority() > currentProject.getPriority()){
-            postponeProject();
-            currentProject = buildPlan.poll();
-        }
-
-        if (currentProject != null && blocksPerStruct.containsKey(currentProject.getId())) {
-            Bukkit.getScheduler().runTask(getPlugin(),
-                    () -> Bukkit.getPluginManager().callEvent(
-                            new BuildPlanUpdatedEvent(currentProject, blocksPerStruct.get(currentProject.getId()))));
-        }
-    }
-    private Optional<StructBlockModel> getBrokenBlock(Block block) {
-        Optional<LoreStructure> struct = getByLocation(block.getLocation());
-        if (struct.isPresent()) {
-            LoreStructure s = struct.get();
-            int x = block.getX() - s.getX1();
-            int y = block.getY() - s.getY1();
-            int z = block.getZ() - s.getZ1();
-            Optional<StructBlockModel> sb = structContext.getStructBlock(x, y, z, s.getVolumeId(), s.getId());
-
-            if (sb.isPresent() && !sb.get().isBroken() && sb.get().isTriggerDestruction()) {
-                sb.get().setBroken(true);
-                return sb;
-            }
-        }
-        return Optional.empty();
+    public void setBlocksBroken(List<StructBlockModel> blocks) {
+        structContext.updateStructBlocksBrokenStatus(blocks);
     }
 }
 

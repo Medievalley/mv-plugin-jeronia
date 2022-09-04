@@ -4,6 +4,7 @@ import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
 import org.shrigorevich.ml.domain.structure.models.StructBlockModelImpl;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface Volumeable {
     int getVolumeId();
@@ -12,4 +13,5 @@ public interface Volumeable {
     void restore();
     void applyVolume(int volumeId) throws IllegalArgumentException;
     List<StructBlockModel> getStructBlocks();
+    Optional<StructBlockModel> getBlock(int x, int y, int z);
 }

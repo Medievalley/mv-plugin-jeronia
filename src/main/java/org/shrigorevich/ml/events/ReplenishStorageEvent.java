@@ -3,20 +3,17 @@ package org.shrigorevich.ml.events;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
-import org.shrigorevich.ml.domain.structure.LoreStructure;
 
-public class ProjectRestoreEvent extends Event {
-
+public class ReplenishStorageEvent extends Event {
+    private final int amount;
     private static final HandlerList HANDLERS = new HandlerList();
-    private final LoreStructure structure;
 
-    public ProjectRestoreEvent(LoreStructure structure) {
-
-        this.structure = structure;
+    public ReplenishStorageEvent(int amount) {
+        this.amount = Math.abs(amount);
     }
 
-    public LoreStructure getStructure() {
-        return structure;
+    public int getAmount() {
+        return amount;
     }
 
     @Override

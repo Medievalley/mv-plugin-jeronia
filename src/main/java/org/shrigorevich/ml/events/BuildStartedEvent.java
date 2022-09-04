@@ -7,14 +7,14 @@ import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 import org.shrigorevich.ml.domain.ai.BuildTask;
 
-public class BuildEvent extends Event {
+public class BuildStartedEvent extends Event {
     private final Entity entity;
     private final Location target;
     private static final HandlerList HANDLERS = new HandlerList();
     private boolean cancelled;
     private final BuildTask task;
 
-    public BuildEvent(Entity entity, Location target, BuildTask task) {
+    public BuildStartedEvent(Entity entity, Location target, BuildTask task) {
         this.entity = entity;
         this.target = target;
         this.task = task;

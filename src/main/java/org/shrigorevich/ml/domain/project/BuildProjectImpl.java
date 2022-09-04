@@ -1,17 +1,19 @@
 package org.shrigorevich.ml.domain.project;
 
+import org.jetbrains.annotations.NotNull;
+import org.shrigorevich.ml.domain.structure.LoreStructure;
 import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
 
 import java.util.*;
 
 public class BuildProjectImpl implements BuildProject {
-    private final int structId;
+    private final LoreStructure structure;
     private final int size;
     private int brokenSize;
     private final Queue<StructBlockModel> plannedBlocks;
 
-    public BuildProjectImpl(int structId, int size) {
-        this.structId = structId;
+    public BuildProjectImpl(LoreStructure structure, int size) {
+        this.structure = structure;
         this.plannedBlocks = new LinkedList<>();
         this.size = size;
         this.brokenSize = 0;
@@ -28,8 +30,8 @@ public class BuildProjectImpl implements BuildProject {
     }
 
     @Override
-    public int getStructId() {
-        return structId;
+    public int getId() {
+        return structure.getId();
     }
 
     @Override
@@ -51,5 +53,20 @@ public class BuildProjectImpl implements BuildProject {
     @Override
     public void decrementBrokenSize() {
         brokenSize-=1;
+    }
+
+    @Override
+    public int getPriority() {
+        return structure.getPriority();
+    }
+
+    @Override
+    public LoreStructure getStruct() {
+        return structure;
+    }
+
+    @Override
+    public int compareTo(@NotNull BuildProject o) {
+        return o.getPriority() - this.getPriority();
     }
 }

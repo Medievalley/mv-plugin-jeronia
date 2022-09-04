@@ -5,7 +5,7 @@ import org.bukkit.entity.Villager;
 
 import java.util.Optional;
 
-public interface LoreStructure extends Structure, Volumeable, Comparable<LoreStructure> {
+public interface LoreStructure extends Structure, Volumeable {
 
     String getName();
     int getPriority();

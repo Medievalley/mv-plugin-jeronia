@@ -1,35 +1,37 @@
 package org.shrigorevich.ml.domain.project;
 
-import org.bukkit.Material;
-import org.shrigorevich.ml.domain.project.models.ResourceModel;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.shrigorevich.ml.domain.project.models.StorageModel;
 
 public class StorageImpl implements Storage {
-    private final Map<Material, Integer> resources;
 
-    public StorageImpl(List<ResourceModel> resList) {
-        this.resources = new HashMap<>();
-        for (ResourceModel model : resList) {
-            Material type = Material.valueOf(model.getType());
-            resources.put(type, model.getNumber());
-        }
+    private int deposit, resources;
+    public StorageImpl(int deposit, int resources) {
+        this.resources = resources;
+        this.deposit = deposit;
+        System.out.printf("Deposit: %d, Resources: %d%n", deposit, resources);
     }
 
-    public StorageImpl(){
-        resources = new HashMap<>();
-    }
-
-    @Override
-    public int getResource(Material material) {
-        return resources.getOrDefault(material, 0);
+    public StorageImpl(StorageModel m) {
+        this(m.getDeposit(), m.getResources());
     }
 
     @Override
-    public void addResource(Material material, int number) {
-        int curNumber = getResource(material) + number;
-        resources.put(material, number);
+    public void updateDeposit(int amount) {
+        deposit+=amount;
+    }
+
+    @Override
+    public void updateResources(int amount) {
+        resources+=amount;
+    }
+
+    @Override
+    public int getDeposit() {
+        return deposit;
+    }
+
+    @Override
+    public int getResources() {
+        return resources;
     }
 }

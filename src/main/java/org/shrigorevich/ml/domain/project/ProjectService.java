@@ -7,6 +7,7 @@ import java.util.Optional;
 public interface ProjectService extends Service {
 
     Optional<BuildProject> getProject(int structId);
+    Optional<BuildProject> getCurrent();
     void addProject(BuildProject project);
     Storage getStorage();
     void load();

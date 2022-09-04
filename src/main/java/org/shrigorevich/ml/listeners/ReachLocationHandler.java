@@ -1,6 +1,5 @@
 package org.shrigorevich.ml.listeners;
 
-import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -22,10 +21,10 @@ public class ReachLocationHandler implements Listener {
 
         switch (event.getTask().getType()) {
             case HARVEST:
-                pm.callEvent(new HarvestEvent(event.getEntity(), event.getTarget(), event.getTask()));
+                pm.callEvent(new HarvestStartedEvent(event.getEntity(), event.getTarget(), event.getTask()));
                 break;
             case BUILD:
-                pm.callEvent(new BuildEvent(event.getEntity(), event.getTarget(), (BuildTask) event.getTask()));
+                pm.callEvent(new BuildStartedEvent(event.getEntity(), event.getTarget(), (BuildTask) event.getTask()));
                 break;
             case HOLD_SPAWN:
             default:
