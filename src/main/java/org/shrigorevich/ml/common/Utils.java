@@ -6,9 +6,7 @@ import org.bukkit.Material;
 public class Utils {
 
     public static boolean isLocationsEquals(Location l1, Location l2) {
-        return l1.getBlockX() == l2.getBlockX() &&
-                l1.getBlockY() == l2.getBlockY() &&
-                l1.getBlockZ() == l2.getBlockZ();
+        return l1.distanceSquared(l2) < 1;
     }
 
     public static boolean isStructPlant(Material material) {

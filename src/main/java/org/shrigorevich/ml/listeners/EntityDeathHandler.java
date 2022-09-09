@@ -5,6 +5,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.shrigorevich.ml.domain.ai.TaskService;
 import org.shrigorevich.ml.domain.npc.NpcService;
@@ -39,6 +40,18 @@ public class EntityDeathHandler implements Listener {
 //                    System.out.println("Not enough gold");
 //                }
             });
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void OnEntityDeath(EntityDamageEvent event) {
+        Entity entity = event.getEntity();
+        if (entity.getEntitySpawnReason() == CreatureSpawnEvent.SpawnReason.CUSTOM) {
+            if (event.getCause() == EntityDamageEvent.DamageCause.SUFFOCATION) {
+                event.setCancelled(true);
+            } else {
+                System.out.println("Damage cause:" + event.getCause());
+            }
         }
     }
 

@@ -65,7 +65,7 @@ public final class Ml extends JavaPlugin {
         setupExecutors();
         try {
             structService.load();
-            npcService.load();
+            //npcService.load();
             projectService.load();
         } catch (IllegalArgumentException ex) {
             Bukkit.getLogger().severe(ex.getMessage());
