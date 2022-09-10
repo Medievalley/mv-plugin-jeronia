@@ -93,6 +93,7 @@ public class BuildProjectHandler implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void OnBuildStart(BuildStartedEvent event) {
+        System.out.println("BuildStartedEvent");
         Entity entity = event.getEntity();
         StructBlockModel block = event.getTask().getBlock();
 

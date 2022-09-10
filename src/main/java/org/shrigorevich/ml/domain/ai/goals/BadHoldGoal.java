@@ -10,9 +10,6 @@ import org.bukkit.plugin.Plugin;
 import org.shrigorevich.ml.common.Utils;
 
 import java.util.EnumSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
 
 public class BadHoldGoal extends BaseGoal implements Goal<Mob> {
     private final Location target;
@@ -23,7 +20,7 @@ public class BadHoldGoal extends BaseGoal implements Goal<Mob> {
 
 
     public BadHoldGoal(Plugin plugin, Mob mob, Location target) {
-        super(mob, plugin, ActionKey.REACH_LOCATION);
+        super(mob, target, plugin, ActionKey.REACH_LOCATION);
         this.target = target;
     }
 
@@ -50,14 +47,13 @@ public class BadHoldGoal extends BaseGoal implements Goal<Mob> {
 
     @Override
     public void tick() {
-
         cooldown+=1;
         if (cooldown == 10) {
             cooldown = 0;
             move();
         }
 
-        if (Utils.isLocationsEquals(getMob().getLocation(), stuckLocation)) {
+        if (Utils.distanceSquared(getMob().getLocation(), stuckLocation)) {
             stuckTicks+=1;
         } else {
             stuckLocation = getMob().getLocation();
@@ -80,10 +76,6 @@ public class BadHoldGoal extends BaseGoal implements Goal<Mob> {
     public EnumSet<GoalType> getTypes() {
         return EnumSet.of(GoalType.MOVE);
     }
-
-    private void printLocation(Location l, String name) {
-        System.out.printf("%s: %d %d %d%n", name, l.getBlockX(), l.getBlockY(), l.getBlockZ());
-    };
 
     private void move() {
         getMob().getPathfinder().moveTo(target, 0.7D);

@@ -41,6 +41,6 @@ public class GoSafeTask extends BaseTask implements Task {
     @Override
     public boolean shouldBeBlocked() {
         Pathfinder.PathResult rp = getEntity().getPathfinder().findPath(target);
-        return rp.getFinalPoint() == null || !Utils.isLocationsEquals(rp.getFinalPoint(), target);
+        return rp.getFinalPoint() == null || !Utils.distanceSquared(rp.getFinalPoint(), target);
     }
 }

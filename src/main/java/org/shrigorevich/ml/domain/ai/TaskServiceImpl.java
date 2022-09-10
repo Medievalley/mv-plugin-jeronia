@@ -114,7 +114,7 @@ public class TaskServiceImpl extends BaseService implements TaskService {
                 }
             }
             blockedTasks.put(entityId, updatedList);
-            System.out.println("Blocked tasks size: " + blockedTasks.get(entityId).size());
+//            System.out.println("Blocked tasks size: " + blockedTasks.get(entityId).size());
         }
     }
 

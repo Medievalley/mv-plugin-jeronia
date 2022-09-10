@@ -14,14 +14,11 @@ import org.shrigorevich.ml.events.LocationReachedEvent;
 import java.util.EnumSet;
 
 public class ReachLocationGoal extends BaseGoal implements Goal<Mob> {
-    private final Location target;
+
     private final Task task;
-    private int cooldown = 0;
 
     public ReachLocationGoal(Plugin plugin, Task task, Mob mob, Location target) {
-
-        super(mob, plugin, ActionKey.REACH_LOCATION);
-        this.target = target;
+        super(mob, target, new LocationReachedEvent(mob, target, task), plugin, ActionKey.REACH_LOCATION);
         this.task = task;
     }
 
@@ -37,28 +34,19 @@ public class ReachLocationGoal extends BaseGoal implements Goal<Mob> {
 
     @Override
     public void start() {
-//        System.out.println(String.format("REACH_LOCATION activated. Task: %s. Target location: %d %d %d",
-//                getData().getType(), target.getBlockX(), target.getBlockY(), target.getBlockZ()));
-        getMob().getPathfinder().moveTo(target, 0.7D);
+//        printLocation(getTarget(), "REACH_LOCATION activated");
+        move(0.7D);
     }
 
     @Override
     public void stop() {
-//        System.out.println("REACH_LOCATION stopped. Task: " + getData().getType());
+//        System.out.println("REACH_LOCATION stopped. Task: " + task.getType());
         getMob().getPathfinder().stopPathfinding();
     }
 
     @Override
     public void tick() {
-        cooldown+=1;
-        getMob().getPathfinder().moveTo(target, 0.7D);
-        Location mobLoc = getMob().getLocation().add(0, 1, 0);
-        if (!isAchieved() && Utils.isLocationsEquals(mobLoc, target)) {
-            setAchieved(true);
-            Bukkit.getScheduler().runTask(getPlugin(), () -> {
-                getPlugin().getServer().getPluginManager().callEvent(new LocationReachedEvent(getMob(), target, task));
-            });
-        }
+        defaultTick();
     }
 
     @Override

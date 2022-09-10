@@ -6,6 +6,7 @@ import com.destroystokyo.paper.entity.ai.MobGoals;
 import org.bukkit.Location;
 import org.bukkit.entity.Mob;
 import org.bukkit.plugin.Plugin;
+import org.shrigorevich.ml.common.Utils;
 import org.shrigorevich.ml.domain.ai.*;
 import org.shrigorevich.ml.domain.ai.goals.BuildGoal;
 import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
@@ -28,8 +29,13 @@ public class BuildTaskImpl extends BaseTask implements BuildTask {
 
     @Override
     public void start() {
+
         MobGoals goals = getPlugin().getServer().getMobGoals();
-        goal = new BuildGoal(getPlugin(), this, getEntity(), target);
+        Location finalPoint = defineFinalLocation(target);
+//        System.out.printf("Init target: %d %d %d%n", target.getBlockX(), target.getBlockY(), target.getBlockZ());
+//        System.out.printf("Final: %d %d %d%n", finalPoint.getBlockX(), finalPoint.getBlockY(), finalPoint.getBlockZ());
+
+        goal = new BuildGoal(getPlugin(), this, getEntity(), finalPoint);
         setGoal(goals, goal);
     }
 
@@ -40,6 +46,20 @@ public class BuildTaskImpl extends BaseTask implements BuildTask {
                     getEntity(),
                     goal.getKey()
             );
+        }
+    }
+
+    private Location defineFinalLocation(Location target) {
+        Pathfinder.PathResult path = getEntity().getPathfinder().findPath(target);
+        if (path != null) {
+            Location fp = path.getFinalPoint();
+            if (Utils.distanceSquared(path.getFinalPoint(), target) && path.getPoints().size() > 1) {
+                return path.getPoints().get(path.getPoints().size() - 2);
+            } else {
+                return fp;
+            }
+        } else {
+            return target;
         }
     }
 

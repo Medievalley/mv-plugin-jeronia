@@ -3,13 +3,15 @@ package org.shrigorevich.ml.commands;
 import com.destroystokyo.paper.entity.ai.Goal;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.data.type.Door;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.*;
+import org.bukkit.util.Vector;
 import org.shrigorevich.ml.domain.ai.TaskService;
-import org.shrigorevich.ml.domain.ai.TaskType;
-import org.shrigorevich.ml.domain.ai.goals.CustomGoal;
 import org.shrigorevich.ml.domain.ai.tasks.HoldSpawnTask;
 import org.shrigorevich.ml.domain.npc.NpcRole;
 import org.shrigorevich.ml.domain.npc.NpcService;
@@ -52,11 +54,13 @@ public class NpcExecutor implements CommandExecutor {
                             break;
 
                         case "test":
-                            Giant e = (Giant) player.getWorld().spawnEntity(player.getLocation().add(10, 0, 0), EntityType.GIANT);
-
-                            Goal<Mob> goal = new CustomGoal(npcService.getPlugin(), new HoldSpawnTask(npcService.getPlugin(), e, player.getLocation()), e, player);
-
-                            npcService.getPlugin().getServer().getMobGoals().addGoal(e, 1, goal);
+                            Location eye = player.getEyeLocation();
+                            Vector dir = player.getLocation().getDirection();
+                            Location newLoc = eye.add(dir);
+                            Door door = (Door) newLoc.getBlock().getBlockData();
+                            System.out.println("Door opened");
+                            door.setOpen(true);
+                            newLoc.getBlock().setBlockData(door);
                             break;
                         default:
                             player.sendMessage(ChatColor.YELLOW + String.format("Command '%s' not found", args[0]));

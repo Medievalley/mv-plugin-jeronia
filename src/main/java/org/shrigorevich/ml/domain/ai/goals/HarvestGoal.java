@@ -15,13 +15,12 @@ import org.shrigorevich.ml.events.UnableToReachLocationEvent;
 import java.util.EnumSet;
 
 public class HarvestGoal extends BaseGoal implements Goal<Mob> {
-    private final Location target;
     private final Task task;
-    private int cooldown = 0;
 
     public HarvestGoal(Plugin plugin, Task task, Mob mob, Location target) {
-        super(mob, plugin, ActionKey.REACH_LOCATION);
-        this.target = target;
+        super(mob, target,
+            new LocationReachedEvent(mob, target, task),
+            plugin, ActionKey.REACH_LOCATION);
         this.task = task;
     }
 
@@ -37,35 +36,19 @@ public class HarvestGoal extends BaseGoal implements Goal<Mob> {
 
     @Override
     public void start() {
-//        System.out.printf("REACH_LOCATION activated. Task: %s. Target location: %d %d %d%n",
-//                getData().getType(), target.getBlockX(), target.getBlockY(), target.getBlockZ());
-        getMob().getPathfinder().moveTo(target, 0.7D);
+//        System.out.printf("Harvest activated. Task: %s%n", task.getType());
+        move(0.7D);
     }
 
     @Override
     public void stop() {
-//        System.out.println("REACH_LOCATION stopped. Task: " + getData().getType());
+//        System.out.printf("Harvest activated. Task: %s%n", task.getType());
         getMob().getPathfinder().stopPathfinding();
     }
 
     @Override
     public void tick() {
-        cooldown+=1;
-        getMob().getPathfinder().moveTo(target, 0.7D);
-        Location tLoc = target.clone().add(0, -1, 0);
-        Location mLoc = getMob().getLocation();
-        PluginManager pm = getPlugin().getServer().getPluginManager();
-        if (!isAchieved() && Utils.isLocationsEquals(mLoc, tLoc)) {
-            setAchieved(true);
-            pm.callEvent(new LocationReachedEvent(getMob(), target, task));
-        }
-        else if (cooldown == 10) {
-            cooldown = 0;
-            Location np = getMob().getPathfinder().getCurrentPath().getNextPoint();
-            if (np == null) {
-                pm.callEvent(new UnableToReachLocationEvent(getMob(), target, task));
-            }
-        }
+        defaultTick();
     }
 
     @Override

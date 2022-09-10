@@ -7,6 +7,7 @@ import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.ItemSpawnEvent;
 import org.shrigorevich.ml.domain.ai.TaskService;
 import org.shrigorevich.ml.domain.ai.tasks.HarvestTask;
 import org.shrigorevich.ml.domain.npc.NpcService;
@@ -61,6 +62,14 @@ public class HarvestHandler implements Listener {
         taskService.block(event.getEntity().getUniqueId());
     }
 
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void OnItemSpawn(ItemSpawnEvent event) {
+        if (isPlantFood(event.getEntity().getItemStack().getType())) {
+            if (event.getEntity().getThrower() == null) {
+                event.setCancelled(true);
+            }
+        }
+    }
     private void updateStock(UUID entityId) {
         npcService.getById(entityId).flatMap(npc ->
                 structService.getById(npc.getStructId())).ifPresent(loreStructure ->
@@ -72,6 +81,17 @@ public class HarvestHandler implements Listener {
             case WHEAT:
             case POTATOES:
             case CARROTS:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private boolean isPlantFood(Material type) {
+        switch (type) {
+            case WHEAT:
+            case POTATO:
+            case CARROT:
                 return true;
             default:
                 return false;

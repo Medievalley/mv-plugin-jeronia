@@ -12,7 +12,6 @@ import org.shrigorevich.ml.domain.ai.Task;
 import org.shrigorevich.ml.domain.ai.TaskPriority;
 import org.shrigorevich.ml.domain.ai.TaskType;
 import org.shrigorevich.ml.domain.ai.goals.HarvestGoal;
-import org.shrigorevich.ml.domain.ai.goals.ReachLocationGoal;
 
 public class HarvestTask extends BaseTask implements Task {
     private final Location target;
@@ -41,6 +40,6 @@ public class HarvestTask extends BaseTask implements Task {
     @Override
     public boolean shouldBeBlocked() {
         Pathfinder.PathResult rp = getEntity().getPathfinder().findPath(target);
-        return rp.getFinalPoint() == null || !Utils.isLocationsEquals(rp.getFinalPoint(), target);
+        return rp.getFinalPoint() == null || !Utils.distanceSquared(rp.getFinalPoint(), target);
     }
 }

@@ -11,7 +11,6 @@ import org.shrigorevich.ml.domain.ai.BaseTask;
 import org.shrigorevich.ml.domain.ai.Task;
 import org.shrigorevich.ml.domain.ai.TaskPriority;
 import org.shrigorevich.ml.domain.ai.TaskType;
-import org.shrigorevich.ml.domain.ai.goals.HarvestGoal;
 import org.shrigorevich.ml.domain.ai.goals.ReachLocationGoal;
 
 public class HoldSpawnTask extends BaseTask implements Task {
@@ -23,6 +22,7 @@ public class HoldSpawnTask extends BaseTask implements Task {
     }
     @Override
     public void start() {
+        System.out.println("Start task. Hold spawn");
         MobGoals goals = getPlugin().getServer().getMobGoals();
         goal = new ReachLocationGoal(getPlugin(), this, getEntity(), target);
         setGoal(goals, goal);
@@ -41,6 +41,6 @@ public class HoldSpawnTask extends BaseTask implements Task {
     @Override
     public boolean shouldBeBlocked() {
         Pathfinder.PathResult rp = getEntity().getPathfinder().findPath(target);
-        return rp.getFinalPoint() == null || !Utils.isLocationsEquals(rp.getFinalPoint(), target);
+        return rp.getFinalPoint() == null || !Utils.distanceSquared(rp.getFinalPoint(), target);
     }
 }
