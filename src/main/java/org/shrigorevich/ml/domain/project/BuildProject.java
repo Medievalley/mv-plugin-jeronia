@@ -14,4 +14,5 @@ public interface BuildProject extends Comparable<BuildProject> {
     void decrementBrokenSize();
     int getPriority();
     LoreStructure getStruct();
+    int getPlanSize();
 }

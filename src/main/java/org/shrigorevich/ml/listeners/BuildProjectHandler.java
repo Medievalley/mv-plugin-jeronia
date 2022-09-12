@@ -14,6 +14,7 @@ import org.shrigorevich.ml.domain.ai.TaskService;
 import org.shrigorevich.ml.domain.ai.tasks.BuildTaskImpl;
 import org.shrigorevich.ml.domain.npc.NpcRole;
 import org.shrigorevich.ml.domain.npc.NpcService;
+import org.shrigorevich.ml.domain.npc.StructNpc;
 import org.shrigorevich.ml.domain.project.BuildProject;
 import org.shrigorevich.ml.domain.project.BuildProjectImpl;
 import org.shrigorevich.ml.domain.project.ProjectService;
@@ -59,7 +60,7 @@ public class BuildProjectHandler implements Listener {
 
         projectService.getCurrent().ifPresent(project -> {
             System.out.printf("Current project: %s. Broken blocks: %d%n", project.getStruct().getName(), project.getBrokenSize());
-            updateScoreboard(project);
+            scoreboardService.updateScoreboard(project, projectService.getStorage());
         });
     }
 
@@ -82,7 +83,7 @@ public class BuildProjectHandler implements Listener {
 
         projectService.getCurrent().ifPresent(project -> {
             if (brokenBlocks.containsKey(project.getId())) {
-                updateScoreboard(project);
+                scoreboardService.updateScoreboard(project, projectService.getStorage());
                 callBuilders(project);
                 System.out.printf("Current project: %s. Broken blocks: %d%n", project.getStruct().getName(), project.getBrokenSize());
             }
@@ -109,7 +110,7 @@ public class BuildProjectHandler implements Listener {
         });
         projectService.getCurrent().ifPresent(project -> {
             if (project.getId() == block.getStructId()) {
-                updateScoreboard(project);
+                scoreboardService.updateScoreboard(project, projectService.getStorage());
             }
         });
     }
@@ -125,39 +126,29 @@ public class BuildProjectHandler implements Listener {
         }
     }
 
-    private void updateScoreboard(BuildProject project) {
-        Scoreboard board = scoreboardService.getScoreboard(BoardType.PROJECT);
-        Objective curObjective = board.getObjective(BoardType.PROJECT.toString());
-
-        if (curObjective != null) {
-            curObjective.unregister();
-        }
-        Objective objective = scoreboardService.createObjective(
-                BoardType.PROJECT, DisplaySlot.SIDEBAR,
-                "Project: " + project.getStruct().getName()
-        );
-
-        int resourceNeeded = project.getBrokenSize() - projectService.getStorage().getResources();
-        objective.getScore("Resources needed:").setScore(Math.max(resourceNeeded, 0));
-        objective.getScore("Health:").setScore(project.getHealthPercent());
-        for (Player p : Bukkit.getOnlinePlayers()) {
-            p.setScoreboard(board);
+    private void callBuilders(BuildProject project) {
+        List<StructNpc> builders = npcService.getNpcByRole(NpcRole.BUILDER);
+        int possibleTasksNumber = Math.min(project.getPlanSize(), projectService.getStorage().getResources());
+        if (builders.size() > 0 && possibleTasksNumber > 0) {
+            int builderIndex = 0;
+            for (int i = 0; i < possibleTasksNumber; i++) {
+                if (builderIndex == builders.size()) {
+                    builderIndex = 0;
+                }
+                addTask(builders.get(builderIndex), project);
+                builderIndex++;
+            }
         }
     }
 
-
-    private void callBuilders(BuildProject project) {
-        npcService.getNpcByRole(NpcRole.BUILDER).forEach(npc -> {
-            while (!project.isPlanEmpty()) {
-                StructBlockModel block = project.getPlannedBlock();
-                BuildTask task = new BuildTaskImpl(
-                        npcService.getPlugin(),
-                        (Villager) Bukkit.getEntity(npc.getEntityId()),
-                        block,
-                        Bukkit.getWorld(npc.getWorld())
-                                .getBlockAt(block.getX(), block.getY(), block.getZ()).getLocation());
-                taskService.add(task);
-            }
-        });
+    private void addTask(StructNpc npc, BuildProject project) {
+        StructBlockModel block = project.getPlannedBlock();
+        BuildTask task = new BuildTaskImpl(
+                npcService.getPlugin(),
+                (Villager) Bukkit.getEntity(npc.getEntityId()),
+                block,
+                Bukkit.getWorld(npc.getWorld())
+                        .getBlockAt(block.getX(), block.getY(), block.getZ()).getLocation());
+        taskService.add(task);
     }
 }

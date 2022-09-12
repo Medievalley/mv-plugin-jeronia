@@ -133,6 +133,14 @@ public class TaskServiceImpl extends BaseService implements TaskService {
         }
     }
 
+    @Override
+    public List<Task> getEntityTasks(UUID entityId) {
+        if (tasksQueues.containsKey(entityId)) {
+            return tasksQueues.get(entityId).stream().toList();
+        }
+        return new ArrayList<>();
+    }
+
     private void postpone(UUID entityId) {
         Task task = currentTasks.remove(entityId);
         if (task != null) {

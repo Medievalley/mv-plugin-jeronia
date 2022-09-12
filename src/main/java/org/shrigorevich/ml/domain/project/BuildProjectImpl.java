@@ -66,6 +66,11 @@ public class BuildProjectImpl implements BuildProject {
     }
 
     @Override
+    public int getPlanSize() {
+        return plannedBlocks.size();
+    }
+
+    @Override
     public int compareTo(@NotNull BuildProject o) {
         return o.getPriority() - this.getPriority();
     }
