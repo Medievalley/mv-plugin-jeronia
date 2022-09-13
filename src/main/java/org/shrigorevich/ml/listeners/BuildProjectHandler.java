@@ -88,8 +88,6 @@ public class BuildProjectHandler implements Listener {
                 System.out.printf("Current project: %s. Broken blocks: %d%n", project.getStruct().getName(), project.getBrokenSize());
             }
         });
-
-
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

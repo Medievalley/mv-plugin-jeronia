@@ -11,6 +11,8 @@ import org.shrigorevich.ml.db.DataSourceCreator;
 import org.shrigorevich.ml.db.contexts.*;
 import org.shrigorevich.ml.domain.ai.TaskService;
 import org.shrigorevich.ml.domain.ai.TaskServiceImpl;
+import org.shrigorevich.ml.domain.mob.MobService;
+import org.shrigorevich.ml.domain.mob.MobServiceImpl;
 import org.shrigorevich.ml.domain.npc.NpcService;
 import org.shrigorevich.ml.domain.npc.NpcServiceImpl;
 import org.shrigorevich.ml.domain.scoreboard.ScoreboardService;
@@ -35,6 +37,7 @@ public final class Ml extends JavaPlugin {
     private TaskService taskService;
     private ProjectService projectService;
     private ScoreboardService scoreboardService;
+    private MobService mobService;
 
     @Override
     public void onLoad() {
@@ -56,7 +59,7 @@ public final class Ml extends JavaPlugin {
         taskService = new TaskServiceImpl(this);
         projectService = new ProjectServiceImpl(this, projectContext);
         scoreboardService = new ScoreboardServiceImpl(this);
-
+        mobService = new MobServiceImpl(this);
     }
     @Override
     public void onEnable() {
@@ -67,6 +70,7 @@ public final class Ml extends JavaPlugin {
             structService.load();
             npcService.load();
             projectService.load();
+            mobService.load();
         } catch (IllegalArgumentException ex) {
             Bukkit.getLogger().severe(ex.getMessage());
         }
@@ -97,7 +101,7 @@ public final class Ml extends JavaPlugin {
 
     private void setupExecutors() {
         getCommand("struct").setExecutor(new StructureExecutor(userService, structService));
-        getCommand("npc").setExecutor(new NpcExecutor(npcService, taskService));
+        getCommand("npc").setExecutor(new NpcExecutor(npcService, taskService, mobService));
         getCommand("score").setExecutor(new ScoreBoardExecutor(scoreboardService));
     }
 }
