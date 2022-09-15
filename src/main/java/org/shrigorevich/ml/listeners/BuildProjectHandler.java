@@ -3,12 +3,10 @@ package org.shrigorevich.ml.listeners;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.scoreboard.*;
 import org.shrigorevich.ml.domain.ai.BuildTask;
 import org.shrigorevich.ml.domain.ai.TaskService;
 import org.shrigorevich.ml.domain.ai.tasks.BuildTaskImpl;
@@ -18,7 +16,7 @@ import org.shrigorevich.ml.domain.npc.StructNpc;
 import org.shrigorevich.ml.domain.project.BuildProject;
 import org.shrigorevich.ml.domain.project.BuildProjectImpl;
 import org.shrigorevich.ml.domain.project.ProjectService;
-import org.shrigorevich.ml.domain.scoreboard.BoardType;
+import org.shrigorevich.ml.domain.project.Storage;
 import org.shrigorevich.ml.domain.scoreboard.ScoreboardService;
 import org.shrigorevich.ml.domain.structure.LoreStructure;
 import org.shrigorevich.ml.domain.structure.StructureService;
@@ -30,6 +28,7 @@ import org.shrigorevich.ml.events.ReplenishStorageEvent;
 
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.stream.Collectors;
 
 public class BuildProjectHandler implements Listener {
@@ -39,7 +38,11 @@ public class BuildProjectHandler implements Listener {
     private final TaskService taskService;
     private final StructureService structureService;
 
-    public BuildProjectHandler(ProjectService projectService, ScoreboardService scoreboardService, NpcService npcService, TaskService taskService, StructureService structureService) {
+    public BuildProjectHandler(
+            ProjectService projectService, ScoreboardService scoreboardService,
+            NpcService npcService, TaskService taskService,
+            StructureService structureService
+    ) {
         this.projectService = projectService;
         this.scoreboardService = scoreboardService;
         this.npcService = npcService;
@@ -54,10 +57,10 @@ public class BuildProjectHandler implements Listener {
             List<StructBlockModel> blocks = s.getStructBlocks();
             List<StructBlockModel> brokenBlocks = blocks.stream().filter(StructBlockModel::isBroken).collect(Collectors.toList());
             BuildProject project = new BuildProjectImpl(s, blocks.size());
-            updateProject(project, brokenBlocks);
+            addPlannedBlocks(project, brokenBlocks);
             projectService.addProject(project);
+            System.out.println("Project loaded: " + project.getId());
         }
-
         projectService.getCurrent().ifPresent(project -> {
             System.out.printf("Current project: %s. Broken blocks: %d%n", project.getStruct().getName(), project.getBrokenSize());
             scoreboardService.updateScoreboard(project, projectService.getStorage());
@@ -76,9 +79,8 @@ public class BuildProjectHandler implements Listener {
                     projectService.addProject(newProject);
                     return newProject;
                 });
-                updateProject(project, brokenBlocks.get(structId));
-                System.out.printf("Project %d updated", project.getId());
-            } );
+                addPlannedBlocks(project, brokenBlocks.get(structId));
+            });
         }
 
         projectService.getCurrent().ifPresent(project -> {
@@ -92,20 +94,14 @@ public class BuildProjectHandler implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void OnBuildStart(BuildStartedEvent event) {
-        System.out.println("BuildStartedEvent");
         Entity entity = event.getEntity();
         StructBlockModel block = event.getTask().getBlock();
 
-        entity.getWorld().getBlockAt(block.getX(), block.getY(), block.getZ())
-                .setType(Material.valueOf(block.getType()));
-
         projectService.getProject(block.getStructId()).ifPresent(p -> {
-            structureService.getById(block.getStructId()).ifPresent(s -> {
-                s.restoreBlock(block);
-                taskService.finalize(entity.getUniqueId());
-                p.decrementBrokenSize();
-            });
+            p.restoreBlock(block);
+            taskService.finalize(entity.getUniqueId());
         });
+
         projectService.getCurrent().ifPresent(project -> {
             if (project.getId() == block.getStructId()) {
                 scoreboardService.updateScoreboard(project, projectService.getStorage());
@@ -118,7 +114,7 @@ public class BuildProjectHandler implements Listener {
         projectService.getStorage().updateResources(event.getAmount());
     }
 
-    private void updateProject(BuildProject project, List<StructBlockModel> brokenBlocks) {
+    private void addPlannedBlocks(BuildProject project, List<StructBlockModel> brokenBlocks) {
         for (StructBlockModel block : brokenBlocks) {
             project.addPlannedBlock(block);
         }
@@ -141,6 +137,7 @@ public class BuildProjectHandler implements Listener {
 
     private void addTask(StructNpc npc, BuildProject project) {
         StructBlockModel block = project.getPlannedBlock();
+        projectService.getStorage().updateResources(-1);
         BuildTask task = new BuildTaskImpl(
                 npcService.getPlugin(),
                 (Villager) Bukkit.getEntity(npc.getEntityId()),

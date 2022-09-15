@@ -13,9 +13,13 @@ import org.shrigorevich.ml.domain.ai.TaskService;
 import org.shrigorevich.ml.domain.ai.TaskType;
 import org.shrigorevich.ml.domain.npc.NpcService;
 import org.shrigorevich.ml.domain.npc.StructNpc;
+import org.shrigorevich.ml.domain.project.BuildProject;
 import org.shrigorevich.ml.domain.structure.StructureService;
 import org.shrigorevich.ml.domain.project.ProjectService;
 import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
+
+import java.util.List;
+import java.util.Optional;
 
 public class EntityDeathHandler implements Listener {
 
@@ -46,7 +50,7 @@ public class EntityDeathHandler implements Listener {
             if (event.getCause() == EntityDamageEvent.DamageCause.SUFFOCATION) {
                 event.setCancelled(true);
             } else {
-                System.out.println("Damage cause:" + event.getCause());
+//                System.out.println("Damage cause:" + event.getCause());
             }
         }
     }
@@ -54,15 +58,25 @@ public class EntityDeathHandler implements Listener {
     private void processNpcDeath(StructNpc npc) {
         switch (npc.getRole()) {
             case BUILDER:
-                for (Task task : taskService.getEntityTasks(npc.getEntityId())) {
+                boolean isCurrentProject = false;
+                Optional<BuildProject> current = projectService.getCurrent();
+                List<Task> npcTasks = taskService.getEntityTasks(npc.getEntityId());
+                for (Task task : npcTasks) {
                     if (task.getType() == TaskType.BUILD) {
                         StructBlockModel block = ((BuildTask) task).getBlock();
                         projectService.getProject(block.getStructId()).ifPresent(project -> {
                             project.addPlannedBlock(block);
                             projectService.getStorage().updateResources(1);
                         });
+                        if (current.isPresent() && current.get().getId() == block.getStructId()){
+                            isCurrentProject = true;
+                        }
                     }
                 };
+                if (isCurrentProject) {
+                    System.out.println("Current project updated");
+                }
+
                 break;
             case HARVESTER:
                 break;

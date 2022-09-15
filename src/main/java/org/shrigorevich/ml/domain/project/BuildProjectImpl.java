@@ -1,8 +1,10 @@
 package org.shrigorevich.ml.domain.project;
 
+import org.bukkit.Material;
 import org.jetbrains.annotations.NotNull;
 import org.shrigorevich.ml.domain.structure.LoreStructure;
 import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
+import org.shrigorevich.ml.domain.structure.models.VolumeBlockDB;
 
 import java.util.*;
 
@@ -10,11 +12,11 @@ public class BuildProjectImpl implements BuildProject {
     private final LoreStructure structure;
     private final int size;
     private int brokenSize;
-    private final Queue<StructBlockModel> plannedBlocks;
+    private final PriorityQueue<StructBlockModel> plannedBlocks;
 
     public BuildProjectImpl(LoreStructure structure, int size) {
         this.structure = structure;
-        this.plannedBlocks = new LinkedList<>();
+        this.plannedBlocks = new PriorityQueue<>(Comparator.comparingInt(VolumeBlockDB::getY));
         this.size = size;
         this.brokenSize = 0;
     }
@@ -51,11 +53,6 @@ public class BuildProjectImpl implements BuildProject {
     }
 
     @Override
-    public void decrementBrokenSize() {
-        brokenSize-=1;
-    }
-
-    @Override
     public int getPriority() {
         return structure.getPriority();
     }
@@ -70,6 +67,27 @@ public class BuildProjectImpl implements BuildProject {
         return plannedBlocks.size();
     }
 
+    @Override
+    public void restoreBlock(StructBlockModel block) {
+        structure.getWorld().getBlockAt(block.getX(), block.getY(), block.getZ())
+                .setType(Material.valueOf(block.getType()));
+        structure.restoreBlock(block);
+        decrementBrokenSize();
+    }
+
+    @Override
+    public PriorityQueue<StructBlockModel> getPlan() {
+        return plannedBlocks;
+    }
+
+    @Override
+    public StructBlockModel getCurrent() {
+        return plannedBlocks.peek();
+    }
+
+    private void decrementBrokenSize() {
+        brokenSize-=1;
+    }
     @Override
     public int compareTo(@NotNull BuildProject o) {
         return o.getPriority() - this.getPriority();

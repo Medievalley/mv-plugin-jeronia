@@ -17,7 +17,7 @@ public class ProjectServiceImpl extends BaseService implements ProjectService {
         super(plugin);
         this.context = context;
         this.projects = new HashMap<>();
-        this.storage = new StorageImpl(100, 3);
+        this.storage = new StorageImpl(0, 0);
         this.buildPlan = new PriorityQueue<>();
     }
 
