@@ -103,7 +103,7 @@ public class PlayerInteract implements Listener {
                 case DIAMOND_SWORD:
                     Bukkit.getPluginManager().callEvent(new DangerIsGoneEvent(entity));
                     break;
-                case DIAMOND_HOE:
+                case AIR:
                     showInventory(entity, event.getPlayer());
                 default:
                     break;
@@ -158,8 +158,8 @@ public class PlayerInteract implements Listener {
         }
     }
     private void showInventory(Entity entity, Player player) {
-        Inventory inv = Bukkit.createInventory(player, 9);
-        inv.setContents(((InventoryHolder)entity).getInventory().getContents());
+        Inventory inv = Bukkit.createInventory((Villager) entity, 9);
+//        inv.setContents(((InventoryHolder)entity).getInventory().getContents());
         player.openInventory(inv);
     }
 }
