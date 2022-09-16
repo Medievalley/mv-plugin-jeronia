@@ -22,12 +22,11 @@ public class BlockBreak implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void BlockBroken(BlockBreakEvent event) {
-        //TODO: handle event
+        processDestroyedBlocksAsync(new ArrayList<>(Collections.singletonList(event.getBlock())));
     }
     @EventHandler(priority = EventPriority.HIGHEST)
     public void BlockBroken(BlockDestroyEvent event) {
-        Block b = event.getBlock();
-        processDestroyedBlocksAsync(new ArrayList<>(Collections.singletonList(b)));
+        processDestroyedBlocksAsync(new ArrayList<>(Collections.singletonList(event.getBlock())));
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

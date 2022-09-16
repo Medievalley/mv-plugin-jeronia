@@ -88,7 +88,7 @@ public final class Ml extends JavaPlugin {
         pm.registerEvents(new Auth(userService), this);
         pm.registerEvents(new BlockBreak(structService), this);
         pm.registerEvents(new CustomSpawn(taskService, npcService, structService), this);
-        pm.registerEvents(new EntityInventoryHandler(npcService), this);
+        pm.registerEvents(new EntityInventoryHandler(npcService, projectService), this);
         pm.registerEvents(new EntitySpawn(this), this);
         pm.registerEvents(new HarvestHandler(taskService, npcService, structService), this);
         pm.registerEvents(new PlantGrow(structService), this);
