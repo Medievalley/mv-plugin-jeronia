@@ -1,5 +1,6 @@
 package org.shrigorevich.ml.listeners;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
@@ -11,6 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import org.shrigorevich.ml.domain.npc.NpcRole;
 import org.shrigorevich.ml.domain.npc.NpcService;
 import org.shrigorevich.ml.domain.project.ProjectService;
+import org.shrigorevich.ml.events.ReplenishStorageEvent;
 
 public class EntityInventoryHandler implements Listener {
     private final NpcService npcService;
@@ -40,16 +42,13 @@ public class EntityInventoryHandler implements Listener {
             projectService.getCurrent().ifPresent(project -> {
                 double resourceNeeded = Math.max(project.getBrokenSize() - projectService.getStorage().getResources(), 0);
                 int blockEquivalent = (int) Math.ceil(resourceNeeded / getResourceValue(item.getType()));
-                System.out.println("Resource needed: " + resourceNeeded);
-                System.out.println("BlockEquivalent: " + blockEquivalent);
-                if (item.getAmount()  <= blockEquivalent) {
-                    System.out.println("CountedBlocks value: " + item.getAmount());
-                } else {
-                    System.out.println("CountedBlocks value: " + blockEquivalent);
-                    System.out.println("Change: " + (item.getAmount() - blockEquivalent));
-                }
+                int countedItems = Math.min(blockEquivalent, item.getAmount());
+                int countedResources = countedItems * getResourceValue(item.getType());
+                int change = Math.max(0, item.getAmount()-blockEquivalent);
+                item.setAmount(change);
+                Bukkit.getScheduler().runTask(projectService.getPlugin(), () ->
+                        Bukkit.getServer().getPluginManager().callEvent(new ReplenishStorageEvent(countedResources)));
             });
-
         }
     }
 

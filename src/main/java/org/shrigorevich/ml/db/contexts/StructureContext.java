@@ -24,8 +24,8 @@ public interface StructureContext {
     Optional<StructBlockModel> getStructBlock(int x, int y, int z, int volumeId, int structId);
     void saveStructBlocks(List<StructBlockModel> blocks);
     List<StructBlockModel> getStructBlocks(int structId);
-    int updateStructBlocksBrokenStatus(List<StructBlockModel> blocks);
-    void delete(int structId);
+    int updateBlocksStatus(List<StructBlockModel> blocks, boolean isBroken);
+    void restoreBlock(int id);
     void restore(int structId);
     void removeVolume(int structId);
     void updateStock(int structId, int stockSize);

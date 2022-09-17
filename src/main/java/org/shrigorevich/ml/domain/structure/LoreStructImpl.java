@@ -51,20 +51,10 @@ public class LoreStructImpl extends StructureImpl implements LoreStructure {
 
     @Override
     public void restoreBlock(StructBlockModel block) {
-        restoreBlock(
-            block.getX()-getX1(),
-            block.getY()-getY1(),
-            block.getZ()-getZ1()
-        );
-    }
-
-    private void restoreBlock(int x, int y, int z) {
-        context.getStructBlock(x, y, z, getVolumeId(), getId())
-            .ifPresent(sb -> {
-                BlockData bd = Bukkit.createBlockData(sb.getBlockData());
-                Block b = getWorld().getBlockAt(sb.getX(), sb.getY(), sb.getZ());
-                b.setBlockData(bd);
-            });
+        context.restoreBlock(block.getId());
+        BlockData bd = Bukkit.createBlockData(block.getBlockData());
+        Block b = getWorld().getBlockAt(block.getX(), block.getY(), block.getZ());
+        b.setBlockData(bd);
     }
 
     @Override

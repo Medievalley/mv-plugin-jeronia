@@ -240,7 +240,7 @@ public class StructContextImpl implements StructureContext { //TODO: extends abs
         }
     }
 
-    public int updateStructBlocksBrokenStatus(List<StructBlockModel> blocks) {
+    public int updateBlocksStatus(List<StructBlockModel> blocks, boolean isBroken) {
         try {
             QueryRunner run = new QueryRunner(dataSource);
             Object[][] blockValues = new Object[blocks.size()][2];
@@ -248,7 +248,7 @@ public class StructContextImpl implements StructureContext { //TODO: extends abs
             for (int i = 0; i < blocks.size(); i++) {
                 StructBlockModel b = blocks.get(i);
                 blockValues[i] = new Object[] {
-                        b.isBroken(),
+                        isBroken,
                         b.getId()
                 };
             }
@@ -262,10 +262,10 @@ public class StructContextImpl implements StructureContext { //TODO: extends abs
     }
 
     @Override
-    public void delete(int structId) {
+    public void restoreBlock(int id) {
         try {
             QueryRunner run = new QueryRunner(dataSource);
-            String sql = String.format("DELETE FROM struct WHERE id=%d", structId);
+            String sql = String.format("UPDATE struct_block SET broken=false WHERE id=%d", id);
             run.update(sql);
         } catch (SQLException ex) {
             plugin.getLogger().severe("StructContext. GetStructBlock: " + ex);

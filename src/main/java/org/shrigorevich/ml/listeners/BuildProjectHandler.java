@@ -17,14 +17,12 @@ import org.shrigorevich.ml.domain.project.BuildProject;
 import org.shrigorevich.ml.domain.project.BuildProjectImpl;
 import org.shrigorevich.ml.domain.project.ProjectService;
 import org.shrigorevich.ml.domain.project.Storage;
+import org.shrigorevich.ml.domain.scoreboard.BoardType;
 import org.shrigorevich.ml.domain.scoreboard.ScoreboardService;
 import org.shrigorevich.ml.domain.structure.LoreStructure;
 import org.shrigorevich.ml.domain.structure.StructureService;
 import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
-import org.shrigorevich.ml.events.BuildStartedEvent;
-import org.shrigorevich.ml.events.StructsDamagedEvent;
-import org.shrigorevich.ml.events.StructsLoadedEvent;
-import org.shrigorevich.ml.events.ReplenishStorageEvent;
+import org.shrigorevich.ml.events.*;
 
 import java.util.List;
 import java.util.Map;
@@ -70,7 +68,6 @@ public class BuildProjectHandler implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void OnStructsDamaged(StructsDamagedEvent event) {
         Map<Integer, List<StructBlockModel>> brokenBlocks = event.getBrokenBlocks();
-
         for (int structId : brokenBlocks.keySet()) {
             structureService.getById(structId).ifPresent(struct -> {
                 BuildProject project = projectService.getProject(structId).orElseGet(() -> {
@@ -85,9 +82,9 @@ public class BuildProjectHandler implements Listener {
 
         projectService.getCurrent().ifPresent(project -> {
             if (brokenBlocks.containsKey(project.getId())) {
-                scoreboardService.updateScoreboard(project, projectService.getStorage());
                 callBuilders(project);
-                System.out.printf("Current project: %s. Broken blocks: %d%n", project.getStruct().getName(), project.getBrokenSize());
+                scoreboardService.updateScoreboard(project, projectService.getStorage());
+                System.out.printf("Current project: %s. Storage: %d%n", project.getStruct().getName(), projectService.getStorage().getResources());
             }
         });
     }
@@ -100,18 +97,26 @@ public class BuildProjectHandler implements Listener {
         projectService.getProject(block.getStructId()).ifPresent(p -> {
             p.restoreBlock(block);
             taskService.finalize(entity.getUniqueId());
-        });
-
-        projectService.getCurrent().ifPresent(project -> {
-            if (project.getId() == block.getStructId()) {
-                scoreboardService.updateScoreboard(project, projectService.getStorage());
+            if (p.getBrokenSize() == 0) {
+                projectService.finalizeProject(p);
             }
+        });
+        updateProjectScoreboard();
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void OnResourceSupplied(ReplenishStorageEvent event) {
+        projectService.getStorage().updateResources(event.getAmount());
+        projectService.getCurrent().ifPresent(project -> {
+            scoreboardService.updateScoreboard(project, projectService.getStorage());
+            callBuilders(project);
         });
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void OnBuildStart(ReplenishStorageEvent event) {
-        projectService.getStorage().updateResources(event.getAmount());
+    public void OnProjectFinalize(FinalizeProjectEvent event) {
+        projectService.finalizeProject(event.getProject());
+        updateProjectScoreboard();
     }
 
     private void addPlannedBlocks(BuildProject project, List<StructBlockModel> brokenBlocks) {
@@ -146,4 +151,12 @@ public class BuildProjectHandler implements Listener {
                         .getBlockAt(block.getX(), block.getY(), block.getZ()).getLocation());
         taskService.add(task);
     }
+
+    void updateProjectScoreboard() {
+        if (projectService.getCurrent().isPresent()) {
+            scoreboardService.updateScoreboard(projectService.getCurrent().get(), projectService.getStorage());
+        } else {
+            scoreboardService.closeScoreboard(BoardType.PROJECT);
+        }
+    };
 }

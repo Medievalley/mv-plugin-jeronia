@@ -1,8 +1,15 @@
 package org.shrigorevich.ml;
 
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.platform.bukkit.BukkitAudiences;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 import org.shrigorevich.ml.commands.NpcExecutor;
 import org.shrigorevich.ml.commands.ScoreBoardExecutor;
 import org.shrigorevich.ml.commands.StructureExecutor;
@@ -27,7 +34,7 @@ import org.shrigorevich.ml.listeners.*;
 
 import javax.sql.DataSource;
 
-public final class Ml extends JavaPlugin {
+public final class Ml extends JavaPlugin implements AdventurePlugin {
 
     private Configuration config;
     private DataSource dataSource;
@@ -38,6 +45,15 @@ public final class Ml extends JavaPlugin {
     private ProjectService projectService;
     private ScoreboardService scoreboardService;
     private MobService mobService;
+
+    private BukkitAudiences adventure;
+
+    public @NotNull BukkitAudiences adventure() {
+        if(this.adventure == null) {
+            throw new IllegalStateException("Tried to access Adventure when the plugin was disabled!");
+        }
+        return this.adventure;
+    }
 
     @Override
     public void onLoad() {
@@ -61,8 +77,10 @@ public final class Ml extends JavaPlugin {
         scoreboardService = new ScoreboardServiceImpl(this);
         mobService = new MobServiceImpl(this);
     }
+
     @Override
     public void onEnable() {
+        this.adventure = BukkitAudiences.create(this);
         super.onEnable();
         setupListeners();
         setupExecutors();
@@ -75,12 +93,18 @@ public final class Ml extends JavaPlugin {
             Bukkit.getLogger().severe(ex.getMessage());
         }
     }
-
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+        if(this.adventure != null) {
+            this.adventure.close();
+            this.adventure = null;
+        }
+        try {
+            npcService.unload();
+        } catch (IllegalArgumentException ex) {
+            Bukkit.getLogger().severe(ex.getMessage());
+        }
         System.out.println("DISABLED");
-        npcService.unload();
     }
 
     private void setupListeners() {
@@ -100,8 +124,28 @@ public final class Ml extends JavaPlugin {
     }
 
     private void setupExecutors() {
-        getCommand("struct").setExecutor(new StructureExecutor(userService, structService));
+        getCommand("struct").setExecutor(new StructureExecutor(userService, structService, projectService, scoreboardService));
         getCommand("npc").setExecutor(new NpcExecutor(npcService, taskService, mobService));
         getCommand("score").setExecutor(new ScoreBoardExecutor(scoreboardService));
+    }
+
+    @Override
+    public void showTitle(String title, String subTitle) {
+        showTitle(title, subTitle, Color.BLUE.asRGB());
+    }
+
+    @Override
+    public void showTitle(String title, String subTitle, int color) {
+        showTitle(title, subTitle, color, color);
+    }
+
+    @Override
+    public void showTitle(String title, String subTitle, int titleColor, int subTitleColor) {
+        Audience audience = this.adventure().players();
+        Title titleToShow = Title.title(
+                Component.text(title).color(TextColor.color(titleColor)),
+                Component.text(subTitle).color(TextColor.color(subTitleColor))
+        );
+        audience.showTitle(titleToShow);
     }
 }

@@ -54,11 +54,18 @@ public class ScoreboardServiceImpl extends BaseService implements ScoreboardServ
                 "Project: " + project.getStruct().getName()
         );
 
-        int resourceNeeded = project.getBrokenSize() - storage.getResources();
+        int resourceNeeded = project.getPlanSize() - storage.getResources();
         objective.getScore("Resources needed:").setScore(Math.max(resourceNeeded, 0));
         objective.getScore("Health:").setScore(project.getHealthPercent());
         for (Player p : Bukkit.getOnlinePlayers()) {
             p.setScoreboard(board);
+        }
+    }
+
+    @Override
+    public void closeScoreboard(BoardType type) {
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            p.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
         }
     }
 }

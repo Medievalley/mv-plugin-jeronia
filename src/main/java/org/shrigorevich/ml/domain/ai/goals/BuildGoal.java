@@ -39,7 +39,7 @@ public class BuildGoal extends BaseGoal implements Goal<Mob> {
 
     @Override
     public void stop() {
-        System.out.println("Build stopped. Task: " + task.getType());
+//        System.out.println("Build stopped. Task: " + task.getType());
         getMob().getPathfinder().stopPathfinding();
     }
 

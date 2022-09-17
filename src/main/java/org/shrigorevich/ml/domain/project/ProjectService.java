@@ -9,6 +9,7 @@ public interface ProjectService extends Service {
     Optional<BuildProject> getProject(int structId);
     Optional<BuildProject> getCurrent();
     void addProject(BuildProject project);
+    void finalizeProject(BuildProject project);
     Storage getStorage();
     void load();
 }

@@ -22,7 +22,6 @@ public class HoldSpawnTask extends BaseTask implements Task {
     }
     @Override
     public void start() {
-        System.out.println("Start task. Hold spawn");
         MobGoals goals = getPlugin().getServer().getMobGoals();
         goal = new ReachLocationGoal(getPlugin(), this, getEntity(), target);
         setGoal(goals, goal);

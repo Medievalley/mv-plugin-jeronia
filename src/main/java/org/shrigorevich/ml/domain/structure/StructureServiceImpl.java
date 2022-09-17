@@ -169,7 +169,7 @@ public class StructureServiceImpl extends BaseService implements StructureServic
 
     @Override
     public void setBlocksBroken(List<StructBlockModel> blocks) {
-        structContext.updateStructBlocksBrokenStatus(blocks);
+        structContext.updateBlocksStatus(blocks, true);
     }
 }
 

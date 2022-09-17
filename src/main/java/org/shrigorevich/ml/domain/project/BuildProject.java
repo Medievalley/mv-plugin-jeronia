@@ -17,6 +17,4 @@ public interface BuildProject extends Comparable<BuildProject> {
     LoreStructure getStruct();
     int getPlanSize();
     void restoreBlock(StructBlockModel block);
-    PriorityQueue<StructBlockModel> getPlan();
-    StructBlockModel getCurrent();
 }

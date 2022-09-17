@@ -11,4 +11,5 @@ public interface ScoreboardService extends Service {
     Scoreboard getScoreboard(BoardType type);
     Objective createObjective(BoardType type, DisplaySlot slot, String displayName);
     void updateScoreboard(BuildProject project, Storage storage);
+    void closeScoreboard(BoardType type);
 }

@@ -35,27 +35,25 @@ public class BlockBreak implements Listener {
     }
 
     private void processDestroyedBlocksAsync(List<Block> blocks) {
-        Bukkit.getScheduler().runTaskAsynchronously(structSvc.getPlugin(), () -> {
-            List<StructBlockModel> brokenBlocks = new ArrayList<>();
-            for (Block block : blocks) {
-                Optional<StructBlockModel> b = getBrokenBlock(block);
-                b.ifPresent(brokenBlocks::add);
-            }
-            structSvc.setBlocksBroken(brokenBlocks);
+        List<StructBlockModel> brokenBlocks = new ArrayList<>();
+        for (Block block : blocks) {
+            Optional<StructBlockModel> b = getBrokenBlock(block);
+            b.ifPresent(brokenBlocks::add);
+        }
+        structSvc.setBlocksBroken(brokenBlocks);
 
-            Map<Integer, List<StructBlockModel>> blocksPerStruct = new HashMap<>();
-            for (StructBlockModel b : brokenBlocks) {
-                if(blocksPerStruct.containsKey(b.getStructId())) {
-                    blocksPerStruct.get(b.getStructId()).add(b);
-                } else {
-                    blocksPerStruct.put(b.getStructId(), new ArrayList<>(Collections.singletonList(b)));
-                }
+        Map<Integer, List<StructBlockModel>> blocksPerStruct = new HashMap<>();
+        for (StructBlockModel b : brokenBlocks) {
+            if(blocksPerStruct.containsKey(b.getStructId())) {
+                blocksPerStruct.get(b.getStructId()).add(b);
+            } else {
+                blocksPerStruct.put(b.getStructId(), new ArrayList<>(Collections.singletonList(b)));
             }
-            if (!blocksPerStruct.isEmpty()) {
-                Bukkit.getScheduler().runTask(structSvc.getPlugin(),
-                        () -> Bukkit.getPluginManager().callEvent(new StructsDamagedEvent(blocksPerStruct)));
-            }
-        });
+        }
+        if (!blocksPerStruct.isEmpty()) {
+            Bukkit.getScheduler().runTask(structSvc.getPlugin(),
+                    () -> Bukkit.getPluginManager().callEvent(new StructsDamagedEvent(blocksPerStruct)));
+        }
     }
 
     private Optional<StructBlockModel> getBrokenBlock(Block block) {

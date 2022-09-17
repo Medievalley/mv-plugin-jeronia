@@ -69,20 +69,8 @@ public class BuildProjectImpl implements BuildProject {
 
     @Override
     public void restoreBlock(StructBlockModel block) {
-        structure.getWorld().getBlockAt(block.getX(), block.getY(), block.getZ())
-                .setType(Material.valueOf(block.getType()));
         structure.restoreBlock(block);
         decrementBrokenSize();
-    }
-
-    @Override
-    public PriorityQueue<StructBlockModel> getPlan() {
-        return plannedBlocks;
-    }
-
-    @Override
-    public StructBlockModel getCurrent() {
-        return plannedBlocks.peek();
     }
 
     private void decrementBrokenSize() {
