@@ -1,12 +1,20 @@
 package org.shrigorevich.ml.listeners;
 
+import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.enchantments.EnchantmentWrapper;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.shrigorevich.ml.domain.ai.BuildTask;
 import org.shrigorevich.ml.domain.ai.Task;
 import org.shrigorevich.ml.domain.ai.TaskService;
@@ -18,8 +26,7 @@ import org.shrigorevich.ml.domain.structure.StructureService;
 import org.shrigorevich.ml.domain.project.ProjectService;
 import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class EntityDeathHandler implements Listener {
 
@@ -37,9 +44,26 @@ public class EntityDeathHandler implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void OnEntityDeath(EntityDeathEvent event) {
-        Entity entity = event.getEntity();
+        LivingEntity entity = event.getEntity();
         if (entity.getEntitySpawnReason() == CreatureSpawnEvent.SpawnReason.CUSTOM) {
-            npcService.getById(entity.getUniqueId()).ifPresent(this::processNpcDeath);
+            if (entity.getType() == EntityType.VILLAGER) {
+                npcService.getById(entity.getUniqueId()).ifPresent(this::processNpcDeath);
+            } else {
+                //TODO: handle custom spawned mobs;
+            }
+        } else if (getReward(entity.getType()) > 0){
+            ItemStack item = new ItemStack(Material.NETHER_STAR, getReward(entity.getType()));
+            ItemMeta meta = item.getItemMeta();
+            meta.displayName(Component.text("Jeron"));
+            item.setItemMeta(meta);
+            if (entity.getKiller() != null) {
+                Map<Integer, ItemStack> change = entity.getKiller().getInventory().addItem(item);
+                for (ItemStack itemStack : change.values()) {
+                    entity.getWorld().dropItem(entity.getKiller().getLocation(), itemStack);
+                }
+            } else {
+                entity.getWorld().dropItem(entity.getKiller().getLocation(), item);
+            }
         }
     }
 
@@ -91,4 +115,12 @@ public class EntityDeathHandler implements Listener {
         taskService.clear(npc.getEntityId());
         npcService.remove(npc.getEntityId());
     };
+
+    private int getReward(EntityType type) {
+        return switch (type) {
+            case ZOMBIE, SKELETON -> 1;
+            case CREEPER -> 2;
+            default -> 0;
+        };
+    }
 }
