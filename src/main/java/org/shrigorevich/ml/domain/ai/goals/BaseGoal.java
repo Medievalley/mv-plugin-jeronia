@@ -101,7 +101,7 @@ public abstract class BaseGoal {
             int index = findIndex(path.getPoints(), getMob().getLocation());
             if (index != -1 && index+1 < path.getPoints().size()) {
                 Location nextLoc = path.getPoints().get(index+1);
-                printLocation(nextLoc, "Next point");
+//                printLocation(nextLoc, "Next point");
                 if (isDoor(nextLoc.getBlock().getType())) {
                     openDoor(nextLoc.getBlock());
                 } else if (isDoor(getMobLocation().getBlock().getType())) {

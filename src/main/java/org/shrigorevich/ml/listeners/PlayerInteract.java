@@ -1,6 +1,7 @@
 package org.shrigorevich.ml.listeners;
 
 import com.destroystokyo.paper.entity.ai.Goal;
+import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
@@ -15,6 +16,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.shrigorevich.ml.domain.ai.TaskService;
 import org.shrigorevich.ml.domain.ai.goals.BadHoldGoal;
 import org.shrigorevich.ml.domain.ai.goals.HoldGoal;
@@ -159,6 +162,14 @@ public class PlayerInteract implements Listener {
     }
     private void showInventory(Entity entity, Player player) {
         Inventory inv = Bukkit.createInventory((Villager) entity, 9);
+        ItemStack gag = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
+        ItemMeta gagMeta = gag.getItemMeta();
+        gagMeta.displayName(Component.text(""));
+        gag.setItemMeta(gagMeta);
+        for (int i = 1; i < inv.getSize()-1; i++) {
+            inv.setItem(i, gag);
+        }
+        inv.setItem(inv.getSize()-1, new ItemStack(Material.CRIMSON_BUTTON));
 //        inv.setContents(((InventoryHolder)entity).getInventory().getContents());
         player.openInventory(inv);
     }
