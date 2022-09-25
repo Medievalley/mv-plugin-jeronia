@@ -28,4 +28,15 @@ public class ProjectContextImpl extends Context implements ProjectContext {
             return new StorageModelImpl();
         }
     }
+
+    @Override
+    public void updateResources(int amount) {
+        try {
+            QueryRunner run = new QueryRunner(getDataSource());
+            String sql = String.format("UPDATE storage SET resources=%d", amount);
+            run.update(sql);
+        } catch (SQLException ex) {
+            getPlugin().getLogger().severe("ProjectContext. Update resources: " + ex);
+        }
+    }
 }

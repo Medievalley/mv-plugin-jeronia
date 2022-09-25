@@ -61,7 +61,7 @@ public class BuildProjectHandler implements Listener {
         }
         projectService.getCurrent().ifPresent(project -> {
             System.out.printf("Current project: %s. Broken blocks: %d%n", project.getStruct().getName(), project.getBrokenSize());
-            scoreboardService.updateScoreboard(project, projectService.getStorage());
+            scoreboardService.updateScoreboard(project, projectService.getResources());
         });
     }
 
@@ -83,8 +83,8 @@ public class BuildProjectHandler implements Listener {
         projectService.getCurrent().ifPresent(project -> {
             if (brokenBlocks.containsKey(project.getId())) {
                 callBuilders(project);
-                scoreboardService.updateScoreboard(project, projectService.getStorage());
-                System.out.printf("Current project: %s. Storage: %d%n", project.getStruct().getName(), projectService.getStorage().getResources());
+                scoreboardService.updateScoreboard(project, projectService.getResources());
+                System.out.printf("Current project: %s. Storage: %d%n", project.getStruct().getName(), projectService.getResources());
             }
         });
     }
@@ -106,9 +106,9 @@ public class BuildProjectHandler implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void OnResourceSupplied(ReplenishStorageEvent event) {
-        projectService.getStorage().updateResources(event.getAmount());
+        projectService.updateResources(event.getAmount());
         projectService.getCurrent().ifPresent(project -> {
-            scoreboardService.updateScoreboard(project, projectService.getStorage());
+            scoreboardService.updateScoreboard(project, projectService.getResources());
             callBuilders(project);
         });
     }
@@ -127,7 +127,7 @@ public class BuildProjectHandler implements Listener {
 
     private void callBuilders(BuildProject project) {
         List<StructNpc> builders = npcService.getNpcByRole(NpcRole.BUILDER);
-        int possibleTasksNumber = Math.min(project.getPlanSize(), projectService.getStorage().getResources());
+        int possibleTasksNumber = Math.min(project.getPlanSize(), projectService.getResources());
         if (builders.size() > 0 && possibleTasksNumber > 0) {
             int builderIndex = 0;
             for (int i = 0; i < possibleTasksNumber; i++) {
@@ -142,7 +142,7 @@ public class BuildProjectHandler implements Listener {
 
     private void addTask(StructNpc npc, BuildProject project) {
         StructBlockModel block = project.getPlannedBlock();
-        projectService.getStorage().updateResources(-1);
+        projectService.updateResources(-1);
         BuildTask task = new BuildTaskImpl(
                 npcService.getPlugin(),
                 (Villager) Bukkit.getEntity(npc.getEntityId()),
@@ -154,7 +154,7 @@ public class BuildProjectHandler implements Listener {
 
     void updateProjectScoreboard() {
         if (projectService.getCurrent().isPresent()) {
-            scoreboardService.updateScoreboard(projectService.getCurrent().get(), projectService.getStorage());
+            scoreboardService.updateScoreboard(projectService.getCurrent().get(), projectService.getResources());
         } else {
             scoreboardService.closeScoreboard(BoardType.PROJECT);
         }

@@ -42,7 +42,7 @@ public class ScoreboardServiceImpl extends BaseService implements ScoreboardServ
     }
 
     @Override
-    public void updateScoreboard(BuildProject project, Storage storage) {
+    public void updateScoreboard(BuildProject project, int resources) {
         Scoreboard board = getScoreboard(BoardType.PROJECT);
         Objective curObjective = board.getObjective(BoardType.PROJECT.toString());
 
@@ -54,7 +54,7 @@ public class ScoreboardServiceImpl extends BaseService implements ScoreboardServ
                 "Project: " + project.getStruct().getName()
         );
 
-        int resourceNeeded = project.getPlanSize() - storage.getResources();
+        int resourceNeeded = project.getPlanSize() - resources;
         objective.getScore("Resources needed:").setScore(Math.max(resourceNeeded, 0));
         objective.getScore("Health:").setScore(project.getHealthPercent());
         for (Player p : Bukkit.getOnlinePlayers()) {

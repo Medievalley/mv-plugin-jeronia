@@ -62,8 +62,14 @@ public class ProjectServiceImpl extends BaseService implements ProjectService {
     }
 
     @Override
-    public Storage getStorage() {
-        return storage;
+    public int getResources() {
+        return storage.getResources();
+    }
+
+    @Override
+    public void updateResources(int amount) {
+        storage.updateResources(amount);
+        context.updateResources(getResources());
     }
 
     @Override

@@ -90,7 +90,7 @@ public class EntityDeathHandler implements Listener {
                         StructBlockModel block = ((BuildTask) task).getBlock();
                         projectService.getProject(block.getStructId()).ifPresent(project -> {
                             project.addPlannedBlock(block);
-                            projectService.getStorage().updateResources(1);
+                            projectService.updateResources(1);
                         });
                         if (current.isPresent() && current.get().getId() == block.getStructId()){
                             isCurrentProject = true;

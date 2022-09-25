@@ -10,6 +10,7 @@ public interface ProjectService extends Service {
     Optional<BuildProject> getCurrent();
     void addProject(BuildProject project);
     void finalizeProject(BuildProject project);
-    Storage getStorage();
+    int getResources();
+    void updateResources(int amount);
     void load();
 }
