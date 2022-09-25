@@ -23,7 +23,7 @@ public class BuildProjectImpl implements BuildProject {
 
     @Override
     public int getHealthPercent() {
-        return 100 - (size > 0 ? brokenSize * 100 / size : 0);
+        return 100 - (size > 0 ? (int) Math.ceil((double) brokenSize / size) : 0);
     }
 
     @Override

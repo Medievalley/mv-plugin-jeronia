@@ -3,8 +3,6 @@ package org.shrigorevich.ml.domain.project;
 import org.shrigorevich.ml.domain.structure.LoreStructure;
 import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
 
-import java.util.PriorityQueue;
-
 
 public interface BuildProject extends Comparable<BuildProject> {
     int getHealthPercent();
