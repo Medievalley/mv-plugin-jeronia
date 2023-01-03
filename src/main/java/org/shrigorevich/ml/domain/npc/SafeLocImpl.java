@@ -1,6 +1,7 @@
 package org.shrigorevich.ml.domain.npc;
 
 import org.bukkit.Location;
+import org.shrigorevich.ml.domain.npc.contracts.SafeLoc;
 
 public class SafeLocImpl implements SafeLoc {
     private final Location location;

@@ -10,9 +10,12 @@ import org.bukkit.entity.Villager;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
-import org.shrigorevich.ml.db.contexts.NpcContext;
-import org.shrigorevich.ml.domain.BaseService;
+import org.shrigorevich.ml.common.BaseService;
 import org.shrigorevich.ml.domain.callbacks.MsgCallback;
+import org.shrigorevich.ml.domain.npc.contracts.NpcContext;
+import org.shrigorevich.ml.domain.npc.contracts.NpcService;
+import org.shrigorevich.ml.domain.npc.contracts.SafeLoc;
+import org.shrigorevich.ml.domain.npc.contracts.StructNpc;
 import org.shrigorevich.ml.domain.npc.models.StructNpcDB;
 import org.shrigorevich.ml.domain.npc.models.StructNpcModel;
 

@@ -10,8 +10,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockFertilizeEvent;
 import org.bukkit.event.block.BlockGrowEvent;
 import org.shrigorevich.ml.domain.structure.StructureType;
-import org.shrigorevich.ml.domain.structure.StructureService;
-import org.shrigorevich.ml.domain.structure.LoreStructure;
+import org.shrigorevich.ml.domain.structure.contracts.StructureService;
+import org.shrigorevich.ml.domain.structure.contracts.LoreStructure;
 import org.shrigorevich.ml.events.StructPlantGrownEvent;
 
 import java.util.Optional;

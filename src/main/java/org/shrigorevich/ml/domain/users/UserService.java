@@ -1,7 +1,6 @@
 package org.shrigorevich.ml.domain.users;
 
 import org.shrigorevich.ml.domain.callbacks.IAccessCheckCallback;
-import org.shrigorevich.ml.db.contexts.UserContext;
 
 import java.util.HashMap;
 import java.util.Map;

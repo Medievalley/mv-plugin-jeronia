@@ -1,15 +1,15 @@
 package org.shrigorevich.ml.domain.project;
 
-import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.plugin.Plugin;
 import org.shrigorevich.ml.AdventurePlugin;
-import org.shrigorevich.ml.db.contexts.ProjectContext;
-import org.shrigorevich.ml.domain.BaseService;
+import org.shrigorevich.ml.common.BaseService;
+import org.shrigorevich.ml.domain.project.contracts.BuildProject;
+import org.shrigorevich.ml.domain.project.contracts.ProjectContext;
+import org.shrigorevich.ml.domain.project.contracts.ProjectService;
+import org.shrigorevich.ml.domain.project.contracts.Storage;
 import org.shrigorevich.ml.domain.project.models.StorageModel;
 
 import java.util.*;

@@ -5,11 +5,11 @@ import org.bukkit.entity.Mob;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.shrigorevich.ml.domain.ai.Task;
-import org.shrigorevich.ml.domain.ai.TaskService;
+import org.shrigorevich.ml.domain.ai.contracts.Task;
+import org.shrigorevich.ml.domain.ai.contracts.TaskService;
 import org.shrigorevich.ml.domain.ai.TaskType;
 import org.shrigorevich.ml.domain.ai.tasks.GoSafeTask;
-import org.shrigorevich.ml.domain.npc.NpcService;
+import org.shrigorevich.ml.domain.npc.contracts.NpcService;
 import org.shrigorevich.ml.events.DangerIsGoneEvent;
 import org.shrigorevich.ml.events.NpcInDangerEvent;
 

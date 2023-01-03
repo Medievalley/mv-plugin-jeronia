@@ -4,8 +4,6 @@ import com.destroystokyo.paper.entity.ai.Goal;
 import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.block.data.Ageable;
-import org.bukkit.block.data.type.Door;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -15,16 +13,14 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.shrigorevich.ml.domain.ai.TaskService;
-import org.shrigorevich.ml.domain.ai.goals.BadHoldGoal;
+import org.shrigorevich.ml.domain.ai.contracts.TaskService;
 import org.shrigorevich.ml.domain.ai.goals.HoldGoal;
-import org.shrigorevich.ml.domain.npc.NpcService;
+import org.shrigorevich.ml.domain.npc.contracts.NpcService;
 import org.shrigorevich.ml.domain.npc.SafeLocImpl;
-import org.shrigorevich.ml.domain.structure.LoreStructure;
-import org.shrigorevich.ml.domain.structure.StructureService;
+import org.shrigorevich.ml.domain.structure.contracts.LoreStructure;
+import org.shrigorevich.ml.domain.structure.contracts.StructureService;
 import org.shrigorevich.ml.events.DangerIsGoneEvent;
 
 import java.util.Optional;
@@ -35,6 +31,7 @@ public class PlayerInteract implements Listener {
     private final NpcService npcService;
     private final TaskService taskService;
     private Villager villager;
+
     public PlayerInteract(StructureService structureService, NpcService npcService, TaskService taskService) {
         this.structureService = structureService;
         this.npcService = npcService;
@@ -116,11 +113,12 @@ public class PlayerInteract implements Listener {
 
     private void showBlockType(PlayerInteractEvent event) {
         Block b = event.getClickedBlock();
-        event.getPlayer().sendMessage(String.format("Block type: %s", b.getType()));
+        Block highest = b.getWorld().getHighestBlockAt(b.getLocation(), HeightMap.MOTION_BLOCKING_NO_LEAVES);
+        event.getPlayer().sendMessage(String.format("Highest block: %d %d %d", highest.getX(), highest.getY(), highest.getZ()));
 
-        if (b.getBlockData() instanceof Ageable) {
-            event.getPlayer().sendMessage(String.format("Age: %s", ((Ageable) b.getBlockData()).getAge()));
-        }
+//        if (b.getBlockData() instanceof Ageable) {
+//            event.getPlayer().sendMessage(String.format("Age: %s", ((Ageable) b.getBlockData()).getAge()));
+//        }
     }
     private void draftNpc(PlayerInteractEvent event) {
         if (event.getClickedBlock() != null) {

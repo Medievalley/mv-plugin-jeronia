@@ -4,9 +4,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Villager;
-import org.jetbrains.annotations.NotNull;
-import org.shrigorevich.ml.db.contexts.StructureContext;
+import org.shrigorevich.ml.domain.structure.contracts.LoreStructure;
+import org.shrigorevich.ml.domain.structure.contracts.StructureContext;
 import org.shrigorevich.ml.domain.structure.models.*;
+import org.shrigorevich.ml.domain.volume.models.VolumeBlockModel;
+import org.shrigorevich.ml.domain.volume.models.VolumeModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +23,7 @@ public class LoreStructImpl extends StructureImpl implements LoreStructure {
     private final int priority;
     private int foodStock;
 
-    public LoreStructImpl(LoreStructDB m, StructureContext context) {
+    public LoreStructImpl(LoreStructModel m, StructureContext context) {
         super(m);
         this.volumeId = m.getVolumeId();
         this.name = m.getName();
@@ -70,7 +72,7 @@ public class LoreStructImpl extends StructureImpl implements LoreStructure {
 
     @Override
     public void applyVolume(int volumeId) throws IllegalArgumentException {
-        Optional<VolumeDB> volume = context.getVolumeById(volumeId);
+        Optional<VolumeModel> volume = context.getVolumeById(volumeId);
         if (!volume.isPresent()) throw new IllegalArgumentException(String.format("Volume %d not found", volumeId));
 
         if(!isSizeEqual(volume.get()))
@@ -79,10 +81,10 @@ public class LoreStructImpl extends StructureImpl implements LoreStructure {
         context.removeVolume(getId());
         context.setStructVolume(getId(), volumeId);
 
-        List<VolumeBlockDB> volumeBlocks = context.getVolumeBlocks(volumeId);
+        List<VolumeBlockModel> volumeBlocks = context.getVolumeBlocks(volumeId);
         List<StructBlockModel> structBlocks = new ArrayList<>();
         for(int i = 0; i < volumeBlocks.size(); i ++) {
-            VolumeBlockDB vb = volumeBlocks.get(i);
+            VolumeBlockModel vb = volumeBlocks.get(i);
             structBlocks.add(new StructBlockModelImpl(getId(), vb.getId(), true));
         }
         context.saveStructBlocks(structBlocks);
@@ -126,7 +128,7 @@ public class LoreStructImpl extends StructureImpl implements LoreStructure {
         return priority;
     }
 
-    private boolean isSizeEqual(VolumeDB volume) {
+    private boolean isSizeEqual(VolumeModel volume) {
         return this.getSizeX() == volume.getSizeX() && this.getSizeY() == volume.getSizeY() &&
                 this.getSizeZ() == volume.getSizeZ();
     }

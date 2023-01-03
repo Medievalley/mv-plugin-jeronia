@@ -6,7 +6,7 @@ import com.destroystokyo.paper.entity.ai.GoalType;
 import org.bukkit.Location;
 import org.bukkit.entity.Mob;
 import org.bukkit.plugin.Plugin;
-import org.shrigorevich.ml.domain.ai.BuildTask;
+import org.shrigorevich.ml.domain.ai.contracts.BuildTask;
 import org.shrigorevich.ml.events.LocationReachedEvent;
 
 import java.util.EnumSet;

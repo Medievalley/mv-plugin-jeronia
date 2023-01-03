@@ -1,5 +1,6 @@
 package org.shrigorevich.ml.domain.project;
 
+import org.shrigorevich.ml.domain.project.contracts.Storage;
 import org.shrigorevich.ml.domain.project.models.StorageModel;
 
 public class StorageImpl implements Storage {

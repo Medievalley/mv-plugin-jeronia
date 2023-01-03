@@ -1,7 +1,7 @@
 package org.shrigorevich.ml.domain.npc;
 
+import org.shrigorevich.ml.domain.npc.contracts.StructNpc;
 import org.shrigorevich.ml.domain.npc.models.StructNpcDB;
-import org.shrigorevich.ml.domain.structure.StructureType;
 
 import java.util.UUID;
 

@@ -4,12 +4,16 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.plugin.Plugin;
-import org.shrigorevich.ml.domain.BaseService;
-import org.shrigorevich.ml.domain.structure.models.LoreStructModel;
-import org.shrigorevich.ml.domain.structure.models.VolumeBlockModel;
-import org.shrigorevich.ml.domain.structure.models.VolumeModel;
+import org.shrigorevich.ml.common.BaseService;
+import org.shrigorevich.ml.domain.structure.contracts.LoreStructure;
+import org.shrigorevich.ml.domain.structure.contracts.Structure;
+import org.shrigorevich.ml.domain.structure.contracts.StructureContext;
+import org.shrigorevich.ml.domain.structure.contracts.StructureService;
+import org.shrigorevich.ml.domain.structure.models.LoreStructModelImpl;
+import org.shrigorevich.ml.domain.volume.models.VolumeBlockModel;
+import org.shrigorevich.ml.domain.volume.models.VolumeBlockModelImpl;
+import org.shrigorevich.ml.domain.volume.models.VolumeModelImpl;
 import org.shrigorevich.ml.domain.callbacks.IResultCallback;
-import org.shrigorevich.ml.db.contexts.StructureContext;
 import org.shrigorevich.ml.domain.structure.models.*;
 import org.shrigorevich.ml.domain.users.User;
 import org.shrigorevich.ml.events.StructsLoadedEvent;
@@ -21,7 +25,6 @@ public class StructureServiceImpl extends BaseService implements StructureServic
     private final StructureContext structContext;
     private final Map<Integer, LoreStructure> structures;
     private final Map<String, Structure> selectedStruct;
-    private LoreStructure currentProject;
 
     public StructureServiceImpl(StructureContext structureContext, Plugin plugin) {
         super(plugin);
@@ -38,7 +41,7 @@ public class StructureServiceImpl extends BaseService implements StructureServic
             String name, boolean destructible,
             IResultCallback cb
     ) throws Exception  {
-        LoreStructModel m = new LoreStructModel();
+        LoreStructModelImpl m = new LoreStructModelImpl();
         ArrayList<Location> corners = structCorners.get(user.getName());
         if (corners == null || corners.size() != 2) {
             throw new Exception("Structure location not set");
@@ -51,13 +54,13 @@ public class StructureServiceImpl extends BaseService implements StructureServic
 
         int structId = structContext.save(m);
         if (structId != 0) {
-            Optional<LoreStructDB> model = structContext.getById(structId);
+            Optional<LoreStructModel> model = structContext.getById(structId);
             model.ifPresent(this::registerStructure);
             cb.sendResult(true, String.format("StructId: %d", structId));
         }
     }
 
-    private void applyLocation(LoreStructModel m, Location l1, Location l2) {
+    private void applyLocation(LoreStructModelImpl m, Location l1, Location l2) {
         m.x1 = Math.min(l1.getBlockX(), l2.getBlockX());
         m.y1 = Math.min(l1.getBlockY(), l2.getBlockY());
         m.z1 = Math.min(l1.getBlockZ(), l2.getBlockZ());
@@ -110,17 +113,17 @@ public class StructureServiceImpl extends BaseService implements StructureServic
     }
 
     @Override
-    public void exportVolume(String userName, String volumeName, IResultCallback cb) {
+    public String exportVolume(String userName, String volumeName) {
         Structure s = selectedStruct.get(userName);
         if (s != null) {
-            VolumeModel v = new VolumeModel(
+            VolumeModelImpl v = new VolumeModelImpl(
                     volumeName,
                     s.getSizeX(),
                     s.getSizeY(),
                     s.getSizeZ()
             );
 
-            List<VolumeBlockDB> volumeBlocks = new ArrayList<>();
+            List<VolumeBlockModel> volumeBlocks = new ArrayList<>();
             List<Block> blocks = s.getBlocks();
             int offsetX = blocks.get(0).getX();
             int offsetY = blocks.get(0).getY();
@@ -129,7 +132,7 @@ public class StructureServiceImpl extends BaseService implements StructureServic
             for (Block b : blocks) {
                 if (!b.getType().isAir()) {
                     volumeBlocks.add(
-                            new VolumeBlockModel(
+                            new VolumeBlockModelImpl(
                                     b.getX() - offsetX,
                                     b.getY() - offsetY,
                                     b.getZ() - offsetZ,
@@ -138,18 +141,18 @@ public class StructureServiceImpl extends BaseService implements StructureServic
                             ));
                 }
             }
-            structContext.createVolume(v, volumeBlocks,
-                    (res, volumeId) -> cb.sendResult(res, String.format("VolumeId: %d", volumeId)));
+            int volumeId = structContext.createVolume(v, volumeBlocks);
+            return String.format("VolumeId: %d", volumeId);
         } else {
-            cb.sendResult(false, "Please choose struct by right click to any struct block");
+            return "Error occurred";
         }
     }
 
     @Override
     public void load() {
-        List<LoreStructDB> structs = structContext.getStructures();
+        List<LoreStructModel> structs = structContext.getLoreStructures();
         List<LoreStructure> damagedStructs = new ArrayList<>();
-        for (LoreStructDB s : structs) {
+        for (LoreStructModel s : structs) {
             LoreStructure struct = registerStructure(s);
             if (s.getBlocks() > 0 && s.getBrokenBlocks() > 0) {
                 damagedStructs.add(struct);
@@ -161,7 +164,7 @@ public class StructureServiceImpl extends BaseService implements StructureServic
         }
     }
 
-    private LoreStructure registerStructure(LoreStructDB s) {
+    private LoreStructure registerStructure(LoreStructModel s) {
         LoreStructure newStruct = new LoreStructImpl(s, structContext);
         structures.put(newStruct.getId(), newStruct);
         return newStruct;

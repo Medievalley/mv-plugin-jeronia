@@ -2,10 +2,10 @@ package org.shrigorevich.ml.domain.ai;
 
 import com.destroystokyo.paper.entity.ai.Goal;
 import com.destroystokyo.paper.entity.ai.MobGoals;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Mob;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
+import org.shrigorevich.ml.domain.ai.contracts.Task;
 
 public abstract class BaseTask implements Task {
     private final TaskPriority priority;

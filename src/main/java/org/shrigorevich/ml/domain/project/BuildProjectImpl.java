@@ -1,10 +1,10 @@
 package org.shrigorevich.ml.domain.project;
 
-import org.bukkit.Material;
 import org.jetbrains.annotations.NotNull;
-import org.shrigorevich.ml.domain.structure.LoreStructure;
+import org.shrigorevich.ml.domain.project.contracts.BuildProject;
+import org.shrigorevich.ml.domain.structure.contracts.LoreStructure;
 import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
-import org.shrigorevich.ml.domain.structure.models.VolumeBlockDB;
+import org.shrigorevich.ml.domain.volume.models.VolumeBlockModel;
 
 import java.util.*;
 
@@ -16,7 +16,7 @@ public class BuildProjectImpl implements BuildProject {
 
     public BuildProjectImpl(LoreStructure structure, int size) {
         this.structure = structure;
-        this.plannedBlocks = new PriorityQueue<>(Comparator.comparingInt(VolumeBlockDB::getY));
+        this.plannedBlocks = new PriorityQueue<>(Comparator.comparingInt(VolumeBlockModel::getY));
         this.size = size;
         this.brokenSize = 0;
     }

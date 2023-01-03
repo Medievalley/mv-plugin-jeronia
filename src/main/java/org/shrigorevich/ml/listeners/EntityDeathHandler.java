@@ -1,9 +1,7 @@
 package org.shrigorevich.ml.listeners;
 
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.enchantments.EnchantmentWrapper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -15,15 +13,15 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.shrigorevich.ml.domain.ai.BuildTask;
-import org.shrigorevich.ml.domain.ai.Task;
-import org.shrigorevich.ml.domain.ai.TaskService;
+import org.shrigorevich.ml.domain.ai.contracts.BuildTask;
+import org.shrigorevich.ml.domain.ai.contracts.Task;
+import org.shrigorevich.ml.domain.ai.contracts.TaskService;
 import org.shrigorevich.ml.domain.ai.TaskType;
-import org.shrigorevich.ml.domain.npc.NpcService;
-import org.shrigorevich.ml.domain.npc.StructNpc;
-import org.shrigorevich.ml.domain.project.BuildProject;
-import org.shrigorevich.ml.domain.structure.StructureService;
-import org.shrigorevich.ml.domain.project.ProjectService;
+import org.shrigorevich.ml.domain.npc.contracts.NpcService;
+import org.shrigorevich.ml.domain.npc.contracts.StructNpc;
+import org.shrigorevich.ml.domain.project.contracts.BuildProject;
+import org.shrigorevich.ml.domain.structure.contracts.StructureService;
+import org.shrigorevich.ml.domain.project.contracts.ProjectService;
 import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
 
 import java.util.*;

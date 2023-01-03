@@ -1,6 +1,8 @@
 package org.shrigorevich.ml.domain.structure.models;
 
-public interface StructBlockModel extends VolumeBlockDB {
+import org.shrigorevich.ml.domain.volume.models.VolumeBlockModel;
+
+public interface StructBlockModel extends VolumeBlockModel {
     int getStructId();
     void setStructId(int structId);
     boolean isBroken();

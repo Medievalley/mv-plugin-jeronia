@@ -5,7 +5,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
-import org.shrigorevich.ml.domain.ai.BuildTask;
+import org.shrigorevich.ml.domain.ai.contracts.BuildTask;
 
 public class BuildStartedEvent extends Event {
     private final Entity entity;

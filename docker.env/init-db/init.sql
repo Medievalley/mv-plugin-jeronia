@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS lore_struct (
     struct_id INTEGER references struct(id) ON DELETE CASCADE ON UPDATE CASCADE NOT NULL,
     volume_id integer references volume(id) ON DELETE SET NULL ON UPDATE CASCADE,
     name varchar(100) NOT NULL,
-    stock INTEGER DEFAULT 0 NOT NULL
+    stock INTEGER DEFAULT 0 NOT NULL,
     priority INTEGER UNIQUE NOT NULL
 );
 
@@ -84,6 +84,7 @@ CREATE TABLE IF NOT EXISTS struct_block (
 
 CREATE TABLE IF NOT EXISTS location (
     id SERIAL PRIMARY KEY,
+    struct_id INTEGER references struct (id) ON DELETE CASCADE ON UPDATE CASCADE,
     x integer NOT NULL,
     y integer NOT NULL,
     z integer NOT NULL
@@ -111,13 +112,12 @@ CREATE TABLE IF NOT EXISTS storage (
     resources INTEGER DEFAULT 0 NOT NULL
 );
 
-CREATE UNIQUE INDEX res_uniq_idx ON resource(dep_id, type);
-
 INSERT INTO role VALUES (1, 'Admin', 'Most privileged role');
 
 INSERT INTO struct_type (id, name, description) VALUES
 (1, 'private', 'Private territory that each user can own'),
 (2, 'lore', 'Lore structure that normally cannot be destroyed');
+(3, 'abode', 'Structure - adobe of monsters');
 
 INSERT INTO npc_role (id, name, description) VALUES
 (1, 'harvester', 'A villager who harvests'),

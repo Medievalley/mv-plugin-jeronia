@@ -7,7 +7,8 @@ import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.shrigorevich.ml.domain.structure.models.StructDB;
+import org.shrigorevich.ml.domain.structure.contracts.Structure;
+import org.shrigorevich.ml.domain.structure.models.StructModel;
 
 public abstract class StructureImpl implements Structure {
 
@@ -18,7 +19,7 @@ public abstract class StructureImpl implements Structure {
     private final int x2, y2, z2;
 
     //TODO: refactor constructor
-    public StructureImpl(StructDB m) throws IllegalArgumentException {
+    public StructureImpl(StructModel m) throws IllegalArgumentException {
 
         this.type = parseType(m.getTypeId());
         if(type == null) throw new IllegalArgumentException(

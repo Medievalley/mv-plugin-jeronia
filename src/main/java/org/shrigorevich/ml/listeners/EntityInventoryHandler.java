@@ -2,7 +2,6 @@ package org.shrigorevich.ml.listeners;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -13,13 +12,11 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.shrigorevich.ml.domain.npc.NpcRole;
-import org.shrigorevich.ml.domain.npc.NpcService;
-import org.shrigorevich.ml.domain.project.ProjectService;
+import org.shrigorevich.ml.domain.npc.contracts.NpcService;
+import org.shrigorevich.ml.domain.project.contracts.ProjectService;
 import org.shrigorevich.ml.events.StorageReplenishedEvent;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 public class EntityInventoryHandler implements Listener {
     private final NpcService npcService;

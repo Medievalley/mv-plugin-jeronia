@@ -9,7 +9,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.Plugin;
-import org.shrigorevich.ml.domain.BaseService;
+import org.shrigorevich.ml.common.BaseService;
 import org.shrigorevich.ml.domain.mob.models.SkullModel;
 import org.shrigorevich.ml.domain.mob.models.SkullModelImpl;
 

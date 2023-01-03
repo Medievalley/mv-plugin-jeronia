@@ -1,6 +1,8 @@
 package org.shrigorevich.ml.domain.structure.models;
 
-public class StructBlockModelImpl extends VolumeBlockModel implements StructBlockModel {
+import org.shrigorevich.ml.domain.volume.models.VolumeBlockModelImpl;
+
+public class StructBlockModelImpl extends VolumeBlockModelImpl implements StructBlockModel {
     private int id, structId, volumeBlockId;
     private boolean broken, triggerDestruction;
 

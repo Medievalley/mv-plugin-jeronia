@@ -1,21 +1,16 @@
 package org.shrigorevich.ml.commands;
 
-import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.shrigorevich.ml.AdventurePlugin;
-import org.shrigorevich.ml.domain.project.BuildProject;
-import org.shrigorevich.ml.domain.project.ProjectService;
+import org.shrigorevich.ml.domain.project.contracts.ProjectService;
 import org.shrigorevich.ml.domain.scoreboard.ScoreboardService;
-import org.shrigorevich.ml.domain.structure.LoreStructure;
+import org.shrigorevich.ml.domain.structure.contracts.LoreStructure;
 import org.shrigorevich.ml.domain.users.User;
-import org.shrigorevich.ml.domain.structure.StructureService;
+import org.shrigorevich.ml.domain.structure.contracts.StructureService;
 import org.shrigorevich.ml.domain.users.IUserService;
 import org.shrigorevich.ml.events.FinalizeProjectEvent;
 
@@ -66,9 +61,8 @@ public class StructureExecutor implements CommandExecutor {
                             break;
                         case "sv":
                         case "save_volume":
-                            structService.exportVolume(player.getName(), args[1], (res, msg) -> {
-                                player.sendMessage(msg);
-                            });
+                            String res = structService.exportVolume(player.getName(), args[1]);
+                            player.sendMessage(res);
                             break;
                         case "av":
                         case "apply_volume":
