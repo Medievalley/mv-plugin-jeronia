@@ -8,13 +8,12 @@ import java.util.Optional;
 
 public interface StructureContext {
 
-    int save(LoreStructModel struct);
-    Optional<LoreStructModel> getById(int id);
+    int save(StructModel struct);
+    Optional<StructModel> getById(int id);
     int createVolume(VolumeModel volume, List<VolumeBlockModel> volumeBlocks);
     List<VolumeBlockModel> getVolumeBlocks(int id);
     Optional<VolumeModel> getVolumeById(int id);
-    List<LoreStructModel> getLoreStructures();
-    List<AbodeStructModel> getAbodeStructures();
+    List<StructModel> getStructures();
     /**
      * @param volumeId Identifier of volume assigned to structure
      * @param structId Structure identifier

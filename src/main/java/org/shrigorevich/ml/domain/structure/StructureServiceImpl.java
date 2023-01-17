@@ -9,7 +9,6 @@ import org.shrigorevich.ml.domain.structure.contracts.LoreStructure;
 import org.shrigorevich.ml.domain.structure.contracts.Structure;
 import org.shrigorevich.ml.domain.structure.contracts.StructureContext;
 import org.shrigorevich.ml.domain.structure.contracts.StructureService;
-import org.shrigorevich.ml.domain.structure.models.LoreStructModelImpl;
 import org.shrigorevich.ml.domain.volume.models.VolumeBlockModel;
 import org.shrigorevich.ml.domain.volume.models.VolumeBlockModelImpl;
 import org.shrigorevich.ml.domain.volume.models.VolumeModelImpl;
@@ -41,7 +40,7 @@ public class StructureServiceImpl extends BaseService implements StructureServic
             String name, boolean destructible,
             IResultCallback cb
     ) throws Exception  {
-        LoreStructModelImpl m = new LoreStructModelImpl();
+        StructModelImpl m = new StructModelImpl();
         ArrayList<Location> corners = structCorners.get(user.getName());
         if (corners == null || corners.size() != 2) {
             throw new Exception("Structure location not set");
@@ -54,13 +53,13 @@ public class StructureServiceImpl extends BaseService implements StructureServic
 
         int structId = structContext.save(m);
         if (structId != 0) {
-            Optional<LoreStructModel> model = structContext.getById(structId);
+            Optional<StructModel> model = structContext.getById(structId);
             model.ifPresent(this::registerStructure);
             cb.sendResult(true, String.format("StructId: %d", structId));
         }
     }
 
-    private void applyLocation(LoreStructModelImpl m, Location l1, Location l2) {
+    private void applyLocation(StructModelImpl m, Location l1, Location l2) {
         m.x1 = Math.min(l1.getBlockX(), l2.getBlockX());
         m.y1 = Math.min(l1.getBlockY(), l2.getBlockY());
         m.z1 = Math.min(l1.getBlockZ(), l2.getBlockZ());
@@ -150,9 +149,9 @@ public class StructureServiceImpl extends BaseService implements StructureServic
 
     @Override
     public void load() {
-        List<LoreStructModel> structs = structContext.getLoreStructures();
+        List<StructModel> structs = structContext.getStructures();
         List<LoreStructure> damagedStructs = new ArrayList<>();
-        for (LoreStructModel s : structs) {
+        for (StructModel s : structs) {
             LoreStructure struct = registerStructure(s);
             if (s.getBlocks() > 0 && s.getBrokenBlocks() > 0) {
                 damagedStructs.add(struct);
@@ -164,7 +163,7 @@ public class StructureServiceImpl extends BaseService implements StructureServic
         }
     }
 
-    private LoreStructure registerStructure(LoreStructModel s) {
+    private LoreStructure registerStructure(StructModel s) {
         LoreStructure newStruct = new LoreStructImpl(s, structContext);
         structures.put(newStruct.getId(), newStruct);
         return newStruct;

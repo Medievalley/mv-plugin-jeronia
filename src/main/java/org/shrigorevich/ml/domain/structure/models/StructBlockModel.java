@@ -9,8 +9,6 @@ public interface StructBlockModel extends VolumeBlockModel {
     void setBroken(boolean broken);
     int getVolumeBlockId();
     void setVolumeBlockId(int volumeBlockId);
-    int getId();
-    void setId(int id);
     void setTriggerDestruction(boolean triggerDestruction);
     boolean isTriggerDestruction();
 }

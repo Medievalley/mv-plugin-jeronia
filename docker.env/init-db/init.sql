@@ -1,8 +1,6 @@
 CREATE TABLE IF NOT EXISTS users (
-	id SERIAL PRIMARY KEY,
-	username VARCHAR (20) UNIQUE NOT NULL,
-    email VARCHAR(100) UNIQUE NOT NULL,
-    password VARCHAR (30) NOT NULL,
+	id VARCHAR(150) PRIMARY KEY,
+	login VARCHAR (20) UNIQUE NOT NULL,
     ip VARCHAR (30) NOT NUll,
     verified BOOLEAN DEFAULT false NOT NULL
 );
@@ -14,7 +12,8 @@ CREATE TABLE IF NOT EXISTS role (
 );
 
 CREATE TABLE IF NOT EXISTS player_data (
-	user_id INTEGER references users (id) ON DELETE CASCADE PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
+	user_id VARCHAR(150) references users (id) ON DELETE CASCADE ON UPDATE CASCADE,
 	role_id INTEGER references role (id) ON DELETE SET NULL,
     lives INTEGER DEFAULT 0 NOT NULL
 );
@@ -24,20 +23,18 @@ CREATE TABLE IF NOT EXISTS volume (
     size_x INTEGER NOT NULL,
     size_y INTEGER NOT NULL,
     size_z INTEGER NOT NULL,
-    name TEXT NOT NULL
+    name VARCHAR(50) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS volume_block (
     id SERIAL PRIMARY KEY,
     volume_id INTEGER REFERENCES volume(id) ON DELETE CASCADE ON UPDATE CASCADE,
-    type VARCHAR(255) NOT NULL,
+    type VARCHAR(70) NOT NULL,
     block_data TEXT NOT NULL,
     x INTEGER,
     y INTEGER,
     z INTEGER
 );
-
-CREATE UNIQUE INDEX vol_block_idx ON volume_block (volume_id, x, y, z);
 
 CREATE TABLE IF NOT EXISTS struct_type (
     id INTEGER PRIMARY KEY,
@@ -45,49 +42,37 @@ CREATE TABLE IF NOT EXISTS struct_type (
     description TEXT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS location (
+    id SERIAL PRIMARY KEY,
+    x integer NOT NULL,
+    y integer NOT NULL,
+    z integer NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS struct (
     id SERIAL PRIMARY KEY,
     type_id INTEGER references struct_type(id) ON DELETE SET NULL ON UPDATE CASCADE,
-    destructible BOOLEAN DEFAULT false NOT NULL,
     world VARCHAR(255) NOT NULL,
-    x1 INTEGER NOT NULL,
-    y1 INTEGER NOT NULL,
-    z1 INTEGER NOT NULL,
-    x2 INTEGER NOT NULL,
-    y2 INTEGER NOT NULL,
-    z2 INTEGER NOT NULL
+    loc1 INTEGER references location (id) ON DELETE SET NULL ON UPDATE CASCADE,
+    loc2 INTEGER references location (id) ON DELETE SET NULL ON UPDATE CASCADE,
+    volume_id integer references volume(id) ON DELETE SET NULL ON UPDATE CASCADE,
+    name varchar(100),
+    priority INTEGER UNIQUE
 );
 
-CREATE TABLE IF NOT EXISTS lore_struct (
-    id SERIAL PRIMARY KEY,
-    struct_id INTEGER references struct(id) ON DELETE CASCADE ON UPDATE CASCADE NOT NULL,
-    volume_id integer references volume(id) ON DELETE SET NULL ON UPDATE CASCADE,
-    name varchar(100) NOT NULL,
-    stock INTEGER DEFAULT 0 NOT NULL,
-    priority INTEGER UNIQUE NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS private_struct (
-    id SERIAL PRIMARY KEY,
-    struct_id INTEGER references struct(id) ON DELETE CASCADE ON UPDATE CASCADE NOT NULL,
-    volume_id integer references volume(id) ON DELETE SET NULL ON UPDATE CASCADE,
-    owner_id INTEGER references users(id) ON DELETE CASCADE
+CREATE TABLE IF NOT EXISTS struct_block_type (
+    id INTEGER PRIMARY KEY,
+    name VARCHAR(20) NOT NULL,
+    description TEXT
 );
 
 CREATE TABLE IF NOT EXISTS struct_block (
     id SERIAL PRIMARY KEY,
     struct_id INTEGER references struct (id) ON DELETE CASCADE ON UPDATE CASCADE,
     volume_block_id INTEGER references volume_block (id) ON DELETE CASCADE ON UPDATE CASCADE,
-    trigger_destruction BOOLEAN DEFAULT true,
+    type_id INTEGER references struct_block_type (id) ON DELETE SET NULL ON UPDATE CASCADE,
+    hp_trigger BOOLEAN DEFAULT true,
     broken BOOLEAN DEFAULT false NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS location (
-    id SERIAL PRIMARY KEY,
-    struct_id INTEGER references struct (id) ON DELETE CASCADE ON UPDATE CASCADE,
-    x integer NOT NULL,
-    y integer NOT NULL,
-    z integer NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS npc_role (
@@ -108,15 +93,18 @@ CREATE table IF NOT EXISTS struct_npc (
 
 CREATE TABLE IF NOT EXISTS storage (
     id SERIAL PRIMARY KEY,
+    struct_id INTEGER references struct (id) ON DELETE CASCADE ON UPDATE CASCADE,
     deposit INTEGER DEFAULT 0 NOT NULL,
     resources INTEGER DEFAULT 0 NOT NULL
 );
 
-INSERT INTO role VALUES (1, 'Admin', 'Most privileged role');
+--CREATE UNIQUE INDEX vol_block_idx ON volume_block (volume_id, x, y, z);
+
+INSERT INTO role (id, name, description) VALUES (1, 'Admin', 'Most privileged role');
 
 INSERT INTO struct_type (id, name, description) VALUES
 (1, 'private', 'Private territory that each user can own'),
-(2, 'lore', 'Lore structure that normally cannot be destroyed');
+(2, 'lore', 'Lore structure that normally cannot be destroyed'),
 (3, 'abode', 'Structure - adobe of monsters');
 
 INSERT INTO npc_role (id, name, description) VALUES
@@ -124,20 +112,19 @@ INSERT INTO npc_role (id, name, description) VALUES
 (2, 'warden', 'The main person in the village'),
 (3, 'builder', 'A villager who builds and repairs structures');
 
-INSERT INTO storage (deposit, resources) VALUES (100, 3);
-
+INSERT INTO struct_block_type (id, name, description) VALUES
+(1, 'default', 'block without special behavior'),
+(2, 'abode spawn', 'Block where monsters spawn in the abode');
 -- MOCK SCRIPT
  with rows as (
      insert into users(
-         username,
-         email,
-         password,
+         id,
+         login,
          ip,
          verified)
      values(
+         'lsadfsladfb',
          'Smarkatch',
-         'shrigorevich@gmail.com',
-         'password',
          '127.0.0.1',
          true
      )

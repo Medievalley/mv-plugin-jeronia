@@ -17,24 +17,17 @@ import java.util.Optional;
 public class LoreStructImpl extends StructureImpl implements LoreStructure {
     private int volumeId;
     private final String name;
-    private final boolean destructible;
     private final StructureContext context;
     private Villager laborer;
     private final int priority;
     private int foodStock;
 
-    public LoreStructImpl(LoreStructModel m, StructureContext context) {
+    public LoreStructImpl(StructModel m, StructureContext context) {
         super(m);
         this.volumeId = m.getVolumeId();
         this.name = m.getName();
-        this.destructible = m.isDestructible();
-        this.foodStock = m.getStock();
         this.context = context;
         this.priority = m.getPriority();
-    }
-
-    public boolean isDestructible() {
-        return destructible;
     }
 
     public String getName() {
@@ -64,9 +57,9 @@ public class LoreStructImpl extends StructureImpl implements LoreStructure {
         context.restore(getId());
         List<StructBlockModel> structBlocks = context.getStructBlocks(getId());
         for (StructBlockModel sb : structBlocks) {
-            BlockData bd = Bukkit.createBlockData(sb.getBlockData());
-            Block b = getWorld().getBlockAt(sb.getX(), sb.getY(), sb.getZ());
-            b.setBlockData(bd);
+            getWorld()
+                .getBlockAt(sb.getX(), sb.getY(), sb.getZ())
+                .setBlockData(Bukkit.createBlockData(sb.getBlockData()));
         }
     }
 

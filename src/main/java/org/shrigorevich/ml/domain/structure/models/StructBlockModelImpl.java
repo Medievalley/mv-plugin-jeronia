@@ -33,13 +33,6 @@ public class StructBlockModelImpl extends VolumeBlockModelImpl implements Struct
     public void setVolumeBlockId(int volumeBlockId) {
         this.volumeBlockId = volumeBlockId;
     }
-    public int getId() {
-        return id;
-    }
-    public void setId(int id) {
-        this.id = id;
-    }
-
     @Override
     public void setTriggerDestruction(boolean triggerDestruction) {
         this.triggerDestruction = triggerDestruction;

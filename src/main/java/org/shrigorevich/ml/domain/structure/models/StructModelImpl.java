@@ -5,6 +5,11 @@ public class StructModelImpl implements StructModel {
     public String world;
     public int typeId, x1, y1, z1, x2, y2, z2;
 
+    public int volumeId;
+    public String name;
+    public int blocks, brokenBlocks, priority;
+    public int deposit, resources;
+
     public StructModelImpl() {}
 
     public int getId() {
@@ -60,5 +65,49 @@ public class StructModelImpl implements StructModel {
     }
     public void setZ2(int z2) {
         this.z2 = z2;
+    }
+
+    public int getVolumeId() {
+        return volumeId;
+    }
+    public void setVolumeId(int volumeId) {
+        this.volumeId = volumeId;
+    }
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+    public int getBlocks() {
+        return blocks;
+    }
+    public void setBlocks(int blocks) {
+        this.blocks = blocks;
+    }
+    public int getBrokenBlocks() {
+        return brokenBlocks;
+    }
+    public void setBrokenBlocks(int brokenBlocks) {
+        this.brokenBlocks = brokenBlocks;
+    }
+    @Override
+    public int getPriority() {
+        return priority;
+    }
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
+    public int getDeposit() {
+        return deposit;
+    }
+    public void setDeposit(int deposit) {
+        this.deposit = deposit;
+    }
+    public int getResources() {
+        return resources;
+    }
+    public void setResources(int resources) {
+        this.resources = resources;
     }
 }
