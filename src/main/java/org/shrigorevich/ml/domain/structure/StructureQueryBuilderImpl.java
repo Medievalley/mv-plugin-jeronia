@@ -17,6 +17,7 @@ public class StructureQueryBuilderImpl {
                 );
     }
 
+    @Deprecated
     public String getById(int id) {
         return String.format(
             "select ls.struct_id as id, ls.name, ls.volume_id as volumeId, ls.priority, s.type_id as typeId, " +
@@ -24,14 +25,27 @@ public class StructureQueryBuilderImpl {
             "from lore_struct ls JOIN struct s ON s.id = ls.struct_id where ls.struct_id=%d ", id);
     }
 
-    public String getLoreStructures() {
-        return String.format(
-                "select ls.struct_id as id, ls.name, ls.volume_id as volumeId, ls.priority, ls.stock, s.type_id as typeId, \n" +
-                "s.world, s.x1, s.y1, s.z1, s.x2, s.y2, s.z2,\n" +
-                "(select count(id)::int from struct_block where struct_id=s.id and broken=true) as brokenBlocks,\n" +
-                "(select count(id)::int from struct_block where struct_id=s.id and broken=false) as blocks\n" +
-                "from lore_struct ls JOIN struct s ON s.id = ls.struct_id"
-        );
+    public String getStructures() {
+        return String.join("\n",
+            "select id, name, volume_id as volumeId, priority, deposit, resources, type_id as typeId",
+            "world, x1, y1, z1, x2, y2, z2,",
+            "(select count(id)::int from struct_block where struct_id=s.id and broken=true) as brokenBlocks",
+            "(select count(id)::int from struct_block where struct_id=s.id and broken=false) as blocks",
+            "from struct");
+    }
+
+    public String setVolume(int structId, int volumeId) {
+        return String.format("UPDATE struct SET volume_id = %d where id = %d", volumeId, structId);
+    }
+
+    public String getVolumeById(int id) {
+        return String.join("\n",
+            "SELECT id, size_x as sizex, size_y as sizey, size_z as sizez, name",
+            String.format("FROM volume WHERE id=%d", id));
+    }
+
+    public String saveStructBlocks() {
+        return "INSERT INTO struct_block (struct_id, volume_block_id, hp_trigger) VALUES (?, ?, ?)";
     }
 }
 

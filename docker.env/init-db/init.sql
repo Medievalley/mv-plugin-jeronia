@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS volume (
 CREATE TABLE IF NOT EXISTS volume_block (
     id SERIAL PRIMARY KEY,
     volume_id INTEGER REFERENCES volume(id) ON DELETE CASCADE ON UPDATE CASCADE,
-    type VARCHAR(70) NOT NULL,
+    material VARCHAR(70) NOT NULL,
     block_data TEXT NOT NULL,
     x INTEGER,
     y INTEGER,
@@ -57,7 +57,9 @@ CREATE TABLE IF NOT EXISTS struct (
     loc2 INTEGER references location (id) ON DELETE SET NULL ON UPDATE CASCADE,
     volume_id integer references volume(id) ON DELETE SET NULL ON UPDATE CASCADE,
     name varchar(100),
-    priority INTEGER UNIQUE
+    priority INTEGER UNIQUE,
+    deposit INTEGER DEFAULT 0 NOT NULL,
+    resources INTEGER DEFAULT 0 NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS struct_block_type (
@@ -89,13 +91,6 @@ CREATE table IF NOT EXISTS struct_npc (
     name VARCHAR(30) NOT NULL,
     struct_id INTEGER references struct (id) ON DELETE CASCADE ON UPDATE CASCADE,
     alive BOOLEAN DEFAULT true NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS storage (
-    id SERIAL PRIMARY KEY,
-    struct_id INTEGER references struct (id) ON DELETE CASCADE ON UPDATE CASCADE,
-    deposit INTEGER DEFAULT 0 NOT NULL,
-    resources INTEGER DEFAULT 0 NOT NULL
 );
 
 --CREATE UNIQUE INDEX vol_block_idx ON volume_block (volume_id, x, y, z);

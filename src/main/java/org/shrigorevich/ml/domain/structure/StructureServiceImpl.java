@@ -130,13 +130,13 @@ public class StructureServiceImpl extends BaseService implements StructureServic
             for (Block b : blocks) {
                 if (!b.getType().isAir()) {
                     volumeBlocks.add(
-                            new VolumeBlockModelImpl(
-                                    b.getX() - offsetX,
-                                    b.getY() - offsetY,
-                                    b.getZ() - offsetZ,
-                                    b.getType().toString(),
-                                    b.getBlockData().getAsString()
-                            ));
+                        new VolumeBlockModelImpl(
+                            b.getX() - offsetX,
+                            b.getY() - offsetY,
+                            b.getZ() - offsetZ,
+                            b.getType().toString(),
+                            b.getBlockData().getAsString()
+                        ));
                 }
             }
             int volumeId = structContext.createVolume(v, volumeBlocks);

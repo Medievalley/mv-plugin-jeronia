@@ -5,18 +5,17 @@ public class VolumeBlockModelImpl implements VolumeBlockModel {
     private int x;
     private int y;
     private int z;
-    private String blockData;
-    private String type;
+    private String blockData, material;
 
     public VolumeBlockModelImpl() {}
     public VolumeBlockModelImpl(
             int x, int y, int z,
-            String type, String blockData
+            String blockData, String material
     ) {
         this.x = x;
         this.y = y;
         this.z = z;
-        this.type = type;
+        this.material = material;
         this.blockData = blockData;
     }
     public int getId() {
@@ -49,19 +48,18 @@ public class VolumeBlockModelImpl implements VolumeBlockModel {
         this.z = z;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
     public String getBlockData() {
         return blockData;
     }
 
     public void setBlockData(String blockData) {
         this.blockData = blockData;
+    }
+    public String getMaterial() {
+        return material;
+    }
+    @Override
+    public void setMaterial(String material) {
+        this.material = material;
     }
 }

@@ -72,7 +72,7 @@ public class StructContextImpl implements StructureContext { //TODO: extends abs
                 VolumeBlockModel b = volumeBlocks.get(i);
                 volumeBlockValues[i] = new Object[] {
                         volumeId,
-                        b.getType(),
+                        b.getMaterial(),
                         b.getBlockData(),
                         b.getX(), b.getY(), b.getZ()
                 };
@@ -101,7 +101,7 @@ public class StructContextImpl implements StructureContext { //TODO: extends abs
         try {
             QueryRunner run = new QueryRunner(dataSource);
             ResultSetHandler<List<StructModel>> h = new BeanListHandler(StructModelImpl.class);
-            List<StructModel> structs = run.query(structQueryBuilder.getLoreStructures(), h);
+            List<StructModel> structs = run.query(structQueryBuilder.getStructures(), h);
             for (StructModel s : structs) {
                 logger.info(String.format("Id: %d, TypeId: %d, Name: %s, VolumeId: %d brokenBlocks: %d%n",
                         s.getId(), s.getTypeId(), s.getName(), s.getVolumeId(), s.getBrokenBlocks()));
@@ -118,8 +118,7 @@ public class StructContextImpl implements StructureContext { //TODO: extends abs
         try {
             logger.info(String.format("Set volume: %d, %d%n", structId, volumeId));
             QueryRunner run = new QueryRunner(dataSource);
-            String sql = String.format("UPDATE lore_struct SET volume_id = %d where struct_id = %d", volumeId, structId);
-            run.update(sql);
+            run.update(structQueryBuilder.setVolume(structId, volumeId));
         } catch (SQLException ex) {
             logger.severe(ex.toString());
         }
@@ -129,10 +128,7 @@ public class StructContextImpl implements StructureContext { //TODO: extends abs
         try {
             QueryRunner run = new QueryRunner(dataSource);
             ResultSetHandler<VolumeModel> h = new BeanHandler(VolumeModelImpl.class);
-            String sql = String.format("SELECT id, size_x as sizex, size_y as sizey, size_z as sizez, name \n" +
-                    "FROM volume WHERE id=%d", id);
-
-            VolumeModel volume = run.query(sql, h);
+            VolumeModel volume = run.query(structQueryBuilder.getVolumeById(id), h);
             return volume == null ? Optional.empty() : Optional.of(volume);
 
         } catch (SQLException ex) {
@@ -154,8 +150,7 @@ public class StructContextImpl implements StructureContext { //TODO: extends abs
                         b.isTriggerDestruction()
                 };
             }
-            String sql = "INSERT INTO struct_block (struct_id, volume_block_id, trigger_destruction) VALUES (?, ?, ?)";
-            int rows[] = run.batch(sql, brokenBlockValues);
+            run.batch(structQueryBuilder.saveStructBlocks(), brokenBlockValues);
         } catch (SQLException ex) {
             logger.severe(ex.toString());
         }
@@ -166,7 +161,7 @@ public class StructContextImpl implements StructureContext { //TODO: extends abs
             QueryRunner run = new QueryRunner(dataSource);
             ResultSetHandler<List<StructBlockModel>> h = new BeanListHandler(StructBlockModelImpl.class);
             String sql = String.format(
-                    "select b.id, s.id as structId, v.id as volumeBlockId, v.type, v.block_data as blockData, b.broken, b.trigger_destruction as triggerDestruction,\n" +
+                    "select b.id, s.id as structId, b.type, v.block_data as blockData, b.broken, b.hp_trigger as triggerDestruction,\n" +
                     "v.x+s.x1 as x, v.y+s.y1 as y, v.z+s.z1 as z\n" +
                     "from struct_block b \n" +
                     "join volume_block v ON b.volume_block_id=v.id\n" +
