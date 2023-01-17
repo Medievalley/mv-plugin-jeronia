@@ -47,7 +47,6 @@ public class StructureServiceImpl extends BaseService implements StructureServic
         }
         applyLocation(m, corners.get(0), corners.get(1));
         m.typeId = StructureType.valueOf(type.toUpperCase()).getTypeId();
-        m.destructible = destructible;
         m.name = name;
         m.world = corners.get(0).getWorld().getName();
 
