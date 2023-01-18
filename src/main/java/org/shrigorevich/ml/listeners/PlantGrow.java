@@ -31,7 +31,7 @@ public class PlantGrow implements Listener {
         Location l = b.getLocation();
 
         structureService.getByLocation(b.getLocation()).ifPresent((struct) -> {
-            if (isFullyGrown(b) && struct.getType() == StructureType.LORE) {
+            if (isFullyGrown(b) && struct.getType() == StructureType.INFRA) {
                 LoreStructure loreStructure = (LoreStructure) struct;
                 Optional<Villager> e = loreStructure.getLaborer();
                 e.ifPresent(entity -> structureService.getPlugin()

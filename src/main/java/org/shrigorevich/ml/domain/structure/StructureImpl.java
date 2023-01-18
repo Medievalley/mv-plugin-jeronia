@@ -21,7 +21,7 @@ public abstract class StructureImpl implements Structure {
     //TODO: refactor constructor
     public StructureImpl(StructModel m) throws IllegalArgumentException {
 
-        this.type = parseType(m.getTypeId());
+        this.type = StructureType.valueOf(m.getTypeId());
         if(type == null) throw new IllegalArgumentException(
                 String.format("Unable to parse struct type: %d. StructId: %d", 1, m.getId()));
 
@@ -304,14 +304,5 @@ public abstract class StructureImpl implements Structure {
 
     public int getZ2() {
         return z2;
-    }
-
-    private StructureType parseType(int typeId) {
-        for(StructureType st : StructureType.values()) {
-            if (st.getTypeId() == typeId) {
-                return st;
-            }
-        }
-        return null;
     }
 }

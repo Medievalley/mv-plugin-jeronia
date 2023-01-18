@@ -1,7 +1,7 @@
 package org.shrigorevich.ml.domain.structure;
 
 public enum StructureType {
-    PRIVATE(1), LORE(2), MOB_ABODE(3);
+    PRIVATE(1), INFRA(2), MOB_ABODE(3);
 
     private final int typeId;
 
@@ -11,5 +11,14 @@ public enum StructureType {
 
     public int getTypeId() {
         return typeId;
+    }
+
+    public static StructureType valueOf(int id) {
+        for(StructureType st : StructureType.values()) {
+            if (st.getTypeId() == id) {
+                return st;
+            }
+        }
+        return null;
     }
 }

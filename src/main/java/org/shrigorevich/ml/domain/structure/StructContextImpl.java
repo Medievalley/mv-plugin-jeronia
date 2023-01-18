@@ -43,7 +43,7 @@ public class StructContextImpl implements StructureContext { //TODO: extends abs
             ResultSetHandler<Integer> h = new ScalarHandler<>();
             return run.insert(structQueryBuilder.save(st), h);
         } catch (SQLException ex) {
-            plugin.getLogger().severe("StructContext. SaveStructure: " + ex);
+            logger.severe(ex.toString());
             return 0;
         }
     }
@@ -56,7 +56,7 @@ public class StructContextImpl implements StructureContext { //TODO: extends abs
             return s == null ? Optional.empty() : Optional.of(s);
 
         } catch (SQLException ex) {
-            plugin.getLogger().severe("StructContext. GetById: " + ex);
+            logger.severe(ex.toString());
             return Optional.empty();
         }
     }
@@ -71,17 +71,17 @@ public class StructContextImpl implements StructureContext { //TODO: extends abs
             for (int i = 0; i < volumeBlocks.size(); i++) {
                 VolumeBlockModel b = volumeBlocks.get(i);
                 volumeBlockValues[i] = new Object[] {
-                        volumeId,
-                        b.getMaterial(),
-                        b.getBlockData(),
-                        b.getX(), b.getY(), b.getZ()
+                    volumeId,
+                    b.getMaterial(),
+                    b.getBlockData(),
+                    b.getX(), b.getY(), b.getZ()
                 };
             }
             run.batch(volumeQueryBuilder.createVolumeBlockBatch(), volumeBlockValues);
             return volumeId;
 
         } catch (SQLException ex) {
-            plugin.getLogger().severe("StructContext. SaveStructVolume: "  + ex);
+            logger.severe(ex.toString());
             return 0;
         }
     }
@@ -145,9 +145,9 @@ public class StructContextImpl implements StructureContext { //TODO: extends abs
             for (int i = 0; i < blocks.size(); i++) {
                 StructBlockModel b = blocks.get(i);
                 brokenBlockValues[i] = new Object[] {
-                        b.getStructId(),
-                        b.getVolumeBlockId(),
-                        b.isTriggerDestruction()
+                    b.getStructId(),
+                    b.getVolumeBlockId(),
+                    b.isTriggerDestruction()
                 };
             }
             run.batch(structQueryBuilder.saveStructBlocks(), brokenBlockValues);
@@ -160,15 +160,7 @@ public class StructContextImpl implements StructureContext { //TODO: extends abs
         try {
             QueryRunner run = new QueryRunner(dataSource);
             ResultSetHandler<List<StructBlockModel>> h = new BeanListHandler(StructBlockModelImpl.class);
-            String sql = String.format(
-                    "select b.id, s.id as structId, b.type, v.block_data as blockData, b.broken, b.hp_trigger as triggerDestruction,\n" +
-                    "v.x+s.x1 as x, v.y+s.y1 as y, v.z+s.z1 as z\n" +
-                    "from struct_block b \n" +
-                    "join volume_block v ON b.volume_block_id=v.id\n" +
-                    "join struct s ON b.struct_id = s.id\n" +
-                    "where struct_id=%d", structId);
-
-            return run.query(sql, h);
+            return run.query(structQueryBuilder.getStructBlocks(structId), h);
         } catch (SQLException ex) {
             logger.severe(ex.toString());
             return new ArrayList<>(0);

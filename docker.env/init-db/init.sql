@@ -53,13 +53,17 @@ CREATE TABLE IF NOT EXISTS struct (
     id SERIAL PRIMARY KEY,
     type_id INTEGER references struct_type(id) ON DELETE SET NULL ON UPDATE CASCADE,
     world VARCHAR(255) NOT NULL,
-    loc1 INTEGER references location (id) ON DELETE SET NULL ON UPDATE CASCADE,
-    loc2 INTEGER references location (id) ON DELETE SET NULL ON UPDATE CASCADE,
     volume_id integer references volume(id) ON DELETE SET NULL ON UPDATE CASCADE,
     name varchar(100),
     priority INTEGER UNIQUE,
     deposit INTEGER DEFAULT 0 NOT NULL,
-    resources INTEGER DEFAULT 0 NOT NULL
+    resources INTEGER DEFAULT 0 NOT NULL,
+    x1 INTEGER NOT NULL,
+    y1 INTEGER NOT NULL,
+    z1 INTEGER NOT NULL,
+    x2 INTEGER NOT NULL,
+    y2 INTEGER NOT NULL,
+    z2 INTEGER NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS struct_block_type (

@@ -5,16 +5,16 @@ import org.shrigorevich.ml.domain.structure.models.StructModel;
 public class StructureQueryBuilderImpl {
 
     public String save(StructModel m) {
-        return
-            String.join("\n",
-                "with rows as (",
-                String.format("INSERT INTO location (x, y, z) VALUES (%d, %d, %d), (%d, %d, %d)",
-                        m.getX1(), m.getY1(), m.getZ1(), m.getX2(), m.getY2(), m.getZ2()),
-                "RETURNING id )",
-                "insert into struct (loc1, loc2, type_id, world)",
-                String.format("select ids[1], ids[2], %d, '%s' from (select array_agg(id) ids from rows) as locids;",
-                        m.getTypeId(), m.getWorld())
-                );
+        if (StructureType.valueOf(m.getTypeId()) == StructureType.INFRA) {
+            return String.join("\n",
+                "insert into struct (name, type_id, volume_id, world, priority, x1, y1, z1, x2, y2, z2)",
+                String.format("VALUES ('%s', %d, %d, '%s', %d, %d, %d, %d, %d, %d, %d);",
+                    m.getName(), m.getTypeId(), m.getVolumeId(), m.getWorld(), m.getPriority(),
+                    m.getX1(), m.getY1(), m.getZ1(), m.getX2(), m.getY2(), m.getZ2()));
+        } else {
+            throw new IllegalArgumentException(
+                    String.format("Save script for StructType: %d not implemented", m.getTypeId()));
+        }
     }
 
     @Deprecated
@@ -25,6 +25,8 @@ public class StructureQueryBuilderImpl {
             "from lore_struct ls JOIN struct s ON s.id = ls.struct_id where ls.struct_id=%d ", id);
     }
 
+    //TODO: refactor broken blocks logic
+    @Deprecated
     public String getStructures() {
         return String.join("\n",
             "select id, name, volume_id as volumeId, priority, deposit, resources, type_id as typeId",
@@ -46,6 +48,16 @@ public class StructureQueryBuilderImpl {
 
     public String saveStructBlocks() {
         return "INSERT INTO struct_block (struct_id, volume_block_id, hp_trigger) VALUES (?, ?, ?)";
+    }
+
+    public String getStructBlocks(int structId) {
+        return String.join("\n",
+            "select b.id, s.id as structId, b.type, v.block_data as blockData,",
+                "b.broken, b.hp_trigger as triggerDestruction",
+                "v.x+s.x1 as x, v.y+s.y1 as y, v.z+s.z1 as z",
+                "from struct_block b",
+                "join volume_block v ON b.volume_block_id=v.id",
+                String.format("join struct s ON b.struct_id = s.id where struct_id=%d", structId));
     }
 }
 
