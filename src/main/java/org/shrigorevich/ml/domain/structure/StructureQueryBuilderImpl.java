@@ -52,12 +52,49 @@ public class StructureQueryBuilderImpl {
 
     public String getStructBlocks(int structId) {
         return String.join("\n",
-            "select b.id, s.id as structId, b.type, v.block_data as blockData,",
-                "b.broken, b.hp_trigger as triggerDestruction",
+            selectStructBlock(),
+            String.format("where struct_id=%d", structId));
+    }
+
+    public String getStructBlock(int id) {
+        return String.join("\n",
+            selectStructBlock(),
+            String.format("where b.id=%d", id));
+    }
+
+    public String updateBlocksStatus() {
+        return "UPDATE struct_block SET broken=? WHERE id=?";
+    }
+
+    public String restoreBlock(int id) {
+        return String.format("UPDATE struct_block SET broken=false WHERE id=%d", id);
+    }
+
+    public String restoreStruct(int id) {
+        return String.format("UPDATE struct_block SET broken=false WHERE struct_id=%d and broken=true", id);
+    }
+
+    public String unAttachVolume(int structId) {
+        return String.format("UPDATE struct SET volume_id=null WHERE id=%d", structId);
+    }
+
+    public String clearStructBlocks(int structId) {
+        return String.format("DELETE FROM struct_block WHERE struct_id=%d", structId);
+    }
+
+    public String updateResources(int structId, int stockSize) {
+        return String.format("UPDATE struct SET resources=%d WHERE id=%d", stockSize, structId);
+    }
+
+
+    private String selectStructBlock() {
+        return String.join("\n",
+                "select b.id, s.id as structId, b.type, v.block_data as blockData,",
+                "b.broken, b.hp_trigger as triggerDestruction,",
                 "v.x+s.x1 as x, v.y+s.y1 as y, v.z+s.z1 as z",
                 "from struct_block b",
                 "join volume_block v ON b.volume_block_id=v.id",
-                String.format("join struct s ON b.struct_id = s.id where struct_id=%d", structId));
+                "join struct s ON b.struct_id = s.id");
     }
 }
 

@@ -167,7 +167,25 @@ public class StructContextImpl implements StructureContext { //TODO: extends abs
         }
     }
 
-    //TODO: Maybe create new db index
+    @Override
+    public Optional<StructBlockModel> getStructBlock(int id) {
+        try {
+            QueryRunner run = new QueryRunner(dataSource);
+            ResultSetHandler<StructBlockModel> h = new BeanHandler(StructBlockModelImpl.class);
+            StructBlockModel block = run.query(structQueryBuilder.getStructBlock(id), h);
+            if (block == null) {
+                logger.severe(String.format("Struct block with id: %d not found", id));
+            }
+            return block == null ? Optional.empty() : Optional.of(block);
+        } catch (SQLException ex) {
+            logger.severe(ex.toString());
+            //TODO: throw exception instead of return value
+            return Optional.empty();
+        }
+    }
+
+    //TODO: Not use case. Should be replaced with getStructBlockById(int id);
+    @Deprecated
     public Optional<StructBlockModel> getStructBlock(int x, int y, int z, int volumeId, int structId) {
         try {
             QueryRunner run = new QueryRunner(dataSource);
@@ -205,11 +223,11 @@ public class StructContextImpl implements StructureContext { //TODO: extends abs
                         b.getId()
                 };
             }
-            String sql = "UPDATE struct_block SET broken=? WHERE id=?";
-            int rows[] = run.batch(sql, blockValues);
+            int[] rows = run.batch(structQueryBuilder.updateBlocksStatus(), blockValues);
             return rows.length;
         } catch (SQLException ex) {
             logger.severe(ex.toString());
+            //TODO: Throw exception
             return 0;
         }
     }
@@ -218,19 +236,17 @@ public class StructContextImpl implements StructureContext { //TODO: extends abs
     public void restoreBlock(int id) {
         try {
             QueryRunner run = new QueryRunner(dataSource);
-            String sql = String.format("UPDATE struct_block SET broken=false WHERE id=%d", id);
-            run.update(sql);
+            run.update(structQueryBuilder.restoreBlock(id));
         } catch (SQLException ex) {
             logger.severe(ex.toString());
         }
     }
 
     @Override
-    public void restore(int structId) {
+    public void restoreStruct(int structId) {
         try {
             QueryRunner run = new QueryRunner(dataSource);
-            String sql = String.format("UPDATE struct_block SET broken=false WHERE struct_id=%d and broken=true", structId);
-            run.update(sql);
+            run.update(structQueryBuilder.restoreStruct(structId));
         } catch (SQLException ex) {
             logger.severe(ex.toString());
         }
@@ -240,21 +256,18 @@ public class StructContextImpl implements StructureContext { //TODO: extends abs
     public void removeVolume(int structId) {
         try {
             QueryRunner run = new QueryRunner(dataSource);
-            String sql1 = String.format("UPDATE lore_struct SET volume_id=null WHERE struct_id=%d", structId);
-            String sql2 = String.format("DELETE FROM struct_block WHERE struct_id=%d", structId);
-            run.update(sql1);
-            run.update(sql2);
+            run.update(structQueryBuilder.unAttachVolume(structId));
+            run.update(structQueryBuilder.clearStructBlocks(structId));
         } catch (SQLException ex) {
             logger.severe(ex.toString());
         }
     }
 
     @Override
-    public void updateStock(int structId, int stockSize) {
+    public void updateResources(int structId, int stockSize) {
         try {
             QueryRunner run = new QueryRunner(dataSource);
-            String sql = String.format("UPDATE lore_struct SET stock=%d WHERE struct_id=%d", stockSize, structId);
-            run.update(sql);
+            run.update(structQueryBuilder.updateResources(structId, stockSize));
         } catch (SQLException ex) {
             logger.severe(ex.toString());
         }

@@ -22,9 +22,10 @@ public interface StructureContext {
     Optional<StructBlockModel> getStructBlock(int x, int y, int z, int volumeId, int structId);
     void saveStructBlocks(List<StructBlockModel> blocks);
     List<StructBlockModel> getStructBlocks(int structId);
+    Optional<StructBlockModel> getStructBlock(int id);
     int updateBlocksStatus(List<StructBlockModel> blocks, boolean isBroken);
     void restoreBlock(int id);
-    void restore(int structId);
+    void restoreStruct(int structId);
     void removeVolume(int structId);
-    void updateStock(int structId, int stockSize);
+    void updateResources(int structId, int stockSize);
 }

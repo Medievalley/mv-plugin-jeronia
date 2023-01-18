@@ -54,7 +54,7 @@ public class LoreStructImpl extends StructureImpl implements LoreStructure {
 
     @Override
     public void restore() {
-        context.restore(getId());
+        context.restoreStruct(getId());
         List<StructBlockModel> structBlocks = context.getStructBlocks(getId());
         for (StructBlockModel sb : structBlocks) {
             getWorld()
@@ -103,7 +103,7 @@ public class LoreStructImpl extends StructureImpl implements LoreStructure {
     @Override
     public void updateFoodStock(int foodAmount) {
         foodStock+=foodAmount;
-        context.updateStock(getId(), foodStock);
+        context.updateResources(getId(), foodStock);
     }
 
     @Override
