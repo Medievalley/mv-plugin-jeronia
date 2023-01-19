@@ -14,7 +14,7 @@ import org.shrigorevich.ml.domain.volume.models.VolumeBlockModelImpl;
 import org.shrigorevich.ml.domain.volume.models.VolumeModelImpl;
 import org.shrigorevich.ml.domain.callbacks.IResultCallback;
 import org.shrigorevich.ml.domain.structure.models.*;
-import org.shrigorevich.ml.domain.users.User;
+import org.shrigorevich.ml.domain.users.models.UserModelImpl;
 import org.shrigorevich.ml.events.StructsLoadedEvent;
 
 import java.util.*;
@@ -36,7 +36,7 @@ public class StructureServiceImpl extends BaseService implements StructureServic
 
     @Override
     public void create(
-            User user, String type,
+            UserModelImpl user, String type,
             String name, boolean destructible,
             IResultCallback cb
     ) throws Exception  {

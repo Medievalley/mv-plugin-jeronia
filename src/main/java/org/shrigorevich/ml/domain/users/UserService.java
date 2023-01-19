@@ -1,6 +1,11 @@
 package org.shrigorevich.ml.domain.users;
 
 import org.shrigorevich.ml.domain.callbacks.IAccessCheckCallback;
+import org.shrigorevich.ml.domain.users.contracts.IUserService;
+import org.shrigorevich.ml.domain.users.contracts.User;
+import org.shrigorevich.ml.domain.users.contracts.UserContext;
+import org.shrigorevich.ml.domain.users.models.UserModel;
+import org.shrigorevich.ml.domain.users.models.UserModelImpl;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,25 +26,29 @@ public class UserService implements IUserService {
                 livesNumberMsg = "Your character has no lives left:)",
                 confirmedMsg = "You have not verified your email";
 
-        Optional<User> user = userContext.getByName(userName);
+        try {
+            Optional<UserModel> user = userContext.getByName(userName);
 
-        if (!user.isPresent()) {
-            cb.onСheck(false, regMsg);
-        }
-        else if(!user.get().getIp().equals(ip)) {
-            cb.onСheck(false, ipMsg);
-        }
-        else if(!user.get().isVerified()) {
-            cb.onСheck(false, confirmedMsg);
-        }
-        else if (user.get().getLives() <= 0){
-            cb.onСheck(false, livesNumberMsg);
-        }
-        else if (getFromOnlineList(userName).isPresent()) {
-            cb.onСheck(false, nameMsg);
-        }
-        else {
-            addInOnlineList(user.get());
+            if (!user.isPresent()) {
+                cb.onСheck(false, regMsg);
+            }
+            else if(!user.get().getIp().equals(ip)) {
+                cb.onСheck(false, ipMsg);
+            }
+            else if(!user.get().isVerified()) {
+                cb.onСheck(false, confirmedMsg);
+            }
+            else if (user.get().getLives() <= 0){
+                cb.onСheck(false, livesNumberMsg);
+            }
+            else if (getFromOnlineList(userName).isPresent()) {
+                cb.onСheck(false, nameMsg);
+            }
+            else {
+                addInOnlineList(new UserImpl(user.get()));
+            }
+        } catch (Exception ex) {
+
         }
     }
 

@@ -9,9 +9,9 @@ import org.bukkit.entity.Player;
 import org.shrigorevich.ml.domain.project.contracts.ProjectService;
 import org.shrigorevich.ml.domain.scoreboard.ScoreboardService;
 import org.shrigorevich.ml.domain.structure.contracts.LoreStructure;
-import org.shrigorevich.ml.domain.users.User;
+import org.shrigorevich.ml.domain.users.models.UserModelImpl;
 import org.shrigorevich.ml.domain.structure.contracts.StructureService;
-import org.shrigorevich.ml.domain.users.IUserService;
+import org.shrigorevich.ml.domain.users.contracts.IUserService;
 import org.shrigorevich.ml.events.FinalizeProjectEvent;
 
 import java.util.Optional;
@@ -47,7 +47,7 @@ public class StructureExecutor implements CommandExecutor {
                             break;
                         case "c":
                         case "create":
-                            Optional<User> u = userService.getFromOnlineList(player.getName());
+                            Optional<UserModelImpl> u = userService.getFromOnlineList(player.getName());
                             if (u.isPresent())
                                 structService.create(
                                         u.get(), args[1], args[2],

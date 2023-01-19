@@ -1,23 +1,23 @@
 package org.shrigorevich.ml.common;
 
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitScheduler;
 
 import javax.sql.DataSource;
+import java.util.logging.Logger;
 
 public abstract class Context {
 
-    private final Plugin plugin;
+    private final Logger logger;
     private final DataSource dataSource;
 
-    protected Context(Plugin plugin, DataSource dataSource) {
-        this.plugin = plugin;
+    protected Context(DataSource dataSource, Logger logger) {
+        this.logger = logger;
         this.dataSource = dataSource;
+
     }
 
-    public Plugin getPlugin() {
-        return plugin;
+    public Logger getLogger() {
+        return logger;
     }
 
     public DataSource getDataSource() {

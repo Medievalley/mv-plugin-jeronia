@@ -31,7 +31,7 @@ public class StructureQueryBuilderImpl {
         return String.join("\n",
             "select id, name, volume_id as volumeId, priority, deposit, resources, type_id as typeId",
             "world, x1, y1, z1, x2, y2, z2,",
-            "(select count(id)::int from struct_block where struct_id=s.id and broken=true) as brokenBlocks",
+            "(select count(id)::int from struct_block where struct_id=s.id and broken=true) as brokenBlocks,",
             "(select count(id)::int from struct_block where struct_id=s.id and broken=false) as blocks",
             "from struct");
     }

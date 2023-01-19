@@ -99,7 +99,10 @@ CREATE table IF NOT EXISTS struct_npc (
 
 --CREATE UNIQUE INDEX vol_block_idx ON volume_block (volume_id, x, y, z);
 
-INSERT INTO role (id, name, description) VALUES (1, 'Admin', 'Most privileged role');
+INSERT INTO role (id, name, description)
+VALUES (1, 'Admin', 'Most privileged role'),
+VALUES (2, 'Moder', 'Game server moderator'),
+VALUES (3, 'Player', 'Default player');
 
 INSERT INTO struct_type (id, name, description) VALUES
 (1, 'private', 'Private territory that each user can own'),

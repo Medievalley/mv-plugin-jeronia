@@ -1,13 +1,15 @@
-package org.shrigorevich.ml.domain.users;
+package org.shrigorevich.ml.domain.users.models;
 
-public class User {
+import org.shrigorevich.ml.domain.users.models.UserModel;
+
+public class UserModelImpl implements UserModel {
 
     private int id;
     private String name;
     private String ip;
     private int lives;
     private boolean verified;
-    private String roleName;
+    private int roleId;
 
     public int getId() {
         return id;
@@ -28,8 +30,8 @@ public class User {
         return verified;
     }
 
-    public String getRoleName() {
-        return roleName;
+    public int getRoleId() {
+        return roleId;
     }
 
     public void setName(String name) {
@@ -52,7 +54,7 @@ public class User {
         this.verified = verified;
     }
 
-    public void setRoleName(String roleName) {
-        this.roleName = roleName;
+    public void setRoleId(int roleId) {
+        this.roleId = roleId;
     }
 }

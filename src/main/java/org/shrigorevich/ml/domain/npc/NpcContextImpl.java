@@ -16,12 +16,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 public class NpcContextImpl extends Context implements NpcContext {
 
 
-    public NpcContextImpl(Plugin plugin, DataSource dataSource) {
-        super(plugin, dataSource);
+    public NpcContextImpl(DataSource dataSource) {
+        super(dataSource, Logger.getLogger("NpcContextImpl"));
     };
 
     @Override
@@ -45,7 +46,7 @@ public class NpcContextImpl extends Context implements NpcContext {
             return run.insert(sql, h);
 
         } catch (SQLException ex) {
-            getPlugin().getLogger().severe("NpcContext. Save: " + ex);
+            getLogger().severe("NpcContext. Save: " + ex);
             return 0;
         }
     }
@@ -63,7 +64,7 @@ public class NpcContextImpl extends Context implements NpcContext {
             "join location wl on wl.id = n.work";
             return run.query(sql, h);
         } catch (SQLException ex) {
-            getPlugin().getLogger().severe("NpcContext. Get all: " + ex);
+            getLogger().severe("NpcContext. Get all: " + ex);
             return new ArrayList<>(0);
         }
     }
@@ -84,7 +85,7 @@ public class NpcContextImpl extends Context implements NpcContext {
 
             return run.query(sql, h);
         } catch (SQLException ex) {
-            getPlugin().getLogger().severe("NpcContext. Get by structId: " + ex);
+            getLogger().severe("NpcContext. Get by structId: " + ex);
             return new ArrayList<>(0);
         }
     }
@@ -107,7 +108,7 @@ public class NpcContextImpl extends Context implements NpcContext {
             return s == null ? Optional.empty() : Optional.of(s);
 
         } catch (SQLException ex) {
-            getPlugin().getLogger().severe("NpcContext. GetById: " + ex);
+            getLogger().severe("NpcContext. GetById: " + ex);
             return Optional.empty();
         }
     }

@@ -11,10 +11,11 @@ import org.shrigorevich.ml.domain.project.models.StorageModelImpl;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.logging.Logger;
 
 public class ProjectContextImpl extends Context implements ProjectContext {
-    public ProjectContextImpl(Plugin plugin, DataSource dataSource) {
-        super(plugin, dataSource);
+    public ProjectContextImpl(DataSource dataSource) {
+        super(dataSource, Logger.getLogger("ProjectContextImpl"));
     }
 
     @Override
@@ -26,7 +27,7 @@ public class ProjectContextImpl extends Context implements ProjectContext {
 
             return run.query(sql, h);
         } catch (SQLException ex) {
-            getPlugin().getLogger().severe("ProjectContext. Get storage: " + ex);
+            getLogger().severe("ProjectContext. Get storage: " + ex);
             return new StorageModelImpl();
         }
     }
@@ -38,7 +39,7 @@ public class ProjectContextImpl extends Context implements ProjectContext {
             String sql = String.format("UPDATE storage SET resources=%d", amount);
             run.update(sql);
         } catch (SQLException ex) {
-            getPlugin().getLogger().severe("ProjectContext. Update resources: " + ex);
+            getLogger().severe("ProjectContext. Update resources: " + ex);
         }
     }
 }

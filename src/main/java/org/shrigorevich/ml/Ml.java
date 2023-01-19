@@ -31,8 +31,8 @@ import org.shrigorevich.ml.domain.structure.StructContextImpl;
 import org.shrigorevich.ml.domain.structure.contracts.StructureContext;
 import org.shrigorevich.ml.domain.structure.contracts.StructureService;
 import org.shrigorevich.ml.domain.structure.StructureServiceImpl;
-import org.shrigorevich.ml.domain.users.IUserService;
-import org.shrigorevich.ml.domain.users.UserContext;
+import org.shrigorevich.ml.domain.users.contracts.IUserService;
+import org.shrigorevich.ml.domain.users.contracts.UserContext;
 import org.shrigorevich.ml.domain.users.UserContextImpl;
 import org.shrigorevich.ml.domain.users.UserService;
 import org.shrigorevich.ml.domain.project.contracts.ProjectService;
@@ -71,10 +71,10 @@ public final class Ml extends JavaPlugin implements AdventurePlugin {
         config = new Configuration(this);
         dataSource = DataSourceCreator.createDataSource(config);
 
-        UserContext userContext = new UserContextImpl(this, dataSource);
-        StructureContext structureContext = new StructContextImpl(this, dataSource);
-        NpcContext npcContext = new NpcContextImpl(this, dataSource);
-        ProjectContext projectContext = new ProjectContextImpl(this, dataSource);
+        UserContext userContext = new UserContextImpl(dataSource);
+        StructureContext structureContext = new StructContextImpl(dataSource);
+        NpcContext npcContext = new NpcContextImpl(dataSource);
+        ProjectContext projectContext = new ProjectContextImpl(dataSource);
 
         userService = new UserService(userContext);
         structService = new StructureServiceImpl(structureContext, this);
