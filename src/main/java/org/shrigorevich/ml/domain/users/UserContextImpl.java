@@ -3,6 +3,7 @@ package org.shrigorevich.ml.domain.users;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.BeanHandler;
+import org.apache.logging.log4j.LogManager;
 import org.shrigorevich.ml.common.BaseContext;
 import org.shrigorevich.ml.domain.users.contracts.UserContext;
 import org.shrigorevich.ml.domain.users.models.UserModel;
@@ -16,7 +17,7 @@ import java.util.logging.Logger;
 public class UserContextImpl extends BaseContext implements UserContext {
 
     public UserContextImpl(DataSource dataSource) {
-        super(dataSource, Logger.getLogger("UserContextImpl"));
+        super(dataSource, LogManager.getLogger("UserContextImpl"));
     }
 
     public Optional<UserModel> getByName(String name) throws Exception {
@@ -33,7 +34,7 @@ public class UserContextImpl extends BaseContext implements UserContext {
             return user == null ? Optional.empty() : Optional.of(user);
 
         } catch (SQLException ex) {
-            getLogger().severe(ex.toString());
+            getLogger().error(ex.toString());
             throw new Exception(ex.toString());
         }
     }

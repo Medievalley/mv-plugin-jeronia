@@ -1,6 +1,7 @@
 package org.shrigorevich.ml.domain.project;
 
 import net.kyori.adventure.text.Component;
+import org.apache.logging.log4j.LogManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.plugin.Plugin;
@@ -21,7 +22,7 @@ public class ProjectServiceImpl extends BaseService implements ProjectService {
     private final PriorityQueue<BuildProject> buildPlan;
 
     public ProjectServiceImpl(Plugin plugin, ProjectContext context) {
-        super(plugin);
+        super(plugin, LogManager.getLogger("ProjectServiceImpl"));
         this.context = context;
         this.projects = new HashMap<>();
         this.storage = new StorageImpl(0, 0);

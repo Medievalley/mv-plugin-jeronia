@@ -4,6 +4,7 @@ import org.bukkit.Location;
 import org.shrigorevich.ml.common.Service;
 import org.shrigorevich.ml.domain.callbacks.IResultCallback;
 import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
+import org.shrigorevich.ml.domain.users.contracts.User;
 import org.shrigorevich.ml.domain.users.models.UserModelImpl;
 
 import java.util.ArrayList;
@@ -12,7 +13,7 @@ import java.util.Optional;
 
 public interface StructureService extends Service {
 
-    void create(UserModelImpl user, String type, String name, boolean destructible, IResultCallback cb) throws Exception;
+    void create(User user, String type, String name, boolean destructible, IResultCallback cb) throws Exception;
     void setCorner(String key, Location l);
     ArrayList<Location> getStructCorners(String key);
     String exportVolume(String userName, String volumeName);

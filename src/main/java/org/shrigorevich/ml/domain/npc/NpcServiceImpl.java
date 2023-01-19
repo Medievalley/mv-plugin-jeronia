@@ -1,6 +1,7 @@
 package org.shrigorevich.ml.domain.npc;
 
 import net.kyori.adventure.text.Component;
+import org.apache.logging.log4j.LogManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -31,7 +32,7 @@ public class NpcServiceImpl extends BaseService implements NpcService {
     private final Map<UUID, SafeLoc> bookedSafeLocs;
 
     public NpcServiceImpl(NpcContext context, Plugin plugin) {
-        super(plugin);
+        super(plugin, LogManager.getLogger("NpcServiceImpl"));
         this.context = context;
         this.draftNpc = new HashMap<>();
         this.npcList = new HashMap<>();

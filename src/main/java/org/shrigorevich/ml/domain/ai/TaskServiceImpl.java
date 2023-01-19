@@ -2,6 +2,7 @@ package org.shrigorevich.ml.domain.ai;
 
 import com.destroystokyo.paper.entity.ai.Goal;
 import com.destroystokyo.paper.entity.ai.MobGoals;
+import org.apache.logging.log4j.LogManager;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Villager;
 import org.bukkit.plugin.Plugin;
@@ -19,7 +20,7 @@ public class TaskServiceImpl extends BaseService implements TaskService {
     private final Map<UUID, List<Task>> blockedTasks;
 
     public TaskServiceImpl(Plugin plugin) {
-        super(plugin);
+        super(plugin, LogManager.getLogger("TaskServiceImpl"));
         tasksQueues = new HashMap<>();
         currentTasks = new HashMap<>();
         blockedTasks = new HashMap<>();

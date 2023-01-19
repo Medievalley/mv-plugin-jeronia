@@ -3,6 +3,7 @@ package org.shrigorevich.ml.domain.mob;
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
 import net.kyori.adventure.text.Component;
+import org.apache.logging.log4j.LogManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
@@ -24,7 +25,7 @@ public class MobServiceImpl extends BaseService implements MobService {
     private final PlayerProfile profile;
 
     public MobServiceImpl(Plugin plugin) {
-        super(plugin);
+        super(plugin, LogManager.getLogger());
         this.skulls = new HashMap<>();
         this.profile = Bukkit.getServer().createProfile(UUID.randomUUID());
     }

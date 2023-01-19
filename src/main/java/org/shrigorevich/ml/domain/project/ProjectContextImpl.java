@@ -3,6 +3,7 @@ package org.shrigorevich.ml.domain.project;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.BeanHandler;
+import org.apache.logging.log4j.LogManager;
 import org.shrigorevich.ml.common.BaseContext;
 import org.shrigorevich.ml.domain.project.contracts.ProjectContext;
 import org.shrigorevich.ml.domain.project.models.StorageModel;
@@ -14,7 +15,7 @@ import java.util.logging.Logger;
 
 public class ProjectContextImpl extends BaseContext implements ProjectContext {
     public ProjectContextImpl(DataSource dataSource) {
-        super(dataSource, Logger.getLogger("ProjectContextImpl"));
+        super(dataSource, LogManager.getLogger("ProjectContextImpl"));
     }
 
     @Override
@@ -26,7 +27,7 @@ public class ProjectContextImpl extends BaseContext implements ProjectContext {
 
             return run.query(sql, h);
         } catch (SQLException ex) {
-            getLogger().severe("ProjectContext. Get storage: " + ex);
+            getLogger().error("Get storage: " + ex);
             return new StorageModelImpl();
         }
     }
@@ -38,7 +39,7 @@ public class ProjectContextImpl extends BaseContext implements ProjectContext {
             String sql = String.format("UPDATE storage SET resources=%d", amount);
             run.update(sql);
         } catch (SQLException ex) {
-            getLogger().severe("ProjectContext. Update resources: " + ex);
+            getLogger().error("Update resources: " + ex);
         }
     }
 }

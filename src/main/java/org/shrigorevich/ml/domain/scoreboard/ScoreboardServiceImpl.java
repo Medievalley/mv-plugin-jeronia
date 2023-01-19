@@ -1,6 +1,7 @@
 package org.shrigorevich.ml.domain.scoreboard;
 
 import net.kyori.adventure.text.Component;
+import org.apache.logging.log4j.LogManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -17,7 +18,7 @@ public class ScoreboardServiceImpl extends BaseService implements ScoreboardServ
     private final Map<BoardType, Scoreboard> boards;
 
     public ScoreboardServiceImpl(Plugin plugin) {
-        super(plugin);
+        super(plugin, LogManager.getLogger("ScoreboardServiceImpl"));
         boards = new HashMap<>();
     }
 
