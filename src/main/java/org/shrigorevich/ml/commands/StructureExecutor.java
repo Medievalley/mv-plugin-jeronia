@@ -11,18 +11,18 @@ import org.shrigorevich.ml.domain.scoreboard.ScoreboardService;
 import org.shrigorevich.ml.domain.structure.contracts.LoreStructure;
 import org.shrigorevich.ml.domain.users.models.UserModelImpl;
 import org.shrigorevich.ml.domain.structure.contracts.StructureService;
-import org.shrigorevich.ml.domain.users.contracts.IUserService;
+import org.shrigorevich.ml.domain.users.contracts.UserService;
 import org.shrigorevich.ml.events.FinalizeProjectEvent;
 
 import java.util.Optional;
 
 public class StructureExecutor implements CommandExecutor {
-    private final IUserService userService;
+    private final UserService userService;
     private final StructureService structService;
     private final ProjectService projectService;
     private final ScoreboardService scoreboardService;
 
-    public StructureExecutor(IUserService userService, StructureService structService, ProjectService projectService, ScoreboardService scoreboardService) {
+    public StructureExecutor(UserService userService, StructureService structService, ProjectService projectService, ScoreboardService scoreboardService) {
         this.userService = userService;
         this.structService = structService;
         this.projectService = projectService;

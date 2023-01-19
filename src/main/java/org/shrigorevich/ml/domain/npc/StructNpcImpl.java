@@ -1,7 +1,7 @@
 package org.shrigorevich.ml.domain.npc;
 
 import org.shrigorevich.ml.domain.npc.contracts.StructNpc;
-import org.shrigorevich.ml.domain.npc.models.StructNpcDB;
+import org.shrigorevich.ml.domain.npc.models.StructNpcModel;
 
 import java.util.UUID;
 
@@ -13,7 +13,7 @@ public class StructNpcImpl implements StructNpc {
     private boolean alive;
     private NpcRole role;
 
-    public StructNpcImpl(StructNpcDB model, UUID entityId) {
+    public StructNpcImpl(StructNpcModel model, UUID entityId) {
         this.x = model.getWorkX();
         this.y = model.getWorkY();
         this.z = model.getWorkZ();

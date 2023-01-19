@@ -31,10 +31,10 @@ import org.shrigorevich.ml.domain.structure.StructContextImpl;
 import org.shrigorevich.ml.domain.structure.contracts.StructureContext;
 import org.shrigorevich.ml.domain.structure.contracts.StructureService;
 import org.shrigorevich.ml.domain.structure.StructureServiceImpl;
-import org.shrigorevich.ml.domain.users.contracts.IUserService;
+import org.shrigorevich.ml.domain.users.contracts.UserService;
 import org.shrigorevich.ml.domain.users.contracts.UserContext;
 import org.shrigorevich.ml.domain.users.UserContextImpl;
-import org.shrigorevich.ml.domain.users.UserService;
+import org.shrigorevich.ml.domain.users.UserServiceImpl;
 import org.shrigorevich.ml.domain.project.contracts.ProjectService;
 import org.shrigorevich.ml.domain.project.ProjectServiceImpl;
 import org.shrigorevich.ml.listeners.*;
@@ -45,7 +45,7 @@ public final class Ml extends JavaPlugin implements AdventurePlugin {
 
     private Configuration config;
     private DataSource dataSource;
-    private IUserService userService;
+    private UserService userService;
     private StructureService structService;
     private NpcService npcService;
     private TaskService taskService;
@@ -76,7 +76,7 @@ public final class Ml extends JavaPlugin implements AdventurePlugin {
         NpcContext npcContext = new NpcContextImpl(dataSource);
         ProjectContext projectContext = new ProjectContextImpl(dataSource);
 
-        userService = new UserService(userContext);
+        userService = new UserServiceImpl(userContext, this);
         structService = new StructureServiceImpl(structureContext, this);
         npcService = new NpcServiceImpl(npcContext, this);
         taskService = new TaskServiceImpl(this);

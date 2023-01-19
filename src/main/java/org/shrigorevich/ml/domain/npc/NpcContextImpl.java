@@ -5,28 +5,29 @@ import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.BeanHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
-import org.bukkit.plugin.Plugin;
-import org.shrigorevich.ml.common.Context;
+import org.apache.logging.log4j.LogManager;
+import org.shrigorevich.ml.common.BaseContext;
 import org.shrigorevich.ml.domain.npc.contracts.NpcContext;
-import org.shrigorevich.ml.domain.npc.models.StructNpcDB;
 import org.shrigorevich.ml.domain.npc.models.StructNpcModel;
+import org.shrigorevich.ml.domain.npc.models.StructNpcModelImpl;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Logger;
 
-public class NpcContextImpl extends Context implements NpcContext {
+public class NpcContextImpl extends BaseContext implements NpcContext {
 
+    private final NpcQueryBuilder queryBuilder;
 
     public NpcContextImpl(DataSource dataSource) {
-        super(dataSource, Logger.getLogger("NpcContextImpl"));
+        super(dataSource, LogManager.getLogger("NpcContextImpl"));
+        this.queryBuilder = new NpcQueryBuilder();
     };
 
     @Override
-    public int save(StructNpcDB npc) {
+    public int save(StructNpcModel npc) {
         try {
             QueryRunner run = new QueryRunner(getDataSource());
             ResultSetHandler<Integer> h = new ScalarHandler<>();
@@ -46,16 +47,16 @@ public class NpcContextImpl extends Context implements NpcContext {
             return run.insert(sql, h);
 
         } catch (SQLException ex) {
-            getLogger().severe("NpcContext. Save: " + ex);
+            getLogger().error("NpcContext. Save: " + ex);
             return 0;
         }
     }
 
     @Override
-    public List<StructNpcDB> get() {
+    public List<StructNpcModel> get() {
         try {
             QueryRunner run = new QueryRunner(getDataSource());
-            ResultSetHandler<List<StructNpcDB>> h = new BeanListHandler(StructNpcModel.class);
+            ResultSetHandler<List<StructNpcModel>> h = new BeanListHandler(StructNpcModelImpl.class);
             String sql = "select n.id, n.name, struct_id as structId, n.alive, n.role_id as roleId, s.world,\n" +
             "sl.x as spawnX, sl.y as spawnY, sl.z as spawnZ, wl.x as workX, wl.y as workY, wl.z as workZ\n" +
             "from struct_npc n \n" +
@@ -64,16 +65,16 @@ public class NpcContextImpl extends Context implements NpcContext {
             "join location wl on wl.id = n.work";
             return run.query(sql, h);
         } catch (SQLException ex) {
-            getLogger().severe("NpcContext. Get all: " + ex);
+            getLogger().error("NpcContext. Get all: " + ex);
             return new ArrayList<>(0);
         }
     }
 
     @Override
-    public List<StructNpcDB> getByStructId(int structId) {
+    public List<StructNpcModel> getByStructId(int structId) {
         try {
             QueryRunner run = new QueryRunner(getDataSource());
-            ResultSetHandler<List<StructNpcDB>> h = new BeanListHandler(StructNpcModel.class);
+            ResultSetHandler<List<StructNpcModel>> h = new BeanListHandler(StructNpcModelImpl.class);
             String sql = String.format(
                     "select n.id, n.name, struct_id as structId, n.alive, n.role_id as roleId, s.world,\n" +
                     "sl.x as spawnX, sl.y as spawnY, sl.z as spawnZ, wl.x as workX, wl.y as workY, wl.z as workZ\n" +
@@ -85,16 +86,16 @@ public class NpcContextImpl extends Context implements NpcContext {
 
             return run.query(sql, h);
         } catch (SQLException ex) {
-            getLogger().severe("NpcContext. Get by structId: " + ex);
+            getLogger().error("NpcContext. Get by structId: " + ex);
             return new ArrayList<>(0);
         }
     }
 
     @Override
-    public Optional<StructNpcDB> get(int id) {
+    public Optional<StructNpcModel> get(int id) {
         try {
             QueryRunner run = new QueryRunner(getDataSource());
-            ResultSetHandler<StructNpcDB> h = new BeanHandler(StructNpcModel.class);
+            ResultSetHandler<StructNpcModel> h = new BeanHandler(StructNpcModelImpl.class);
             String sql = String.format(
                     "select n.id, n.name, struct_id as structId, n.alive, n.role_id as roleId, s.world,\n" +
                     "sl.x as spawnX, sl.y as spawnY, sl.z as spawnZ, wl.x as workX, wl.y as workY, wl.z as workZ\n" +
@@ -104,11 +105,11 @@ public class NpcContextImpl extends Context implements NpcContext {
                     "join location wl on wl.id = n.work\n" +
                     "where n.id = %d", id);
 
-            StructNpcDB s = run.query(sql, h);
+            StructNpcModel s = run.query(sql, h);
             return s == null ? Optional.empty() : Optional.of(s);
 
         } catch (SQLException ex) {
-            getLogger().severe("NpcContext. GetById: " + ex);
+            getLogger().error("NpcContext. GetById: " + ex);
             return Optional.empty();
         }
     }

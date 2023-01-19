@@ -1,4 +1,5 @@
 package org.shrigorevich.ml.domain.structure.contracts;
+import org.shrigorevich.ml.common.Context;
 import org.shrigorevich.ml.domain.structure.models.*;
 import org.shrigorevich.ml.domain.volume.models.VolumeBlockModel;
 import org.shrigorevich.ml.domain.volume.models.VolumeModel;
@@ -6,7 +7,7 @@ import org.shrigorevich.ml.domain.volume.models.VolumeModel;
 import java.util.List;
 import java.util.Optional;
 
-public interface StructureContext {
+public interface StructureContext extends Context {
 
     int save(StructModel struct);
     Optional<StructModel> getById(int id);

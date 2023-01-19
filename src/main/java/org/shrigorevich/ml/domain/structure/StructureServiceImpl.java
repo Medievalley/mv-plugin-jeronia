@@ -1,5 +1,7 @@
 package org.shrigorevich.ml.domain.structure;
 
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -26,7 +28,7 @@ public class StructureServiceImpl extends BaseService implements StructureServic
     private final Map<String, Structure> selectedStruct;
 
     public StructureServiceImpl(StructureContext structureContext, Plugin plugin) {
-        super(plugin);
+        super(plugin, LogManager.getLogger("StructureServiceImpl"));
         this.structContext = structureContext;
         this.structCorners = new HashMap<>();
         this.structures = new HashMap<>();

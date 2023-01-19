@@ -5,7 +5,8 @@ import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.BeanHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
-import org.shrigorevich.ml.common.Context;
+import org.apache.logging.log4j.LogManager;
+import org.shrigorevich.ml.common.BaseContext;
 import org.shrigorevich.ml.domain.structure.contracts.StructureContext;
 import org.shrigorevich.ml.domain.structure.models.StructBlockModelImpl;
 import org.shrigorevich.ml.domain.volume.models.VolumeBlockModel;
@@ -19,15 +20,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Logger;
 
-public class StructContextImpl extends Context implements StructureContext {
+public class StructContextImpl extends BaseContext implements StructureContext {
 
     private final StructureQueryBuilderImpl structQueryBuilder;
     private final VolumeQueryBuilderImpl volumeQueryBuilder;
 
     public StructContextImpl(DataSource dataSource) {
-        super(dataSource, Logger.getLogger("StructContextImpl"));
+        super(dataSource, LogManager.getLogger("StructContextImpl"));
         this.structQueryBuilder = new StructureQueryBuilderImpl();
         this.volumeQueryBuilder = new VolumeQueryBuilderImpl();
     }
@@ -38,7 +38,7 @@ public class StructContextImpl extends Context implements StructureContext {
             ResultSetHandler<Integer> h = new ScalarHandler<>();
             return run.insert(structQueryBuilder.save(st), h);
         } catch (SQLException ex) {
-            getLogger().severe(ex.toString());
+            getLogger().error(ex.toString());
             return 0;
         }
     }
@@ -51,7 +51,7 @@ public class StructContextImpl extends Context implements StructureContext {
             return s == null ? Optional.empty() : Optional.of(s);
 
         } catch (SQLException ex) {
-            getLogger().severe(ex.toString());
+            getLogger().error(ex.toString());
             return Optional.empty();
         }
     }
@@ -76,7 +76,7 @@ public class StructContextImpl extends Context implements StructureContext {
             return volumeId;
 
         } catch (SQLException ex) {
-            getLogger().severe(ex.toString());
+            getLogger().error(ex.toString());
             return 0;
         }
     }
@@ -87,7 +87,7 @@ public class StructContextImpl extends Context implements StructureContext {
             ResultSetHandler<List<VolumeBlockModel>> volumeHandler = new BeanListHandler(VolumeBlockModelImpl.class);
             return run.query(volumeQueryBuilder.getBlocks(volumeId), volumeHandler);
         } catch (SQLException ex) {
-            getLogger().severe(ex.toString());
+            getLogger().error(ex.toString());
             return new ArrayList<>(0);
         }
     }
@@ -104,7 +104,7 @@ public class StructContextImpl extends Context implements StructureContext {
             return structs;
 
         } catch (SQLException ex) {
-            getLogger().severe(ex.toString());
+            getLogger().error(ex.toString());
             return new ArrayList<>(0);
         }
     }
@@ -115,7 +115,7 @@ public class StructContextImpl extends Context implements StructureContext {
             QueryRunner run = new QueryRunner(getDataSource());
             run.update(structQueryBuilder.setVolume(structId, volumeId));
         } catch (SQLException ex) {
-            getLogger().severe(ex.toString());
+            getLogger().error(ex.toString());
         }
     }
 
@@ -127,7 +127,7 @@ public class StructContextImpl extends Context implements StructureContext {
             return volume == null ? Optional.empty() : Optional.of(volume);
 
         } catch (SQLException ex) {
-            getLogger().severe(ex.toString());
+            getLogger().error(ex.toString());
             return Optional.empty();
         }
     }
@@ -147,7 +147,7 @@ public class StructContextImpl extends Context implements StructureContext {
             }
             run.batch(structQueryBuilder.saveStructBlocks(), brokenBlockValues);
         } catch (SQLException ex) {
-            getLogger().severe(ex.toString());
+            getLogger().error(ex.toString());
         }
     }
 
@@ -157,7 +157,7 @@ public class StructContextImpl extends Context implements StructureContext {
             ResultSetHandler<List<StructBlockModel>> h = new BeanListHandler(StructBlockModelImpl.class);
             return run.query(structQueryBuilder.getStructBlocks(structId), h);
         } catch (SQLException ex) {
-            getLogger().severe(ex.toString());
+            getLogger().error(ex.toString());
             return new ArrayList<>(0);
         }
     }
@@ -169,11 +169,11 @@ public class StructContextImpl extends Context implements StructureContext {
             ResultSetHandler<StructBlockModel> h = new BeanHandler(StructBlockModelImpl.class);
             StructBlockModel block = run.query(structQueryBuilder.getStructBlock(id), h);
             if (block == null) {
-                getLogger().severe(String.format("Struct block with id: %d not found", id));
+                getLogger().error(String.format("Struct block with id: %d not found", id));
             }
             return block == null ? Optional.empty() : Optional.of(block);
         } catch (SQLException ex) {
-            getLogger().severe(ex.toString());
+            getLogger().error(ex.toString());
             //TODO: throw exception instead of return value
             return Optional.empty();
         }
@@ -201,7 +201,7 @@ public class StructContextImpl extends Context implements StructureContext {
             return block == null ? Optional.empty() : Optional.of(block);
 
         } catch (SQLException ex) {
-            getLogger().severe(ex.toString());
+            getLogger().error(ex.toString());
             return Optional.empty();
         }
     }
@@ -221,7 +221,7 @@ public class StructContextImpl extends Context implements StructureContext {
             int[] rows = run.batch(structQueryBuilder.updateBlocksStatus(), blockValues);
             return rows.length;
         } catch (SQLException ex) {
-            getLogger().severe(ex.toString());
+            getLogger().error(ex.toString());
             //TODO: Throw exception
             return 0;
         }
@@ -233,7 +233,7 @@ public class StructContextImpl extends Context implements StructureContext {
             QueryRunner run = new QueryRunner(getDataSource());
             run.update(structQueryBuilder.restoreBlock(id));
         } catch (SQLException ex) {
-            getLogger().severe(ex.toString());
+            getLogger().error(ex.toString());
         }
     }
 
@@ -243,7 +243,7 @@ public class StructContextImpl extends Context implements StructureContext {
             QueryRunner run = new QueryRunner(getDataSource());
             run.update(structQueryBuilder.restoreStruct(structId));
         } catch (SQLException ex) {
-            getLogger().severe(ex.toString());
+            getLogger().error(ex.toString());
         }
     }
 
@@ -254,7 +254,7 @@ public class StructContextImpl extends Context implements StructureContext {
             run.update(structQueryBuilder.unAttachVolume(structId));
             run.update(structQueryBuilder.clearStructBlocks(structId));
         } catch (SQLException ex) {
-            getLogger().severe(ex.toString());
+            getLogger().error(ex.toString());
         }
     }
 
@@ -264,7 +264,7 @@ public class StructContextImpl extends Context implements StructureContext {
             QueryRunner run = new QueryRunner(getDataSource());
             run.update(structQueryBuilder.updateResources(structId, stockSize));
         } catch (SQLException ex) {
-            getLogger().severe(ex.toString());
+            getLogger().error(ex.toString());
         }
     }
 }

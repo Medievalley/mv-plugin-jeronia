@@ -6,12 +6,12 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.shrigorevich.ml.domain.users.contracts.IUserService;
+import org.shrigorevich.ml.domain.users.contracts.UserService;
 
 public class Auth implements Listener {
 
-    IUserService userService;
-    public Auth(IUserService userService) {
+    UserService userService;
+    public Auth(UserService userService) {
         this.userService = userService;
     }
 

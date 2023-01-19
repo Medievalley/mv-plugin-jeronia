@@ -16,15 +16,15 @@ import org.shrigorevich.ml.domain.npc.contracts.NpcContext;
 import org.shrigorevich.ml.domain.npc.contracts.NpcService;
 import org.shrigorevich.ml.domain.npc.contracts.SafeLoc;
 import org.shrigorevich.ml.domain.npc.contracts.StructNpc;
-import org.shrigorevich.ml.domain.npc.models.StructNpcDB;
 import org.shrigorevich.ml.domain.npc.models.StructNpcModel;
+import org.shrigorevich.ml.domain.npc.models.StructNpcModelImpl;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class NpcServiceImpl extends BaseService implements NpcService {
 
-    private final Map<String, StructNpcDB> draftNpc;
+    private final Map<String, StructNpcModel> draftNpc;
     private final Map<UUID, StructNpc> npcList;
     private final NpcContext context;
     private final Queue<SafeLoc> safeLocs;
@@ -41,7 +41,7 @@ public class NpcServiceImpl extends BaseService implements NpcService {
 
     @Override
     public void draftNpc(int x, int y, int z, int structId, String key, MsgCallback cb) {
-        StructNpcDB npc = new StructNpcModel();
+        StructNpcModel npc = new StructNpcModelImpl();
         npc.setWorkX(x);
         npc.setWorkY(y);
         npc.setWorkZ(z);
@@ -53,7 +53,7 @@ public class NpcServiceImpl extends BaseService implements NpcService {
 
     @Override
     public void draftNpcSetSpawn(int x, int y, int z, String key, MsgCallback cb) {
-        StructNpcDB npc = draftNpc.get(key);
+        StructNpcModel npc = draftNpc.get(key);
         npc.setSpawnX(x);
         npc.setSpawnY(y);
         npc.setSpawnZ(z);
@@ -63,7 +63,7 @@ public class NpcServiceImpl extends BaseService implements NpcService {
 
     @Override
     public void commitNpc(String name, NpcRole role, String key) throws IllegalArgumentException {
-        StructNpcDB npc = draftNpc.get(key);
+        StructNpcModel npc = draftNpc.get(key);
         if (npc != null) {
             npc.setName(name);
             npc.setRoleId(role.getRoleId());
@@ -74,7 +74,7 @@ public class NpcServiceImpl extends BaseService implements NpcService {
         }
     }
 
-    private void spawn(StructNpcDB model) {
+    private void spawn(StructNpcModel model) {
         World w = Bukkit.getWorld(model.getWorld());
         if (w != null) {
             Location spawnLocation = new Location(w, model.getSpawnX(), model.getSpawnY(), model.getSpawnZ());
@@ -93,8 +93,8 @@ public class NpcServiceImpl extends BaseService implements NpcService {
     }
 
     public void load() {
-        List<StructNpcDB> models = context.get();
-        for (StructNpcDB m : models) {
+        List<StructNpcModel> models = context.get();
+        for (StructNpcModel m : models) {
             if (m.isAlive()) {
                 spawn(m);
             } else {
@@ -104,7 +104,7 @@ public class NpcServiceImpl extends BaseService implements NpcService {
     }
 
     public void load(int id) {
-        Optional<StructNpcDB> npc = context.get(id);
+        Optional<StructNpcModel> npc = context.get(id);
         npc.ifPresent(this::spawn);
     }
 
@@ -151,8 +151,8 @@ public class NpcServiceImpl extends BaseService implements NpcService {
         }
 
         if (structNpcList.size() == 0) {
-            List<StructNpcDB> models = context.getByStructId(structId);
-            for (StructNpcDB m : models) {
+            List<StructNpcModel> models = context.getByStructId(structId);
+            for (StructNpcModel m : models) {
                 spawn(m);
             }
         }

@@ -1,126 +1,29 @@
 package org.shrigorevich.ml.domain.npc.models;
 
-public class StructNpcModel implements StructNpcDB{
+public interface StructNpcModel {
 
-    private int structId, id, roleId;
-    private int spawnX, spawnY, spawnZ, workX, workY, workZ;
-    private String name, world;
-    private boolean alive;
+    int getId();
+    int getSpawnX();
+    int getSpawnY();
+    int getSpawnZ();
+    int getWorkX();
+    int getWorkY();
+    int getWorkZ();
+    String getName();
+    int getStructId();
+    String getWorld();
 
-    @Override
-    public int getId() {
-        return this.id;
-    }
-
-    @Override
-    public int getWorkX() {
-        return this.workX;
-    }
-
-    @Override
-    public int getWorkY() {
-        return this.workY;
-    }
-
-    @Override
-    public int getWorkZ() {
-        return this.workZ;
-    }
-    @Override
-    public int getSpawnX() {
-        return this.spawnX;
-    }
-
-    @Override
-    public int getSpawnY() {
-        return this.spawnY;
-    }
-
-    @Override
-    public int getSpawnZ() {
-        return this.spawnZ;
-    }
-
-    @Override
-    public String getName() {
-        return this.name;
-    }
-
-    @Override
-    public int getStructId() {
-        return this.structId;
-    }
-
-    @Override
-    public String getWorld() {
-        return this.world;
-    }
-
-    @Override
-    public void setWorkX(int x) {
-        this.workX = x;
-    }
-
-    @Override
-    public void setWorkY(int y) {
-        this.workY = y;
-    }
-
-    @Override
-    public void setWorkZ(int z) {
-        this.workZ = z;
-    }
-    @Override
-    public void setSpawnX(int x) {
-        this.spawnX = x;
-    }
-
-    @Override
-    public void setSpawnY(int y) {
-        this.spawnY = y;
-    }
-
-    @Override
-    public void setSpawnZ(int z) {
-        this.spawnZ = z;
-    }
-
-    @Override
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public void setStructId(int structId) {
-        this.structId = structId;
-    }
-
-    @Override
-    public void setWorld(String world) {
-        this.world = world;
-    }
-
-    @Override
-    public void setAlive(boolean alive) {
-        this.alive = alive;
-    }
-
-    @Override
-    public boolean isAlive() {
-        return alive;
-    }
-
-    @Override
-    public void setRoleId(int roleId) {
-        this.roleId = roleId;
-    }
-
-    @Override
-    public int getRoleId() {
-        return roleId;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
+    void setWorkX(int x);
+    void setWorkY(int y);
+    void setWorkZ(int z);
+    void setSpawnX(int x);
+    void setSpawnY(int y);
+    void setSpawnZ(int z);
+    void setName(String name);
+    void setStructId(int structId);
+    void setWorld(String world);
+    void setAlive(boolean alive);
+    boolean isAlive();
+    void setRoleId(int id);
+    int getRoleId();
 }

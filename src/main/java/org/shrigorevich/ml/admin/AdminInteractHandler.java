@@ -17,8 +17,7 @@ import org.shrigorevich.ml.domain.structure.contracts.LoreStructure;
 import org.shrigorevich.ml.domain.structure.contracts.StructureService;
 import org.shrigorevich.ml.domain.users.UserRole;
 import org.shrigorevich.ml.domain.users.contracts.User;
-import org.shrigorevich.ml.domain.users.models.UserModelImpl;
-import org.shrigorevich.ml.domain.users.UserService;
+import org.shrigorevich.ml.domain.users.UserServiceImpl;
 
 import java.util.Optional;
 
@@ -26,10 +25,10 @@ public class AdminInteractHandler implements Listener {
 
     private final StructureService structureService;
     private final NpcService npcService;
-    private final UserService userService;
+    private final UserServiceImpl userService;
     private Villager villager;
 
-    public AdminInteractHandler(StructureService structureService, NpcService npcService, UserService userService) {
+    public AdminInteractHandler(StructureService structureService, NpcService npcService, UserServiceImpl userService) {
         this.structureService = structureService;
         this.npcService = npcService;
         this.userService = userService;

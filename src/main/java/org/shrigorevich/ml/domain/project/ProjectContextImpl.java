@@ -3,8 +3,7 @@ package org.shrigorevich.ml.domain.project;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.BeanHandler;
-import org.bukkit.plugin.Plugin;
-import org.shrigorevich.ml.common.Context;
+import org.shrigorevich.ml.common.BaseContext;
 import org.shrigorevich.ml.domain.project.contracts.ProjectContext;
 import org.shrigorevich.ml.domain.project.models.StorageModel;
 import org.shrigorevich.ml.domain.project.models.StorageModelImpl;
@@ -13,7 +12,7 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 
-public class ProjectContextImpl extends Context implements ProjectContext {
+public class ProjectContextImpl extends BaseContext implements ProjectContext {
     public ProjectContextImpl(DataSource dataSource) {
         super(dataSource, Logger.getLogger("ProjectContextImpl"));
     }
