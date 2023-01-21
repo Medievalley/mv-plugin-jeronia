@@ -33,21 +33,16 @@ public class StructureExecutor implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){
         if(args.length > 0){
-            if(sender instanceof Player){
-                Player player = (Player) sender;
+            if(sender instanceof Player player){
                 try {
                     switch (args[0].toLowerCase()) {
-                        case "restore":
-                        case "r":
-                            structService.getById(Integer.parseInt(args[1])).ifPresent(ls -> {
-                                ls.restore();
-                                projectService.getProject(ls.getId()).ifPresent(project -> {
-                                    Bukkit.getServer().getPluginManager().callEvent(new FinalizeProjectEvent(project));
-                                });
+                        case "restore", "r" -> structService.getById(Integer.parseInt(args[1])).ifPresent(ls -> {
+                            ls.restore();
+                            projectService.getProject(ls.getId()).ifPresent(project -> {
+                                Bukkit.getServer().getPluginManager().callEvent(new FinalizeProjectEvent(project));
                             });
-                            break;
-                        case "c":
-                        case "create":
+                        });
+                        case "c", "create" -> {
                             Optional<User> u = userService.getFromOnlineList(player.getName());
                             if (u.isPresent())
                                 structService.create(
@@ -59,20 +54,17 @@ public class StructureExecutor implements CommandExecutor {
                                 );
                             else
                                 player.sendMessage(ChatColor.RED + "User not authorized");
-                            break;
-                        case "sv":
-                        case "save_volume":
+                        }
+                        case "sv", "save_volume" -> {
                             String res = structService.exportVolume(player.getName(), args[1]);
                             player.sendMessage(res);
-                            break;
-                        case "av":
-                        case "apply_volume":
+                        }
+                        case "av", "apply_volume" -> {
                             Optional<LoreStructure> structure = structService.getById(Integer.parseInt(args[1]));
                             structure.ifPresent(loreStructure -> loreStructure.applyVolume(Integer.parseInt(args[2])));
-                            break;
-                        default:
-                            player.sendMessage(ChatColor.YELLOW + String.format("Command '%s' not found", args[0]));
-                            break;
+                        }
+                        default ->
+                                player.sendMessage(ChatColor.YELLOW + String.format("Command '%s' not found", args[0]));
                     }
                 } catch (Exception ex) {
                     Bukkit.getLogger().severe(ex.toString());

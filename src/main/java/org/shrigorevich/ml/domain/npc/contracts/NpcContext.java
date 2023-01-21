@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface NpcContext {
 
-    int save(StructNpcModel npc);
+    int save(StructNpcModel npc) throws Exception;
     List<StructNpcModel> get();
     List<StructNpcModel> getByStructId(int structId);
     Optional<StructNpcModel> get(int id);

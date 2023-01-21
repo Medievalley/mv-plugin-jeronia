@@ -16,17 +16,17 @@ import java.util.logging.Logger;
 
 public class UserContextImpl extends BaseContext implements UserContext {
 
+    private final UserQueryBuilder queryBuilder;
     public UserContextImpl(DataSource dataSource) {
         super(dataSource, LogManager.getLogger("UserContextImpl"));
+        this.queryBuilder = new UserQueryBuilder();
     }
 
     public Optional<UserModel> getByName(String name) throws Exception {
         try {
             QueryRunner run = new QueryRunner(getDataSource());
             ResultSetHandler<UserModel> h = new BeanHandler<>(UserModelImpl.class);
-            UserModel user = run.query(String.format("SELECT u.id, u.username as name, u.ip, u.verified, ud.lives, r.name as rolename \n" +
-                    "from users u JOIN player_data ud on u.id = ud.user_id JOIN role r on r.id = ud.role_id \n" +
-                    "WHERE u.username = '%s'", name), h);
+            UserModel user = run.query(queryBuilder.getByName(name), h);
 
             if (user != null) {
                 getLogger().info(String.format("%s, %s, %s, %d, %s%n", user.getName(), user.getIp(), user.getLives(), user.getRoleId(), user.isVerified()));

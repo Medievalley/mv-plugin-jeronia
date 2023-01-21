@@ -27,25 +27,11 @@ public class NpcContextImpl extends BaseContext implements NpcContext {
     };
 
     @Override
-    public int save(StructNpcModel npc) {
+    public int save(StructNpcModel npc) throws Exception {
         try {
             QueryRunner run = new QueryRunner(getDataSource());
             ResultSetHandler<Integer> h = new ScalarHandler<>();
-            String workLocSql = String.format(
-                    "INSERT INTO location (x, y, z) VALUES (%d, %d, %d) returning id",
-                    npc.getWorkX(), npc.getWorkY(), npc.getWorkZ());
-            String spawnLocSql = String.format(
-                    "INSERT INTO location (x, y, z) VALUES (%d, %d, %d) returning id",
-                    npc.getSpawnX(), npc.getSpawnY(), npc.getSpawnZ());
-
-            int workLocId = run.insert(workLocSql, h);
-            int spawnLocId = run.insert(spawnLocSql, h);
-
-            String sql = String.format(
-                    "INSERT INTO struct_npc (name, role_id, struct_id, spawn, work) VALUES ('%s', %d, %d, %d, %d) returning id",
-                    npc.getName(), npc.getRoleId(), npc.getStructId(), spawnLocId, workLocId);
-            return run.insert(sql, h);
-
+            return run.insert(queryBuilder.saveNpc(npc), h);
         } catch (SQLException ex) {
             getLogger().error("NpcContext. Save: " + ex);
             return 0;
@@ -114,3 +100,18 @@ public class NpcContextImpl extends BaseContext implements NpcContext {
         }
     }
 }
+
+//SAVE
+//            String workLocSql = String.format(
+//                    "INSERT INTO location (x, y, z) VALUES (%d, %d, %d) returning id",
+//                    npc.getWorkX(), npc.getWorkY(), npc.getWorkZ());
+//            String spawnLocSql = String.format(
+//                    "INSERT INTO location (x, y, z) VALUES (%d, %d, %d) returning id",
+//                    npc.getSpawnX(), npc.getSpawnY(), npc.getSpawnZ());
+//
+//            int workLocId = run.insert(workLocSql, h);
+//            int spawnLocId = run.insert(spawnLocSql, h);
+//
+//            String sql = String.format(
+//                    "INSERT INTO struct_npc (name, role_id, struct_id, spawn, work) VALUES ('%s', %d, %d, %d, %d) returning id",
+//                    npc.getName(), npc.getRoleId(), npc.getStructId(), spawnLocId, workLocId);

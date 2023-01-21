@@ -63,15 +63,20 @@ public class NpcServiceImpl extends BaseService implements NpcService {
     }
 
     @Override
-    public void commitNpc(String name, NpcRole role, String key) throws IllegalArgumentException {
+    public void commitNpc(String name, NpcRole role, String key) throws Exception {
         StructNpcModel npc = draftNpc.get(key);
         if (npc != null) {
             npc.setName(name);
             npc.setRoleId(role.getRoleId());
-            int id = context.save(npc);
-            load(id);
+            try {
+                int id = context.save(npc);
+                load(id);
+            } catch (Exception ex) {
+                throw new Exception(String.format("Error while committing npc { name: %s, role: %d}",
+                    npc.getName(), npc.getRoleId()));
+            }
         } else {
-            throw new IllegalArgumentException("Please specify npc spawn coordinates first");
+            throw new Exception("Please specify npc spawn coordinates first");
         }
     }
 

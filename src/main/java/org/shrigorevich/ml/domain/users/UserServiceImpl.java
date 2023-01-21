@@ -25,11 +25,13 @@ public class UserServiceImpl extends BaseService implements UserService {
 
     @Override
     public void accessCheck(String userName, String ip, IAccessCheckCallback cb) {
+        //TODO: Localize
         String nameMsg = "Player with the same name is already on the server!",
                 regMsg = "You are not registered!",
                 ipMsg = "You are logged in with a new IP address. To activate it, log in again on our website :)",
                 livesNumberMsg = "Your character has no lives left:)",
-                confirmedMsg = "You have not verified your email";
+                confirmedMsg = "You have not verified your email",
+                dataAccessErrorMsg = "Server error. Please try again or contact support";
 
         try {
             Optional<UserModel> user = userContext.getByName(userName);
@@ -53,7 +55,7 @@ public class UserServiceImpl extends BaseService implements UserService {
                 addInOnlineList(new UserImpl(user.get()));
             }
         } catch (Exception ex) {
-            getLogger().error(ex.toString());
+            cb.onСheck(false, dataAccessErrorMsg);
         }
     }
 
