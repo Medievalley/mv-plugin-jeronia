@@ -7,7 +7,7 @@ import org.apache.commons.dbutils.handlers.BeanListHandler;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.apache.logging.log4j.LogManager;
 import org.shrigorevich.ml.common.BaseContext;
-import org.shrigorevich.ml.common.Coords;
+import org.shrigorevich.ml.common.Coordinates;
 import org.shrigorevich.ml.domain.structure.contracts.StructureContext;
 import org.shrigorevich.ml.domain.structure.models.StructBlockModelImpl;
 import org.shrigorevich.ml.domain.volume.models.VolumeBlockModel;
@@ -34,7 +34,7 @@ public class StructContextImpl extends BaseContext implements StructureContext {
     }
 
     @Override
-    public int save(String name, int typeId, String world, Coords l1, Coords l2) throws Exception {
+    public int save(String name, int typeId, String world, Coordinates l1, Coordinates l2) throws Exception {
         try {
             QueryRunner run = new QueryRunner(getDataSource());
             ResultSetHandler<Integer> h = new ScalarHandler<>();
@@ -43,7 +43,7 @@ public class StructContextImpl extends BaseContext implements StructureContext {
             getLogger().error(ex.getMessage());
             throw new Exception("Error occurred while saving struct: " +
                 String.format("{ name: %s, world: %s, typeId: %d, x1: %d, y1: %d, z1: %d, x2: %d, y2: %d, z2: %d }",
-                name, world, typeId, l1.getX(), l1.getY(), l1.getZ(), l2.getX(), l2.getY(), l2.getZ()));
+                name, world, typeId, l1.x(), l1.y(), l1.z(), l2.x(), l2.y(), l2.z()));
         }
     }
 

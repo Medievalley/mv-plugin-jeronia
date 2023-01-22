@@ -29,13 +29,13 @@ public class UserContextImpl extends BaseContext implements UserContext {
             UserModel user = run.query(queryBuilder.getByName(name), h);
 
             if (user != null) {
-                getLogger().info(String.format("%s, %s, %s, %d, %s%n", user.getName(), user.getIp(), user.getLives(), user.getRoleId(), user.isVerified()));
+                getLogger().debug(String.format("%s, %s, %s, %d, %s%n", user.getName(), user.getIp(), user.getLives(), user.getRoleId(), user.isVerified()));
             }
             return user == null ? Optional.empty() : Optional.of(user);
 
         } catch (SQLException ex) {
             getLogger().error(ex.toString());
-            throw new Exception(ex.toString());
+            throw new Exception(String.format("Error while getting user with name: %s", name));
         }
     }
 }

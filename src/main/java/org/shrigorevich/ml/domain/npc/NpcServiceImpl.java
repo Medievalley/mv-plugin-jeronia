@@ -12,11 +12,9 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
 import org.shrigorevich.ml.common.BaseService;
+import org.shrigorevich.ml.common.CoordinatesImpl;
 import org.shrigorevich.ml.domain.callbacks.MsgCallback;
-import org.shrigorevich.ml.domain.npc.contracts.NpcContext;
-import org.shrigorevich.ml.domain.npc.contracts.NpcService;
-import org.shrigorevich.ml.domain.npc.contracts.SafeLoc;
-import org.shrigorevich.ml.domain.npc.contracts.StructNpc;
+import org.shrigorevich.ml.domain.npc.contracts.*;
 import org.shrigorevich.ml.domain.npc.models.StructNpcModel;
 import org.shrigorevich.ml.domain.npc.models.StructNpcModelImpl;
 
@@ -24,8 +22,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class NpcServiceImpl extends BaseService implements NpcService {
-
-    private final Map<String, StructNpcModel> draftNpc;
     private final Map<UUID, StructNpc> npcList;
     private final NpcContext context;
     private final Queue<SafeLoc> safeLocs;
@@ -34,50 +30,9 @@ public class NpcServiceImpl extends BaseService implements NpcService {
     public NpcServiceImpl(NpcContext context, Plugin plugin) {
         super(plugin, LogManager.getLogger("NpcServiceImpl"));
         this.context = context;
-        this.draftNpc = new HashMap<>();
         this.npcList = new HashMap<>();
         this.safeLocs = new ArrayDeque<>();
         this.bookedSafeLocs = new HashMap<>();
-    }
-
-    @Override
-    public void draftNpc(int x, int y, int z, int structId, String key, MsgCallback cb) {
-        StructNpcModel npc = new StructNpcModelImpl();
-        npc.setWorkX(x);
-        npc.setWorkY(y);
-        npc.setWorkZ(z);
-        npc.setStructId(structId);
-        draftNpc.put(key, npc);
-        cb.result(String.format("Draft npc created. Work loc: %d %d %d, Struct: %d",
-                npc.getWorkX(), npc.getWorkY(), npc.getWorkZ(), npc.getStructId()));
-    }
-
-    @Override
-    public void draftNpcSetSpawn(int x, int y, int z, String key, MsgCallback cb) {
-        StructNpcModel npc = draftNpc.get(key);
-        npc.setSpawnX(x);
-        npc.setSpawnY(y);
-        npc.setSpawnZ(z);
-        cb.result(String.format("Draft npc spawn loc: %d %d %d",
-                npc.getSpawnX(), npc.getSpawnY(), npc.getSpawnZ()));
-    }
-
-    @Override
-    public void commitNpc(String name, NpcRole role, String key) throws Exception {
-        StructNpcModel npc = draftNpc.get(key);
-        if (npc != null) {
-            npc.setName(name);
-            npc.setRoleId(role.getRoleId());
-            try {
-                int id = context.save(npc);
-                load(id);
-            } catch (Exception ex) {
-                throw new Exception(String.format("Error while committing npc { name: %s, role: %d}",
-                    npc.getName(), npc.getRoleId()));
-            }
-        } else {
-            throw new Exception("Please specify npc spawn coordinates first");
-        }
     }
 
     private void spawn(StructNpcModel model) {

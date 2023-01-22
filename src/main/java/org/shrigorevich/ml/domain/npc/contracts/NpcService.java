@@ -10,9 +10,6 @@ import java.util.UUID;
 
 public interface NpcService extends Service {
 
-    void draftNpc(int x, int y, int z, int structId, String key, MsgCallback cb);
-    void draftNpcSetSpawn(int x, int y, int z, String key, MsgCallback cb);
-    void commitNpc(String name, NpcRole role, String key) throws IllegalArgumentException, Exception;
     void load();
     void load(int id);
     void unload();

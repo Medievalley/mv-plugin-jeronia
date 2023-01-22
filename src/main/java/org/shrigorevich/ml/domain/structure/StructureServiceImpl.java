@@ -6,9 +6,8 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.plugin.Plugin;
 import org.shrigorevich.ml.common.BaseService;
-import org.shrigorevich.ml.common.Coords;
-import org.shrigorevich.ml.common.CoordsImpl;
-import org.shrigorevich.ml.domain.callbacks.IResultCallback;
+import org.shrigorevich.ml.common.Coordinates;
+import org.shrigorevich.ml.common.CoordinatesImpl;
 import org.shrigorevich.ml.domain.callbacks.MsgCallback;
 import org.shrigorevich.ml.domain.structure.contracts.LoreStructure;
 import org.shrigorevich.ml.domain.structure.contracts.Structure;
@@ -119,16 +118,16 @@ public class StructureServiceImpl extends BaseService implements StructureServic
         }
     }
 
-    private Coords getMinCoords(Location l1, Location l2) {
-        return new CoordsImpl(
+    private Coordinates getMinCoords(Location l1, Location l2) {
+        return new CoordinatesImpl(
             Math.min(l1.getBlockX(), l2.getBlockX()),
             Math.min(l1.getBlockY(), l2.getBlockY()),
             Math.min(l1.getBlockZ(), l2.getBlockZ())
         );
     }
 
-    private Coords getMaxCoords(Location l1, Location l2) {
-        return new CoordsImpl(
+    private Coordinates getMaxCoords(Location l1, Location l2) {
+        return new CoordinatesImpl(
             Math.max(l1.getBlockX(), l2.getBlockX()),
             Math.max(l1.getBlockY(), l2.getBlockY()),
             Math.max(l1.getBlockZ(), l2.getBlockZ())

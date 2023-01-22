@@ -31,29 +31,32 @@ public class UserServiceImpl extends BaseService implements UserService {
                 ipMsg = "You are logged in with a new IP address. To activate it, log in again on our website :)",
                 livesNumberMsg = "Your character has no lives left:)",
                 confirmedMsg = "You have not verified your email",
+                userNotValidMsg = "User not valid. Please contact support",
                 dataAccessErrorMsg = "Server error. Please try again or contact support";
 
         try {
-            Optional<UserModel> user = userContext.getByName(userName);
+            userContext.getByName(userName).ifPresentOrElse(user -> {
+                if(!user.getIp().equals(ip)) {
+                    cb.onСheck(false, ipMsg);
+                }
+                else if(!user.isVerified()) {
+                    cb.onСheck(false, confirmedMsg);
+                }
+                else if (user.getLives() <= 0){
+                    cb.onСheck(false, livesNumberMsg);
+                }
+                else if (getFromOnlineList(userName).isPresent()) {
+                    cb.onСheck(false, nameMsg);
+                }
+                else if (!isUserValid(user)){
+                    cb.onСheck(false, userNotValidMsg);
+                } else {
+                    addInOnlineList(
+                        new UserImpl(user.getId(), user.getName(), UserRole.valueOf(user.getRoleId()), user.getLives()));
+                }
+            }, () -> cb.onСheck(false, regMsg));
 
-            if (user.isEmpty()) {
-                cb.onСheck(false, regMsg);
-            }
-            else if(!user.get().getIp().equals(ip)) {
-                cb.onСheck(false, ipMsg);
-            }
-            else if(!user.get().isVerified()) {
-                cb.onСheck(false, confirmedMsg);
-            }
-            else if (user.get().getLives() <= 0){
-                cb.onСheck(false, livesNumberMsg);
-            }
-            else if (getFromOnlineList(userName).isPresent()) {
-                cb.onСheck(false, nameMsg);
-            }
-            else {
-                addInOnlineList(new UserImpl(user.get()));
-            }
+
         } catch (Exception ex) {
             cb.onСheck(false, dataAccessErrorMsg);
         }
@@ -73,5 +76,9 @@ public class UserServiceImpl extends BaseService implements UserService {
     @Override
     public void removeFromOnlineList(String name) {
         onlineList.remove(name);
+    }
+
+    private boolean isUserValid(UserModel user) {
+        return UserRole.valueOf(user.getRoleId()) != null;
     }
 }

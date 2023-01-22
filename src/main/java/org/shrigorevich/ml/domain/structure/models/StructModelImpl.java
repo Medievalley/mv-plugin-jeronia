@@ -1,6 +1,6 @@
 package org.shrigorevich.ml.domain.structure.models;
 
-import org.shrigorevich.ml.common.Coords;
+import org.shrigorevich.ml.common.Coordinates;
 
 public class StructModelImpl implements StructModel {
     public int id;
@@ -14,18 +14,18 @@ public class StructModelImpl implements StructModel {
 
     public StructModelImpl() {}
     public StructModelImpl(
-        String name, int typeId, String world,
-        Coords l1, Coords l2
+            String name, int typeId, String world,
+            Coordinates l1, Coordinates l2
     ) {
         this.name = name;
         this.typeId = typeId;
         this.world = world;
-        this.x1 = l1.getX();
-        this.y1 = l1.getY();
-        this.z1 = l1.getZ();
-        this.x2 = l2.getX();
-        this.y2 = l2.getY();
-        this.z2 = l2.getZ();
+        this.x1 = l1.x();
+        this.y1 = l1.y();
+        this.z1 = l1.z();
+        this.x2 = l2.x();
+        this.y2 = l2.y();
+        this.z2 = l2.z();
     }
 
     public int getId() {

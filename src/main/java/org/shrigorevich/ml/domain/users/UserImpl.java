@@ -1,7 +1,6 @@
 package org.shrigorevich.ml.domain.users;
 
 import org.shrigorevich.ml.domain.users.contracts.User;
-import org.shrigorevich.ml.domain.users.models.UserModel;
 
 public class UserImpl implements User {
 
@@ -10,12 +9,11 @@ public class UserImpl implements User {
     private final UserRole role;
     private int lives;
 
-    //TODO: handle nullable role
-    public UserImpl(UserModel model) {
-        this.id = model.getId();
-        this.name = model.getName();
-        this.role = UserRole.valueOf(model.getRoleId());
-        this.lives = model.getLives();
+    public UserImpl(int id, String name, UserRole role, int lives) {
+        this.id = id;
+        this.name = name;
+        this.role = role;
+        this.lives = lives;
     }
 
     @Override

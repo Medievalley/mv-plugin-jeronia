@@ -1,14 +1,14 @@
 package org.shrigorevich.ml.domain.structure;
 
-import org.shrigorevich.ml.common.Coords;
+import org.shrigorevich.ml.common.Coordinates;
 
 public class StructureQueryBuilderImpl {
 
-    public String save(String name, int typeId, String world, Coords l1, Coords l2) {
+    public String save(String name, int typeId, String world, Coordinates l1, Coordinates l2) {
         return String.join("\n",
             "insert into struct (name, type_id, world, x1, y1, z1, x2, y2, z2)",
             String.format("VALUES ('%s', %d, '%s', %d, %d, %d, %d, %d, %d);",
-                name, typeId, world, l1.getX(), l1.getY(), l1.getZ(), l2.getX(), l2.getY(), l2.getZ()));
+                name, typeId, world, l1.x(), l1.y(), l1.z(), l2.x(), l2.y(), l2.z()));
     }
 
     @Deprecated
