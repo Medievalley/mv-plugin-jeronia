@@ -13,13 +13,9 @@ import java.util.Optional;
 
 public interface StructureService extends Service {
 
-    void create(User user, String type, String name, boolean destructible, IResultCallback cb) throws Exception;
-    void setCorner(String key, Location l);
-    ArrayList<Location> getStructCorners(String key);
-    String exportVolume(String userName, String volumeName);
-    void selectStructByLocation(String userName, Location l, IResultCallback cb);
     void load();
     Optional<LoreStructure> getById(int id);
     Optional<LoreStructure> getByLocation(Location location);
     void setBlocksBroken(List<StructBlockModel> blocks);
+
 }
