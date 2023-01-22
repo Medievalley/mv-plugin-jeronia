@@ -10,6 +10,8 @@ import org.bukkit.Color;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+import org.shrigorevich.ml.admin.StructAdminService;
+import org.shrigorevich.ml.admin.StructAdminServiceImpl;
 import org.shrigorevich.ml.commands.NpcExecutor;
 import org.shrigorevich.ml.commands.ScoreBoardExecutor;
 import org.shrigorevich.ml.commands.StructureExecutor;
@@ -52,6 +54,7 @@ public final class Ml extends JavaPlugin implements AdventurePlugin {
     private ProjectService projectService;
     private ScoreboardService scoreboardService;
     private MobService mobService;
+    private StructAdminService structAdminService;
 
     private BukkitAudiences adventure;
 
@@ -83,6 +86,7 @@ public final class Ml extends JavaPlugin implements AdventurePlugin {
         projectService = new ProjectServiceImpl(this, projectContext);
         scoreboardService = new ScoreboardServiceImpl(this);
         mobService = new MobServiceImpl(this);
+        structAdminService = new StructAdminServiceImpl(this);
     }
 
     @Override
@@ -131,7 +135,7 @@ public final class Ml extends JavaPlugin implements AdventurePlugin {
     }
 
     private void setupExecutors() {
-        getCommand("struct").setExecutor(new StructureExecutor(userService, structService, projectService, scoreboardService));
+        getCommand("struct").setExecutor(new StructureExecutor(userService, structService, projectService, structAdminService));
         getCommand("npc").setExecutor(new NpcExecutor(npcService, taskService, mobService));
         getCommand("score").setExecutor(new ScoreBoardExecutor(scoreboardService));
     }

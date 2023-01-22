@@ -6,6 +6,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.shrigorevich.ml.admin.StructAdminService;
 import org.shrigorevich.ml.domain.project.contracts.ProjectService;
 import org.shrigorevich.ml.domain.scoreboard.ScoreboardService;
 import org.shrigorevich.ml.domain.structure.contracts.LoreStructure;
@@ -21,13 +22,17 @@ public class StructureExecutor implements CommandExecutor {
     private final UserService userService;
     private final StructureService structService;
     private final ProjectService projectService;
-    private final ScoreboardService scoreboardService;
+    private final StructAdminService structAdminService;
 
-    public StructureExecutor(UserService userService, StructureService structService, ProjectService projectService, ScoreboardService scoreboardService) {
+    public StructureExecutor(
+            UserService userService,
+            StructureService structService,
+            ProjectService projectService,
+            StructAdminService structAdminService) {
         this.userService = userService;
         this.structService = structService;
         this.projectService = projectService;
-        this.scoreboardService = scoreboardService;
+        this.structAdminService = structAdminService;
     }
 
     @Override
@@ -44,6 +49,7 @@ public class StructureExecutor implements CommandExecutor {
                         });
                         case "c", "create" -> {
                             Optional<User> u = userService.getFromOnlineList(player.getName());
+
                             if (u.isPresent())
                                 structService.create(
                                         u.get(), args[1], args[2],

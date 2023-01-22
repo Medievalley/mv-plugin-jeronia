@@ -1,4 +1,4 @@
-package org.shrigorevich.ml.admin;
+package org.shrigorevich.ml.admin.handlers;
 
 import com.destroystokyo.paper.entity.ai.Goal;
 import org.bukkit.*;
@@ -10,11 +10,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.shrigorevich.ml.admin.StructAdminService;
 import org.shrigorevich.ml.domain.ai.goals.HoldGoal;
 import org.shrigorevich.ml.domain.npc.contracts.NpcService;
 import org.shrigorevich.ml.domain.npc.SafeLocImpl;
 import org.shrigorevich.ml.domain.structure.contracts.LoreStructure;
-import org.shrigorevich.ml.domain.structure.contracts.StructureService;
 import org.shrigorevich.ml.domain.users.UserRole;
 import org.shrigorevich.ml.domain.users.contracts.User;
 import org.shrigorevich.ml.domain.users.UserServiceImpl;
@@ -23,13 +23,13 @@ import java.util.Optional;
 
 public class AdminInteractHandler implements Listener {
 
-    private final StructureService structureService;
+    private final StructAdminService structService;
     private final NpcService npcService;
     private final UserServiceImpl userService;
     private Villager villager;
 
-    public AdminInteractHandler(StructureService structureService, NpcService npcService, UserServiceImpl userService) {
-        this.structureService = structureService;
+    public AdminInteractHandler(StructAdminService structService, NpcService npcService, UserServiceImpl userService) {
+        this.structService = structService;
         this.npcService = npcService;
         this.userService = userService;
     }
@@ -113,7 +113,7 @@ public class AdminInteractHandler implements Listener {
             Player p = event.getPlayer();
             Location l = event.getClickedBlock().getLocation();
 
-            Optional<LoreStructure> s = structureService.getByLocation(l);
+            Optional<LoreStructure> s = structService.getByLocation(l);
 
             s.ifPresent(structure -> npcService.draftNpc(
                     l.getBlockX(), l.getBlockY() + 1, l.getBlockZ(),
@@ -127,21 +127,21 @@ public class AdminInteractHandler implements Listener {
     }
     private void selectStructByLocation(PlayerInteractEvent event) {
         Player p = event.getPlayer();
-        structureService.selectStructByLocation(p.getName(), event.getClickedBlock().getLocation(), ((result, msg) -> {
+        structService.selectStructByLocation(p.getName(), event.getClickedBlock().getLocation(), ((result, msg) -> {
             p.sendMessage(msg);
         }));
     }
     private void setStructCorner(PlayerInteractEvent event) {
         Player p = event.getPlayer();
 
-        structureService.setCorner(p.getName(), event.getClickedBlock().getLocation());
-        for(Location l : structureService.getStructCorners(p.getName())) {
+        structService.setCorner(p.getName(), event.getClickedBlock().getLocation());
+        for(Location l : structService.getStructCorners(p.getName())) {
             p.sendMessage(String.format("%d, %d, %d", l.getBlockX(), l.getBlockY(), l.getBlockZ()));
         }
     }
     private void regSafeLocation(Location l) {
         if (l != null) {
-            structureService.getByLocation(l).ifPresent(struct -> {
+            structService.getByLocation(l).ifPresent(struct -> {
                 npcService.regSafeLoc(new SafeLocImpl(l.clone().add(0, 1, 0), struct.getId()));
             });
         }
