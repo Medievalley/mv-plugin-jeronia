@@ -10,9 +10,10 @@ public interface DraftNpc {
     NpcRole getRole();
     Coordinates getSpawnLoc();
     Coordinates getWorkLoc();
-    void setSpawnLoc(Coordinates workLoc);
+    void setSpawnLoc(Coordinates spawnLoc);
+    void setWorkLoc(Coordinates workLoc);
     void setName(String name);
     void setRole(NpcRole role);
-
+    void setStructId(int id);
     String getString();
 }

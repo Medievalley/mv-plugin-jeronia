@@ -10,6 +10,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.shrigorevich.ml.admin.NpcAdminService;
 import org.shrigorevich.ml.admin.StructAdminService;
 import org.shrigorevich.ml.domain.ai.goals.HoldGoal;
 import org.shrigorevich.ml.domain.npc.contracts.NpcService;
@@ -28,14 +29,21 @@ public class AdminInteractHandler implements Listener {
     private final StructAdminService structAdminService;
     private final StructureService structService;
     private final NpcService npcService;
+    private final NpcAdminService npcAdminService;
     private final UserServiceImpl userService;
     private Villager villager;
 
-    public AdminInteractHandler(StructAdminService structAdminService, StructureService structService, NpcService npcService, UserServiceImpl userService) {
+    public AdminInteractHandler(
+            StructAdminService structAdminService,
+            StructureService structService,
+            NpcService npcService,
+            NpcAdminService npcAdminService,
+            UserServiceImpl userService) {
         this.structAdminService = structAdminService;
         this.structService = structService;
         this.npcService = npcService;
         this.userService = userService;
+        this.npcAdminService = npcAdminService;
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -112,14 +120,13 @@ public class AdminInteractHandler implements Listener {
 //            event.getPlayer().sendMessage(String.format("Age: %s", ((Ageable) b.getBlockData()).getAge()));
 //        }
     }
+
     private void draftNpc(PlayerInteractEvent event) {
         if (event.getClickedBlock() != null) {
             Player p = event.getPlayer();
             Location l = event.getClickedBlock().getLocation();
 
-            Optional<Structure> s = structService.getByLocation(l);
-
-            s.ifPresent(structure -> npcService.draftNpc(
+            structService.getByLocation(l).ifPresent(structure -> npcAdminService.draftNpc(
                     l.getBlockX(), l.getBlockY() + 1, l.getBlockZ(),
                     structure.getId(), p.getName(), (p::sendMessage)));
         }

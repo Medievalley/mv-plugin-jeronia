@@ -13,7 +13,7 @@ public interface NpcContext {
      * @return ID of created npc
      * @throws Exception
      */
-    int save(StructNpcModel npc) throws Exception;
+    int save(DraftNpc npc) throws Exception;
     List<StructNpcModel> get();
     List<StructNpcModel> getByStructId(int structId);
     Optional<StructNpcModel> get(int id);

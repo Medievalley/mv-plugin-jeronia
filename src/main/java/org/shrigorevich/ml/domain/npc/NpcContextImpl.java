@@ -7,6 +7,7 @@ import org.apache.commons.dbutils.handlers.BeanListHandler;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.apache.logging.log4j.LogManager;
 import org.shrigorevich.ml.common.BaseContext;
+import org.shrigorevich.ml.domain.npc.contracts.DraftNpc;
 import org.shrigorevich.ml.domain.npc.contracts.NpcContext;
 import org.shrigorevich.ml.domain.npc.models.StructNpcModel;
 import org.shrigorevich.ml.domain.npc.models.StructNpcModelImpl;
@@ -27,7 +28,7 @@ public class NpcContextImpl extends BaseContext implements NpcContext {
     };
 
     @Override
-    public int save(StructNpcModel npc) throws Exception {
+    public int save(DraftNpc npc) throws Exception {
         try {
             QueryRunner run = new QueryRunner(getDataSource());
             ResultSetHandler<Integer> h = new ScalarHandler<>();

@@ -10,6 +10,7 @@ import java.util.UUID;
 
 public interface NpcService extends Service {
 
+    void commitNpc(DraftNpc npc) throws Exception;
     void load();
     void load(int id);
     void unload();

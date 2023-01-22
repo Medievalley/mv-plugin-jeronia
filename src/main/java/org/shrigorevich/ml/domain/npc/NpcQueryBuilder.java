@@ -1,14 +1,15 @@
 package org.shrigorevich.ml.domain.npc;
 
-import org.shrigorevich.ml.domain.npc.models.StructNpcModel;
+import org.shrigorevich.ml.domain.npc.contracts.DraftNpc;
 
 public class NpcQueryBuilder {
 
-    public String saveNpc(StructNpcModel m) {
+    public String saveNpc(DraftNpc m) {
         return String.join("\n",
             "with rows as ( INSERT INTO location (x, y, z)",
-            String.format("VALUES (%d, %d, %d), (%d, %d, %d)", m.getSpawnX(), m.getSpawnY(), m.getSpawnZ(),
-                m.getWorkX(), m.getWorkY(), m.getWorkZ()),
+            String.format("VALUES (%d, %d, %d), (%d, %d, %d)",
+                m.getSpawnLoc().x(), m.getSpawnLoc().y(), m.getSpawnLoc().z(),
+                m.getWorkLoc().x(), m.getWorkLoc().y(), m.getWorkLoc().z()),
             "INSERT INTO struct_npc (name, role_id, struct_id, spawn, work)",
             "SELECT '%s', %d, %d, ids[1], ids[2]",
             "from (select array_agg(id) ids from rows) as locids returning id;");

@@ -35,6 +35,16 @@ public class NpcServiceImpl extends BaseService implements NpcService {
         this.bookedSafeLocs = new HashMap<>();
     }
 
+    @Override
+    public void commitNpc(DraftNpc npc) throws Exception {
+        try {
+            int id = context.save(npc);
+            load(id);
+        } catch (Exception ex) {
+            throw new Exception(String.format("Error while committing npc: %s", npc.toString()));
+        }
+    }
+
     private void spawn(StructNpcModel model) {
         World w = Bukkit.getWorld(model.getWorld());
         if (w != null) {
