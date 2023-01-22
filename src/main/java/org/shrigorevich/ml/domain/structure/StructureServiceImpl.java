@@ -17,7 +17,6 @@ import org.shrigorevich.ml.domain.structure.contracts.StructureService;
 import org.shrigorevich.ml.domain.structure.models.*;
 import org.shrigorevich.ml.domain.volume.models.VolumeBlockModel;
 import org.shrigorevich.ml.domain.volume.models.VolumeBlockModelImpl;
-import org.shrigorevich.ml.domain.volume.models.VolumeModelImpl;
 import org.shrigorevich.ml.events.StructsLoadedEvent;
 
 import java.util.*;
@@ -74,32 +73,25 @@ public class StructureServiceImpl extends BaseService implements StructureServic
         structContext.updateBlocksStatus(blocks, true);
     }
 
-    //TODO: Remove StructModelImpl dependency
     @Override
-    public void create(String name, StructureType type, Location l1, Location l2, IResultCallback cb) {
-        StructModelImpl m = new StructModelImpl();
-        m.typeId = type.getTypeId();
-        m.name = name;
-        m.world = l1.getWorld().getName();
+    public void create(String name, StructureType type, Location l1, Location l2, MsgCallback cb) {
+        try {
+            int structId = structContext.save(
+                    name, type.getTypeId(), l1.getWorld().getName(), getMinCoords(l1, l2), getMaxCoords(l1, l2));
 
-        int structId = structContext.save(m);
-        if (structId != 0) {
-            Optional<StructModel> model = structContext.getById(structId);
-            model.ifPresent(this::registerStructure);
-            cb.sendResult(true, String.format("StructId: %d", structId));
+            if (structId != 0) {
+                Optional<StructModel> model = structContext.getById(structId);
+                model.ifPresent(this::registerStructure);
+                cb.result(String.format("StructId: %d", structId));
+            }
+        } catch (Exception e) {
+            getLogger().error(e.getMessage());
+            cb.result(e.getMessage());
         }
     }
 
-    //TODO: error handling required
     @Override
-    public int exportVolume(Structure s, String volumeName) {
-        VolumeModelImpl v = new VolumeModelImpl(
-                volumeName,
-                s.getSizeX(),
-                s.getSizeY(),
-                s.getSizeZ()
-        );
-
+    public void exportVolume(Structure s, String volumeName, MsgCallback cb) {
         List<VolumeBlockModel> volumeBlocks = new ArrayList<>();
         List<Block> blocks = s.getBlocks();
         int offsetX = blocks.get(0).getX();
@@ -118,23 +110,28 @@ public class StructureServiceImpl extends BaseService implements StructureServic
                     ));
             }
         }
-        return structContext.createVolume(v, volumeBlocks);
+        try {
+            int volumeId = structContext.createVolume(volumeName, s.getSizeX(), s.getSizeY(), s.getSizeZ());
+            structContext.saveVolumeBlocks(volumeId, volumeBlocks);
+            cb.result(String.format("VolumeId: %d", volumeId));
+        } catch (Exception ex) {
+            cb.result(ex.getMessage());
+        }
     }
 
-    //TODO: move to right place
-    public Coords getMinCoords(Location l1, Location l2) {
+    private Coords getMinCoords(Location l1, Location l2) {
         return new CoordsImpl(
-                Math.min(l1.getBlockX(), l2.getBlockX()),
-                Math.min(l1.getBlockY(), l2.getBlockY()),
-                Math.min(l1.getBlockZ(), l2.getBlockZ())
+            Math.min(l1.getBlockX(), l2.getBlockX()),
+            Math.min(l1.getBlockY(), l2.getBlockY()),
+            Math.min(l1.getBlockZ(), l2.getBlockZ())
         );
     }
 
-    public Coords getMaxCoords(Location l1, Location l2) {
+    private Coords getMaxCoords(Location l1, Location l2) {
         return new CoordsImpl(
-                Math.max(l1.getBlockX(), l2.getBlockX()),
-                Math.max(l1.getBlockY(), l2.getBlockY()),
-                Math.max(l1.getBlockZ(), l2.getBlockZ())
+            Math.max(l1.getBlockX(), l2.getBlockX()),
+            Math.max(l1.getBlockY(), l2.getBlockY()),
+            Math.max(l1.getBlockZ(), l2.getBlockZ())
         );
     }
 }

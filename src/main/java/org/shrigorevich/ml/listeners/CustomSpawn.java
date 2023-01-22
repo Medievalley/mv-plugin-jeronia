@@ -58,11 +58,14 @@ public class CustomSpawn implements Listener {
         }
     }
 
+    //TODO: refactor StructureType logic
     private void assignToStruct(StructNpc npc, Villager entity) {
-        structService.getById(npc.getStructId()).ifPresent(loreStructure -> {
-            loreStructure.setLaborer(entity);
-            if (npc.getRole() == NpcRole.HARVESTER) {
-                scanStructForTasks(loreStructure, entity);
+        structService.getById(npc.getStructId()).ifPresent(s -> {
+            if(s instanceof LoreStructure ls) {
+                ((LoreStructure) s).setLaborer(entity);
+                if (npc.getRole() == NpcRole.HARVESTER) {
+                    scanStructForTasks(ls, entity);
+                }
             }
         });
     }

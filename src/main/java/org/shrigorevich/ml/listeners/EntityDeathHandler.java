@@ -20,6 +20,7 @@ import org.shrigorevich.ml.domain.ai.TaskType;
 import org.shrigorevich.ml.domain.npc.contracts.NpcService;
 import org.shrigorevich.ml.domain.npc.contracts.StructNpc;
 import org.shrigorevich.ml.domain.project.contracts.BuildProject;
+import org.shrigorevich.ml.domain.structure.contracts.LoreStructure;
 import org.shrigorevich.ml.domain.structure.contracts.StructureService;
 import org.shrigorevich.ml.domain.project.contracts.ProjectService;
 import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
@@ -109,7 +110,7 @@ public class EntityDeathHandler implements Listener {
     }
 
     private void clearNpcData(StructNpc npc) {
-        structService.getById(npc.getStructId()).ifPresent(s -> s.setLaborer(null));
+        structService.getById(npc.getStructId()).ifPresent(s -> ((LoreStructure) s).setLaborer(null));
         taskService.clear(npc.getEntityId());
         npcService.remove(npc.getEntityId());
     };

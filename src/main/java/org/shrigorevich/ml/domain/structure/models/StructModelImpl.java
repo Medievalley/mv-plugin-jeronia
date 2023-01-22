@@ -1,16 +1,32 @@
 package org.shrigorevich.ml.domain.structure.models;
 
+import org.shrigorevich.ml.common.Coords;
+
 public class StructModelImpl implements StructModel {
     public int id;
     public String world;
-    public int typeId, x1, y1, z1, x2, y2, z2;
-
+    public int typeId;
+    public int x1, y1, z1, x2, y2, z2;
     public int volumeId;
     public String name;
     public int blocks, brokenBlocks, priority;
     public int deposit, resources;
 
     public StructModelImpl() {}
+    public StructModelImpl(
+        String name, int typeId, String world,
+        Coords l1, Coords l2
+    ) {
+        this.name = name;
+        this.typeId = typeId;
+        this.world = world;
+        this.x1 = l1.getX();
+        this.y1 = l1.getY();
+        this.z1 = l1.getZ();
+        this.x2 = l2.getX();
+        this.y2 = l2.getY();
+        this.z2 = l2.getZ();
+    }
 
     public int getId() {
         return id;

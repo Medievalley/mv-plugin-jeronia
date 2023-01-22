@@ -4,25 +4,21 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import org.shrigorevich.ml.admin.StructAdminService;
 import org.shrigorevich.ml.domain.project.contracts.ProjectService;
-import org.shrigorevich.ml.domain.scoreboard.ScoreboardService;
 import org.shrigorevich.ml.domain.structure.StructureType;
 import org.shrigorevich.ml.domain.structure.contracts.LoreStructure;
-import org.shrigorevich.ml.domain.structure.contracts.Structure;
 import org.shrigorevich.ml.domain.users.UserRole;
 import org.shrigorevich.ml.domain.users.contracts.User;
-import org.shrigorevich.ml.domain.users.models.UserModelImpl;
 import org.shrigorevich.ml.domain.structure.contracts.StructureService;
 import org.shrigorevich.ml.domain.users.contracts.UserService;
 import org.shrigorevich.ml.events.FinalizeProjectEvent;
 
-import java.util.ArrayList;
 import java.util.Optional;
 
 public class StructureExecutor implements CommandExecutor {
@@ -46,7 +42,7 @@ public class StructureExecutor implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args){
         if(args.length > 0) {
             if(sender instanceof Player player){
                 try {
@@ -85,9 +81,8 @@ public class StructureExecutor implements CommandExecutor {
         structService.getById(Integer.parseInt(structId)).ifPresent(s -> {
             if (s instanceof LoreStructure ls) {
                 ls.restore();
-                projectService.getProject(ls.getId()).ifPresent(project -> {
-                    Bukkit.getServer().getPluginManager().callEvent(new FinalizeProjectEvent(project));
-                });
+                projectService.getProject(ls.getId()).ifPresent(project ->
+                    Bukkit.getServer().getPluginManager().callEvent(new FinalizeProjectEvent(project)));
             }
         });
     }
@@ -100,18 +95,14 @@ public class StructureExecutor implements CommandExecutor {
 
             structService.create(
                 name, StructureType.valueOf(type),
-                locs.get(0), locs.get(1),
-                (result, msg) -> {
-                    player.sendMessage(msg);
-                }
+                locs.get(0), locs.get(1), player::sendMessage
             );
         }, () -> player.sendMessage("First choose corners"));
     }
 
     private void exportVolume(Player player, String volumeName) {
         structAdminService.getSelectedStruct(player.getName()).ifPresentOrElse(struct -> {
-            int volumeId = structService.exportVolume(struct, volumeName);
-            player.sendMessage(String.format("VolumeId: %d", volumeId));
+            structService.exportVolume(struct, volumeName, player::sendMessage);
         }, () -> player.sendMessage("First choose a structure"));
     }
 }

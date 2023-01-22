@@ -1,20 +1,14 @@
 package org.shrigorevich.ml.domain.structure;
 
-import org.shrigorevich.ml.domain.structure.models.StructModel;
+import org.shrigorevich.ml.common.Coords;
 
 public class StructureQueryBuilderImpl {
 
-    public String save(StructModel m) {
-        if (StructureType.valueOf(m.getTypeId()) == StructureType.INFRA) {
-            return String.join("\n",
-                "insert into struct (name, type_id, volume_id, world, priority, x1, y1, z1, x2, y2, z2)",
-                String.format("VALUES ('%s', %d, %d, '%s', %d, %d, %d, %d, %d, %d, %d);",
-                    m.getName(), m.getTypeId(), m.getVolumeId(), m.getWorld(), m.getPriority(),
-                    m.getX1(), m.getY1(), m.getZ1(), m.getX2(), m.getY2(), m.getZ2()));
-        } else {
-            throw new IllegalArgumentException(
-                    String.format("Save script for StructType: %d not implemented", m.getTypeId()));
-        }
+    public String save(String name, int typeId, String world, Coords l1, Coords l2) {
+        return String.join("\n",
+            "insert into struct (name, type_id, world, x1, y1, z1, x2, y2, z2)",
+            String.format("VALUES ('%s', %d, '%s', %d, %d, %d, %d, %d, %d);",
+                name, typeId, world, l1.getX(), l1.getY(), l1.getZ(), l2.getX(), l2.getY(), l2.getZ()));
     }
 
     @Deprecated

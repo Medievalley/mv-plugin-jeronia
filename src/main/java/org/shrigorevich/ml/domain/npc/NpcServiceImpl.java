@@ -48,7 +48,7 @@ public class NpcServiceImpl extends BaseService implements NpcService {
         npc.setWorkZ(z);
         npc.setStructId(structId);
         draftNpc.put(key, npc);
-        cb.onDraft(String.format("Draft npc created. Work loc: %d %d %d, Struct: %d",
+        cb.result(String.format("Draft npc created. Work loc: %d %d %d, Struct: %d",
                 npc.getWorkX(), npc.getWorkY(), npc.getWorkZ(), npc.getStructId()));
     }
 
@@ -58,7 +58,7 @@ public class NpcServiceImpl extends BaseService implements NpcService {
         npc.setSpawnX(x);
         npc.setSpawnY(y);
         npc.setSpawnZ(z);
-        cb.onDraft(String.format("Draft npc spawn loc: %d %d %d",
+        cb.result(String.format("Draft npc spawn loc: %d %d %d",
                 npc.getSpawnX(), npc.getSpawnY(), npc.getSpawnZ()));
     }
 

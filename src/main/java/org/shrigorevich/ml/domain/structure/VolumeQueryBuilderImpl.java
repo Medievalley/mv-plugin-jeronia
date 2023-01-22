@@ -4,10 +4,10 @@ import org.shrigorevich.ml.domain.volume.models.VolumeModel;
 
 public class VolumeQueryBuilderImpl {
 
-    String create(VolumeModel v) {
+    String create(String name, int sizeX, int sizeY, int sizeZ) {
         return String.format(
-                "INSERT INTO volume (name, size_x, size_y, size_z) VALUES ('%s', %d, %d, %d) returning id;",
-                v.getName(), v.getSizeX(), v.getSizeY(), v.getSizeZ()
+            "INSERT INTO volume (name, size_x, size_y, size_z) VALUES ('%s', %d, %d, %d) returning id;",
+            name, sizeX, sizeY, sizeZ
         );
     }
 

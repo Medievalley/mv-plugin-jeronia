@@ -29,8 +29,9 @@ public class StructAdminServiceImpl extends BaseService implements StructAdminSe
     }
 
     @Override
-    public ArrayList<Location> getStructCorners(String key) {
-        return structCorners.get(key);
+    public Optional<ArrayList<Location>> getStructCorners(String key) {
+        ArrayList<Location> locations = structCorners.get(key);
+        return locations == null ? Optional.empty() : Optional.of(locations);
     }
 
     @Override

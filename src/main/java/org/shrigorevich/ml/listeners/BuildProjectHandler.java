@@ -67,13 +67,16 @@ public class BuildProjectHandler implements Listener {
         Map<Integer, List<StructBlockModel>> brokenBlocks = event.getBrokenBlocks();
         for (int structId : brokenBlocks.keySet()) {
             structureService.getById(structId).ifPresent(struct -> {
-                BuildProject project = projectService.getProject(structId).orElseGet(() -> {
-                    List<StructBlockModel> blocks = struct.getStructBlocks();
-                    BuildProject newProject = new BuildProjectImpl(struct, blocks.size());
-                    projectService.addProject(newProject);
-                    return newProject;
-                });
-                addPlannedBlocks(project, brokenBlocks.get(structId));
+                if (struct instanceof LoreStructure ls) {
+                    BuildProject project = projectService.getProject(structId).orElseGet(() -> {
+                        List<StructBlockModel> blocks = ls.getStructBlocks();
+                        BuildProject newProject = new BuildProjectImpl(ls, blocks.size());
+                        projectService.addProject(newProject);
+                        return newProject;
+                    });
+                    addPlannedBlocks(project, brokenBlocks.get(structId));
+                }
+
             });
         }
 

@@ -70,10 +70,12 @@ public class HarvestHandler implements Listener {
             }
         }
     }
+
+    //TODO: refactor StructureType logic
     private void updateStock(UUID entityId) {
         npcService.getById(entityId).flatMap(npc ->
-                structService.getById(npc.getStructId())).ifPresent(loreStructure ->
-                loreStructure.updateFoodStock(1)); //TODO: get from config
+            structService.getById(npc.getStructId())).ifPresent(loreStructure ->
+            loreStructure.updateFoodStock(1)); //TODO: get from config
     }
 
     private boolean isPlant(Material type) {
