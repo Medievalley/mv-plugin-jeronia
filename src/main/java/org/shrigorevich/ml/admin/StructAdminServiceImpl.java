@@ -2,21 +2,9 @@ package org.shrigorevich.ml.admin;
 
 import org.apache.logging.log4j.LogManager;
 import org.bukkit.Location;
-import org.bukkit.block.Block;
 import org.bukkit.plugin.Plugin;
 import org.shrigorevich.ml.common.BaseService;
-import org.shrigorevich.ml.common.Coords;
-import org.shrigorevich.ml.common.CoordsImpl;
-import org.shrigorevich.ml.domain.callbacks.IResultCallback;
-import org.shrigorevich.ml.domain.structure.StructureType;
-import org.shrigorevich.ml.domain.structure.contracts.LoreStructure;
 import org.shrigorevich.ml.domain.structure.contracts.Structure;
-import org.shrigorevich.ml.domain.structure.contracts.StructureContext;
-import org.shrigorevich.ml.domain.structure.models.StructModel;
-import org.shrigorevich.ml.domain.structure.models.StructModelImpl;
-import org.shrigorevich.ml.domain.volume.models.VolumeBlockModel;
-import org.shrigorevich.ml.domain.volume.models.VolumeBlockModelImpl;
-import org.shrigorevich.ml.domain.volume.models.VolumeModelImpl;
 
 import java.util.*;
 
@@ -43,6 +31,17 @@ public class StructAdminServiceImpl extends BaseService implements StructAdminSe
     @Override
     public ArrayList<Location> getStructCorners(String key) {
         return structCorners.get(key);
+    }
+
+    @Override
+    public void setSelectedStruct(String key, Structure struct) {
+        selectedStruct.put(key, struct);
+    }
+
+    @Override
+    public Optional<Structure> getSelectedStruct(String key) {
+        Structure s = selectedStruct.get(key);
+        return s == null ? Optional.empty() : Optional.of(s);
     }
 
 }

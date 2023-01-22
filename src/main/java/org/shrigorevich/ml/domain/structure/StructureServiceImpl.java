@@ -30,15 +30,15 @@ public class StructureServiceImpl extends BaseService implements StructureServic
         super(plugin, LogManager.getLogger("StructureServiceImpl"));
         this.structContext = structureContext;
         this.structures = new HashMap<>();
-
     }
 
-    public Optional<LoreStructure> getById (int id) {
+    @Override
+    public Optional<Structure> getById (int id) {
         LoreStructure struct = structures.get(id);
         return struct != null ? Optional.of(struct) : Optional.empty();
     }
     @Override
-    public Optional<LoreStructure> getByLocation(Location l) {
+    public Optional<Structure> getByLocation(Location l) {
         for (LoreStructure s : structures.values()) {
             if(s.contains(l)) {
                 return Optional.of(s);
@@ -74,9 +74,9 @@ public class StructureServiceImpl extends BaseService implements StructureServic
         structContext.updateBlocksStatus(blocks, true);
     }
 
+    //TODO: Remove StructModelImpl dependency
     @Override
     public void create(String name, StructureType type, Location l1, Location l2, IResultCallback cb) {
-
         StructModelImpl m = new StructModelImpl();
         m.typeId = type.getTypeId();
         m.name = name;
@@ -90,58 +90,35 @@ public class StructureServiceImpl extends BaseService implements StructureServic
         }
     }
 
+    //TODO: error handling required
     @Override
-    public void selectStructByLocation(String userName, Location l, IResultCallback cb) {
-        Optional<LoreStructure> struct = this.getByLocation(l);
-        if (struct.isPresent()) {
-            Structure s = struct.get();
-            selectedStruct.put(userName, s);
-            cb.sendResult(true, String.format(
-                    "Id: %d\n SizeX: %d\n SizeY: %d\n SizeZ: %d\n",
-                    s.getId(),
-                    s.getX2() - s.getX1() + 1,
-                    s.getY2() - s.getY1() + 1,
-                    s.getZ2() - s.getZ1() + 1)
-            );
-        } else {
-            cb.sendResult(false, "This location is not part of any structure");
-        }
-    }
+    public int exportVolume(Structure s, String volumeName) {
+        VolumeModelImpl v = new VolumeModelImpl(
+                volumeName,
+                s.getSizeX(),
+                s.getSizeY(),
+                s.getSizeZ()
+        );
 
-    @Override
-    public String exportVolume(String userName, String volumeName) {
-        Structure s = selectedStruct.get(userName);
-        if (s != null) {
-            VolumeModelImpl v = new VolumeModelImpl(
-                    volumeName,
-                    s.getSizeX(),
-                    s.getSizeY(),
-                    s.getSizeZ()
-            );
+        List<VolumeBlockModel> volumeBlocks = new ArrayList<>();
+        List<Block> blocks = s.getBlocks();
+        int offsetX = blocks.get(0).getX();
+        int offsetY = blocks.get(0).getY();
+        int offsetZ = blocks.get(0).getZ();
 
-            List<VolumeBlockModel> volumeBlocks = new ArrayList<>();
-            List<Block> blocks = s.getBlocks();
-            int offsetX = blocks.get(0).getX();
-            int offsetY = blocks.get(0).getY();
-            int offsetZ = blocks.get(0).getZ();
-
-            for (Block b : blocks) {
-                if (!b.getType().isAir()) {
-                    volumeBlocks.add(
-                            new VolumeBlockModelImpl(
-                                    b.getX() - offsetX,
-                                    b.getY() - offsetY,
-                                    b.getZ() - offsetZ,
-                                    b.getType().toString(),
-                                    b.getBlockData().getAsString()
-                            ));
-                }
+        for (Block b : blocks) {
+            if (!b.getType().isAir()) {
+                volumeBlocks.add(
+                    new VolumeBlockModelImpl(
+                        b.getX() - offsetX,
+                        b.getY() - offsetY,
+                        b.getZ() - offsetZ,
+                        b.getType().toString(),
+                        b.getBlockData().getAsString()
+                    ));
             }
-            int volumeId = structContext.createVolume(v, volumeBlocks);
-            return String.format("VolumeId: %d", volumeId);
-        } else {
-            return "Error occurred";
         }
+        return structContext.createVolume(v, volumeBlocks);
     }
 
     //TODO: move to right place

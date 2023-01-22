@@ -16,14 +16,10 @@ import java.util.Optional;
 public interface StructureService extends Service {
 
     void load();
-    Optional<LoreStructure> getById(int id);
-    Optional<LoreStructure> getByLocation(Location location);
+    Optional<Structure> getById(int id);
+    Optional<Structure> getByLocation(Location location);
     void setBlocksBroken(List<StructBlockModel> blocks);
 
-    String exportVolume(String userName, String volumeName);
-    void setCorner(String key, Location l);
-    ArrayList<Location> getStructCorners(String key);
+    int exportVolume(Structure structure, String volumeName);
     void create(String name, StructureType type, Location l1, Location l2, IResultCallback cb);
-    void selectStructByLocation(String userName, Location l, IResultCallback cb);
-
 }

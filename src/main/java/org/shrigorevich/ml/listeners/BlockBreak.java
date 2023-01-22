@@ -8,6 +8,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.shrigorevich.ml.domain.structure.contracts.LoreStructure;
+import org.shrigorevich.ml.domain.structure.contracts.Structure;
 import org.shrigorevich.ml.domain.structure.contracts.StructureService;
 import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
 import org.shrigorevich.ml.events.StructsDamagedEvent;
@@ -56,10 +57,11 @@ public class BlockBreak implements Listener {
         }
     }
 
+    //TODO: refactor struct logic
     private Optional<StructBlockModel> getBrokenBlock(Block block) {
-        Optional<LoreStructure> optional = structSvc.getByLocation(block.getLocation());
+        Optional<Structure> optional = structSvc.getByLocation(block.getLocation());
         if (optional.isPresent()) {
-            LoreStructure struct = optional.get();
+            LoreStructure struct = (LoreStructure) optional.get();
             int x = block.getX() - struct.getX1();
             int y = block.getY() - struct.getY1();
             int z = block.getZ() - struct.getZ1();

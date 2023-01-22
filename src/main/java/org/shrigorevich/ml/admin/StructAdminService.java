@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface StructAdminService extends Service {
 
     void setCorner(String key, Location l);
-    ArrayList<Location> getStructCorners(String key);
+    Optional<ArrayList<Location>> getStructCorners(String key);
     void setSelectedStruct(String key, Structure struct);
     Optional<Structure> getSelectedStruct(String key);
 }

@@ -1,7 +1,10 @@
 package org.shrigorevich.ml.commands;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -9,13 +12,17 @@ import org.bukkit.entity.Player;
 import org.shrigorevich.ml.admin.StructAdminService;
 import org.shrigorevich.ml.domain.project.contracts.ProjectService;
 import org.shrigorevich.ml.domain.scoreboard.ScoreboardService;
+import org.shrigorevich.ml.domain.structure.StructureType;
 import org.shrigorevich.ml.domain.structure.contracts.LoreStructure;
+import org.shrigorevich.ml.domain.structure.contracts.Structure;
+import org.shrigorevich.ml.domain.users.UserRole;
 import org.shrigorevich.ml.domain.users.contracts.User;
 import org.shrigorevich.ml.domain.users.models.UserModelImpl;
 import org.shrigorevich.ml.domain.structure.contracts.StructureService;
 import org.shrigorevich.ml.domain.users.contracts.UserService;
 import org.shrigorevich.ml.events.FinalizeProjectEvent;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 public class StructureExecutor implements CommandExecutor {
@@ -23,7 +30,9 @@ public class StructureExecutor implements CommandExecutor {
     private final StructureService structService;
     private final ProjectService projectService;
     private final StructAdminService structAdminService;
+    private final Logger logger;
 
+    //TODO: inject logger
     public StructureExecutor(
             UserService userService,
             StructureService structService,
@@ -33,53 +42,76 @@ public class StructureExecutor implements CommandExecutor {
         this.structService = structService;
         this.projectService = projectService;
         this.structAdminService = structAdminService;
+        this.logger = LogManager.getLogger("StructureExecutor");
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){
-        if(args.length > 0){
+        if(args.length > 0) {
             if(sender instanceof Player player){
                 try {
-                    switch (args[0].toLowerCase()) {
-                        case "restore", "r" -> structService.getById(Integer.parseInt(args[1])).ifPresent(ls -> {
-                            ls.restore();
-                            projectService.getProject(ls.getId()).ifPresent(project -> {
-                                Bukkit.getServer().getPluginManager().callEvent(new FinalizeProjectEvent(project));
-                            });
-                        });
-                        case "c", "create" -> {
-                            Optional<User> u = userService.getFromOnlineList(player.getName());
+                    Optional<User> user = userService.getFromOnlineList(player.getName());
+                    if (user.isPresent() && user.get().getRole().accessLevel() < UserRole.MODER.accessLevel())
+                        throw new Exception("You do not have permission for this operation");
 
-                            if (u.isPresent())
-                                structService.create(
-                                        u.get(), args[1], args[2],
-                                        Boolean.parseBoolean(args[3]),
-                                        (result, msg) -> {
-                                            player.sendMessage(msg);
-                                        }
-                                );
-                            else
-                                player.sendMessage(ChatColor.RED + "User not authorized");
-                        }
-                        case "sv", "save_volume" -> {
-                            String res = structService.exportVolume(player.getName(), args[1]);
-                            player.sendMessage(res);
-                        }
-                        case "av", "apply_volume" -> {
-                            Optional<LoreStructure> structure = structService.getById(Integer.parseInt(args[1]));
-                            structure.ifPresent(loreStructure -> loreStructure.applyVolume(Integer.parseInt(args[2])));
-                        }
+                    switch (args[0].toLowerCase()) {
+                        case "restore", "r" -> restore(args[1]);
+                        case "c", "create" -> create(player, args[1], args[2]);
+                        case "sv", "save_volume" -> exportVolume(player, args[1]);
+                        case "av", "apply_volume" -> applyVolume(args[1], args[2]);
                         default ->
-                                player.sendMessage(ChatColor.YELLOW + String.format("Command '%s' not found", args[0]));
+                            player.sendMessage(ChatColor.YELLOW + String.format("Command '%s' not found", args[0]));
                     }
                 } catch (Exception ex) {
-                    Bukkit.getLogger().severe(ex.toString());
+                    logger.error(ex.toString());
                     player.sendMessage(ChatColor.RED + ex.getMessage());
                 }
             } else {
-                System.out.println("You can`t use this command through console");
+                logger.error("You can`t use this command through console");
             }
         }
         return true;
+    }
+
+    private void applyVolume(String structId, String volumeId) {
+        structService.getById(Integer.parseInt(structId)).ifPresent(s -> {
+            if(s instanceof LoreStructure ls) {
+                ls.applyVolume(Integer.parseInt(volumeId));
+            }
+        });
+    }
+
+    private void restore(String structId) {
+        structService.getById(Integer.parseInt(structId)).ifPresent(s -> {
+            if (s instanceof LoreStructure ls) {
+                ls.restore();
+                projectService.getProject(ls.getId()).ifPresent(project -> {
+                    Bukkit.getServer().getPluginManager().callEvent(new FinalizeProjectEvent(project));
+                });
+            }
+        });
+    }
+
+    private void create(Player player, String name, String type) {
+        structAdminService.getStructCorners(player.getName()).ifPresentOrElse(locs -> {
+            if(locs.size() != 2)
+                throw new IllegalArgumentException(
+                    String.format("Specify the coordinates of two structure corners. Now defined: %d", locs.size()));
+
+            structService.create(
+                name, StructureType.valueOf(type),
+                locs.get(0), locs.get(1),
+                (result, msg) -> {
+                    player.sendMessage(msg);
+                }
+            );
+        }, () -> player.sendMessage("First choose corners"));
+    }
+
+    private void exportVolume(Player player, String volumeName) {
+        structAdminService.getSelectedStruct(player.getName()).ifPresentOrElse(struct -> {
+            int volumeId = structService.exportVolume(struct, volumeName);
+            player.sendMessage(String.format("VolumeId: %d", volumeId));
+        }, () -> player.sendMessage("First choose a structure"));
     }
 }
