@@ -9,7 +9,7 @@ import org.shrigorevich.ml.common.BaseService;
 import org.shrigorevich.ml.common.Coordinates;
 import org.shrigorevich.ml.common.CoordinatesImpl;
 import org.shrigorevich.ml.domain.callbacks.MsgCallback;
-import org.shrigorevich.ml.domain.structure.contracts.LoreStructure;
+import org.shrigorevich.ml.domain.structure.contracts.FoodStructure;
 import org.shrigorevich.ml.domain.structure.contracts.Structure;
 import org.shrigorevich.ml.domain.structure.contracts.StructureContext;
 import org.shrigorevich.ml.domain.structure.contracts.StructureService;
@@ -22,7 +22,7 @@ import java.util.*;
 
 public class StructureServiceImpl extends BaseService implements StructureService {
     private final StructureContext structContext;
-    private final Map<Integer, LoreStructure> structures;
+    private final Map<Integer, FoodStructure> structures;
 
     public StructureServiceImpl(StructureContext structureContext, Plugin plugin) {
         super(plugin, LogManager.getLogger("StructureServiceImpl"));
@@ -32,12 +32,12 @@ public class StructureServiceImpl extends BaseService implements StructureServic
 
     @Override
     public Optional<Structure> getById (int id) {
-        LoreStructure struct = structures.get(id);
+        FoodStructure struct = structures.get(id);
         return struct != null ? Optional.of(struct) : Optional.empty();
     }
     @Override
     public Optional<Structure> getByLocation(Location l) {
-        for (LoreStructure s : structures.values()) {
+        for (FoodStructure s : structures.values()) {
             if(s.contains(l)) {
                 return Optional.of(s);
             }
@@ -48,9 +48,9 @@ public class StructureServiceImpl extends BaseService implements StructureServic
     @Override
     public void load() {
         List<StructModel> structs = structContext.getStructures();
-        List<LoreStructure> damagedStructs = new ArrayList<>();
+        List<FoodStructure> damagedStructs = new ArrayList<>();
         for (StructModel s : structs) {
-            LoreStructure struct = registerStructure(s);
+            FoodStructure struct = registerStructure(s);
             if (s.getBlocks() > 0 && s.getBrokenBlocks() > 0) {
                 damagedStructs.add(struct);
             }
@@ -61,8 +61,8 @@ public class StructureServiceImpl extends BaseService implements StructureServic
         }
     }
 
-    private LoreStructure registerStructure(StructModel s) {
-        LoreStructure newStruct = new LoreStructImpl(s, structContext);
+    private FoodStructure registerStructure(StructModel s) {
+        FoodStructure newStruct = new FoodStructImpl(s, structContext);
         structures.put(newStruct.getId(), newStruct);
         return newStruct;
     }

@@ -14,7 +14,7 @@ import org.shrigorevich.ml.domain.ai.tasks.HoldSpawnTask;
 import org.shrigorevich.ml.domain.npc.NpcRole;
 import org.shrigorevich.ml.domain.npc.contracts.NpcService;
 import org.shrigorevich.ml.domain.npc.contracts.StructNpc;
-import org.shrigorevich.ml.domain.structure.contracts.LoreStructure;
+import org.shrigorevich.ml.domain.structure.contracts.FoodStructure;
 import org.shrigorevich.ml.domain.structure.contracts.StructureService;
 import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
 import org.shrigorevich.ml.events.CustomSpawnEvent;
@@ -61,8 +61,8 @@ public class CustomSpawn implements Listener {
     //TODO: refactor StructureType logic
     private void assignToStruct(StructNpc npc, Villager entity) {
         structService.getById(npc.getStructId()).ifPresent(s -> {
-            if(s instanceof LoreStructure ls) {
-                ((LoreStructure) s).setLaborer(entity);
+            if(s instanceof FoodStructure ls) {
+                ((FoodStructure) s).setLaborer(entity);
                 if (npc.getRole() == NpcRole.HARVESTER) {
                     scanStructForTasks(ls, entity);
                 }
@@ -80,7 +80,7 @@ public class CustomSpawn implements Listener {
         );
     }
 
-    private void scanStructForTasks(LoreStructure structure, Villager entity) {
+    private void scanStructForTasks(FoodStructure structure, Villager entity) {
         List<StructBlockModel> structBlocks = structure.getStructBlocks();
         structBlocks.forEach(b -> {
             Block wBlock = structure.getWorld().getBlockAt(b.getX(), b.getY(), b.getZ());

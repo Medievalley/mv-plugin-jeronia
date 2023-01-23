@@ -1,4 +1,4 @@
-package org.shrigorevich.ml.domain.volume;
+package org.shrigorevich.ml.domain.structure.contracts;
 
 import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
 import org.shrigorevich.ml.domain.structure.models.StructBlockModelImpl;

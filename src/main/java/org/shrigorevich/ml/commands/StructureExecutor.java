@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.shrigorevich.ml.admin.StructAdminService;
 import org.shrigorevich.ml.domain.project.contracts.ProjectService;
 import org.shrigorevich.ml.domain.structure.StructureType;
-import org.shrigorevich.ml.domain.structure.contracts.LoreStructure;
+import org.shrigorevich.ml.domain.structure.contracts.FoodStructure;
 import org.shrigorevich.ml.domain.users.UserRole;
 import org.shrigorevich.ml.domain.users.contracts.User;
 import org.shrigorevich.ml.domain.structure.contracts.StructureService;
@@ -71,7 +71,7 @@ public class StructureExecutor implements CommandExecutor {
 
     private void applyVolume(String structId, String volumeId) {
         structService.getById(Integer.parseInt(structId)).ifPresent(s -> {
-            if(s instanceof LoreStructure ls) {
+            if(s instanceof FoodStructure ls) {
                 ls.applyVolume(Integer.parseInt(volumeId));
             }
         });
@@ -79,7 +79,7 @@ public class StructureExecutor implements CommandExecutor {
 
     private void restore(String structId) {
         structService.getById(Integer.parseInt(structId)).ifPresent(s -> {
-            if (s instanceof LoreStructure ls) {
+            if (s instanceof FoodStructure ls) {
                 ls.restore();
                 projectService.getProject(ls.getId()).ifPresent(project ->
                     Bukkit.getServer().getPluginManager().callEvent(new FinalizeProjectEvent(project)));

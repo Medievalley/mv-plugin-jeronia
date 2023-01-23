@@ -4,7 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Villager;
-import org.shrigorevich.ml.domain.structure.contracts.LoreStructure;
+import org.shrigorevich.ml.domain.structure.contracts.FoodStructure;
 import org.shrigorevich.ml.domain.structure.contracts.StructureContext;
 import org.shrigorevich.ml.domain.structure.models.*;
 import org.shrigorevich.ml.domain.volume.models.VolumeBlockModel;
@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class LoreStructImpl extends StructureImpl implements LoreStructure {
+public class FoodStructImpl extends StructureImpl implements FoodStructure {
     private int volumeId;
     private final String name;
     private final StructureContext context;
@@ -22,7 +22,7 @@ public class LoreStructImpl extends StructureImpl implements LoreStructure {
     private final int priority;
     private int foodStock;
 
-    public LoreStructImpl(StructModel m, StructureContext context) {
+    public FoodStructImpl(StructModel m, StructureContext context) {
         super(m);
         this.volumeId = m.getVolumeId();
         this.name = m.getName();

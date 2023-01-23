@@ -1,6 +1,6 @@
 package org.shrigorevich.ml.domain.project.contracts;
 
-import org.shrigorevich.ml.domain.structure.contracts.LoreStructure;
+import org.shrigorevich.ml.domain.structure.contracts.FoodStructure;
 import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
 
 
@@ -12,7 +12,7 @@ public interface BuildProject extends Comparable<BuildProject> {
     StructBlockModel getPlannedBlock();
     boolean isPlanEmpty();
     int getPriority();
-    LoreStructure getStruct();
+    FoodStructure getStruct();
     int getPlanSize();
     void restoreBlock(StructBlockModel block);
 }

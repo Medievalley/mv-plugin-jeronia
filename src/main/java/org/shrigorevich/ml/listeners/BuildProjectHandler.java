@@ -17,7 +17,7 @@ import org.shrigorevich.ml.domain.project.BuildProjectImpl;
 import org.shrigorevich.ml.domain.project.contracts.ProjectService;
 import org.shrigorevich.ml.domain.scoreboard.BoardType;
 import org.shrigorevich.ml.domain.scoreboard.ScoreboardService;
-import org.shrigorevich.ml.domain.structure.contracts.LoreStructure;
+import org.shrigorevich.ml.domain.structure.contracts.FoodStructure;
 import org.shrigorevich.ml.domain.structure.contracts.StructureService;
 import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
 import org.shrigorevich.ml.events.*;
@@ -47,8 +47,8 @@ public class BuildProjectHandler implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void OnStructLoaded(StructsLoadedEvent event) {
-        List<LoreStructure> structs = event.getStructures();
-        for (LoreStructure s : structs) {
+        List<FoodStructure> structs = event.getStructures();
+        for (FoodStructure s : structs) {
             List<StructBlockModel> blocks = s.getStructBlocks();
             List<StructBlockModel> brokenBlocks = blocks.stream().filter(StructBlockModel::isBroken).collect(Collectors.toList());
             BuildProject project = new BuildProjectImpl(s, blocks.size());
@@ -67,7 +67,7 @@ public class BuildProjectHandler implements Listener {
         Map<Integer, List<StructBlockModel>> brokenBlocks = event.getBrokenBlocks();
         for (int structId : brokenBlocks.keySet()) {
             structureService.getById(structId).ifPresent(struct -> {
-                if (struct instanceof LoreStructure ls) {
+                if (struct instanceof FoodStructure ls) {
                     BuildProject project = projectService.getProject(structId).orElseGet(() -> {
                         List<StructBlockModel> blocks = ls.getStructBlocks();
                         BuildProject newProject = new BuildProjectImpl(ls, blocks.size());

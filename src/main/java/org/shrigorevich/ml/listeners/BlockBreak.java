@@ -7,7 +7,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
-import org.shrigorevich.ml.domain.structure.contracts.LoreStructure;
+import org.shrigorevich.ml.domain.structure.contracts.FoodStructure;
 import org.shrigorevich.ml.domain.structure.contracts.Structure;
 import org.shrigorevich.ml.domain.structure.contracts.StructureService;
 import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
@@ -61,7 +61,7 @@ public class BlockBreak implements Listener {
     private Optional<StructBlockModel> getBrokenBlock(Block block) {
         Optional<Structure> optional = structSvc.getByLocation(block.getLocation());
         if (optional.isPresent()) {
-            LoreStructure struct = (LoreStructure) optional.get();
+            FoodStructure struct = (FoodStructure) optional.get();
             int x = block.getX() - struct.getX1();
             int y = block.getY() - struct.getY1();
             int z = block.getZ() - struct.getZ1();

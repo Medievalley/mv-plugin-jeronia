@@ -2,19 +2,19 @@ package org.shrigorevich.ml.domain.project;
 
 import org.jetbrains.annotations.NotNull;
 import org.shrigorevich.ml.domain.project.contracts.BuildProject;
-import org.shrigorevich.ml.domain.structure.contracts.LoreStructure;
+import org.shrigorevich.ml.domain.structure.contracts.FoodStructure;
 import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
 import org.shrigorevich.ml.domain.volume.models.VolumeBlockModel;
 
 import java.util.*;
 
 public class BuildProjectImpl implements BuildProject {
-    private final LoreStructure structure;
+    private final FoodStructure structure;
     private final int size;
     private int brokenSize;
     private final PriorityQueue<StructBlockModel> plannedBlocks;
 
-    public BuildProjectImpl(LoreStructure structure, int size) {
+    public BuildProjectImpl(FoodStructure structure, int size) {
         this.structure = structure;
         this.plannedBlocks = new PriorityQueue<>(Comparator.comparingInt(VolumeBlockModel::getY));
         this.size = size;
@@ -58,7 +58,7 @@ public class BuildProjectImpl implements BuildProject {
     }
 
     @Override
-    public LoreStructure getStruct() {
+    public FoodStructure getStruct() {
         return structure;
     }
 

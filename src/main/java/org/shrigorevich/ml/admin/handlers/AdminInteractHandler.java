@@ -15,14 +15,11 @@ import org.shrigorevich.ml.admin.StructAdminService;
 import org.shrigorevich.ml.domain.ai.goals.HoldGoal;
 import org.shrigorevich.ml.domain.npc.contracts.NpcService;
 import org.shrigorevich.ml.domain.npc.SafeLocImpl;
-import org.shrigorevich.ml.domain.structure.contracts.LoreStructure;
-import org.shrigorevich.ml.domain.structure.contracts.Structure;
 import org.shrigorevich.ml.domain.structure.contracts.StructureService;
 import org.shrigorevich.ml.domain.users.UserRole;
 import org.shrigorevich.ml.domain.users.contracts.User;
 import org.shrigorevich.ml.domain.users.UserServiceImpl;
 
-import java.util.Objects;
 import java.util.Optional;
 
 public class AdminInteractHandler implements Listener {

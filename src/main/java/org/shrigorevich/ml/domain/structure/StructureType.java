@@ -1,7 +1,7 @@
 package org.shrigorevich.ml.domain.structure;
 
 public enum StructureType {
-    PRIVATE(1), INFRA(2), MOB_ABODE(3);
+    PRIVATE(1), AGRONOMIC(2), MOB_ABODE(3);
 
     private final int typeId;
 

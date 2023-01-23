@@ -11,7 +11,7 @@ import org.bukkit.event.block.BlockFertilizeEvent;
 import org.bukkit.event.block.BlockGrowEvent;
 import org.shrigorevich.ml.domain.structure.StructureType;
 import org.shrigorevich.ml.domain.structure.contracts.StructureService;
-import org.shrigorevich.ml.domain.structure.contracts.LoreStructure;
+import org.shrigorevich.ml.domain.structure.contracts.FoodStructure;
 import org.shrigorevich.ml.events.StructPlantGrownEvent;
 
 import java.util.Optional;
@@ -31,9 +31,9 @@ public class PlantGrow implements Listener {
         Location l = b.getLocation();
 
         structureService.getByLocation(b.getLocation()).ifPresent((struct) -> {
-            if (isFullyGrown(b) && struct.getType() == StructureType.INFRA) {
-                LoreStructure loreStructure = (LoreStructure) struct;
-                Optional<Villager> e = loreStructure.getLaborer();
+            if (isFullyGrown(b) && struct.getType() == StructureType.AGRONOMIC) {
+                FoodStructure foodStructure = (FoodStructure) struct;
+                Optional<Villager> e = foodStructure.getLaborer();
                 e.ifPresent(entity -> structureService.getPlugin()
                         .getServer().getPluginManager().callEvent(new StructPlantGrownEvent(entity, b)));
             }
