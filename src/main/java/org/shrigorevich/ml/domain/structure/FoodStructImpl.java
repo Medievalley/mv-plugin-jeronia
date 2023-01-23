@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class FoodStructImpl extends StructureImpl implements FoodStructure {
+public class FoodStructImpl extends TownInfraImpl implements FoodStructure {
     private int volumeId;
     private final String name;
     private final StructureContext context;
@@ -39,12 +39,10 @@ public class FoodStructImpl extends StructureImpl implements FoodStructure {
         return this.volumeId;
     }
 
-    @Override
     public void updateVolume(List<StructBlockModelImpl> blocks) {
 
     } //TODO: replace class to interface
 
-    @Override
     public void restoreBlock(StructBlockModel block) {
         context.restoreBlock(block.getId());
         BlockData bd = Bukkit.createBlockData(block.getBlockData());
@@ -52,7 +50,6 @@ public class FoodStructImpl extends StructureImpl implements FoodStructure {
         b.setBlockData(bd);
     }
 
-    @Override
     public void restore() {
         context.restoreStruct(getId());
         List<StructBlockModel> structBlocks = context.getStructBlocks(getId());
@@ -63,7 +60,6 @@ public class FoodStructImpl extends StructureImpl implements FoodStructure {
         }
     }
 
-    @Override
     public void applyVolume(int volumeId) throws IllegalArgumentException {
         Optional<VolumeModel> volume = context.getVolumeById(volumeId);
         if (!volume.isPresent()) throw new IllegalArgumentException(String.format("Volume %d not found", volumeId));
@@ -85,24 +81,22 @@ public class FoodStructImpl extends StructureImpl implements FoodStructure {
         this.restore();
     }
 
-    @Override
     public List<StructBlockModel> getStructBlocks() {
         return context.getStructBlocks(getId());
     }
 
-    @Override
     public Optional<StructBlockModel> getBlock(int x, int y, int z) {
         return context.getStructBlock(x, y, z, volumeId, getId());
     }
 
     @Override
     public int getFoodStock() {
-        return foodStock;
+        return getStorage().getResources();
     }
 
     @Override
     public void updateFoodStock(int foodAmount) {
-        foodStock+=foodAmount;
+        getStorage().updateResources(foodAmount);
         context.updateResources(getId(), foodStock);
     }
 

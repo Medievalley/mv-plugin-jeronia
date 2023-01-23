@@ -1,6 +1,6 @@
 package org.shrigorevich.ml.domain.structure.contracts;
 
-public interface FoodStructure extends Structure, TownInfrastructure, WorkPlace {
+public interface FoodStructure extends TownInfra {
 
     String getName();
     int getFoodStock();

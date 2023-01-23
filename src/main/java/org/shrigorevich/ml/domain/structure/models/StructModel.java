@@ -25,4 +25,6 @@ public interface StructModel {
     int getPriority();
     int getResources();
     void setResources(int resources);
+    int getDeposit();
+    void setDeposit(int deposit);
 }

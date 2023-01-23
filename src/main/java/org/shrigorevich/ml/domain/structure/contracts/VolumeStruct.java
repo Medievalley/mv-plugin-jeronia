@@ -6,7 +6,7 @@ import org.shrigorevich.ml.domain.structure.models.StructBlockModelImpl;
 import java.util.List;
 import java.util.Optional;
 
-public interface Volumeable {
+public interface VolumeStruct extends Structure {
     int getVolumeId();
     void updateVolume(List<StructBlockModelImpl> blocks);
     void restoreBlock(StructBlockModel block);
