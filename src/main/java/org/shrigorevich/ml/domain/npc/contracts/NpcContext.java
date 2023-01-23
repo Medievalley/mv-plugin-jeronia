@@ -14,7 +14,7 @@ public interface NpcContext {
      * @throws Exception
      */
     int save(DraftNpc npc) throws Exception;
-    List<StructNpcModel> get();
-    List<StructNpcModel> getByStructId(int structId);
-    Optional<StructNpcModel> get(int id);
+    List<StructNpcModel> get() throws Exception;
+    List<StructNpcModel> getByStructId(int structId) throws Exception;
+    Optional<StructNpcModel> get(int id) throws Exception;
 }

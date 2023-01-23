@@ -22,6 +22,7 @@ import org.shrigorevich.ml.domain.users.UserRole;
 import org.shrigorevich.ml.domain.users.contracts.User;
 import org.shrigorevich.ml.domain.users.UserServiceImpl;
 
+import java.util.Objects;
 import java.util.Optional;
 
 public class AdminInteractHandler implements Listener {
@@ -97,11 +98,9 @@ public class AdminInteractHandler implements Listener {
             }
         } else if (action.equals(Action.LEFT_CLICK_BLOCK)) {
             switch (event.getMaterial()) {
-                case BONE:
-                    draftNpcSetSpawn(event);
-                    break;
-                default:
-                    break;
+                case BONE -> draftNpcSetSpawn(event);
+                default -> {
+                }
             }
         }
     }
@@ -121,34 +120,41 @@ public class AdminInteractHandler implements Listener {
 //        }
     }
 
+    //TODO: refactor y+1 logic
     private void draftNpc(PlayerInteractEvent event) {
         if (event.getClickedBlock() != null) {
             Player p = event.getPlayer();
             Location l = event.getClickedBlock().getLocation();
 
-            structService.getByLocation(l).ifPresent(structure -> npcAdminService.draftNpc(
-                    l.getBlockX(), l.getBlockY() + 1, l.getBlockZ(),
-                    structure.getId(), p.getName(), (p::sendMessage)));
+            structService.getByLocation(l).ifPresent(structure -> npcAdminService.draftNpcSetWork(
+                l.getBlockX(), l.getBlockY() + 1, l.getBlockZ(),
+                structure.getId(), p.getName(), (p::sendMessage)));
         }
     }
 
+    //TODO: refactor y+1 logic
     private void draftNpcSetSpawn(PlayerInteractEvent event) {
-        Player p = event.getPlayer();
-        Location l = event.getClickedBlock().getLocation().clone().add(0, 1, 0);
-        npcService.draftNpcSetSpawn(l.getBlockX(), l.getBlockY(), l.getBlockZ(), p.getName(), (p::sendMessage));
+        if(event.getClickedBlock() != null) {
+            Player p = event.getPlayer();
+            Location l = event.getClickedBlock().getLocation();
+            npcAdminService.draftNpcSetSpawn(
+                l.getBlockX(), l.getBlockY()+1, l.getBlockZ(), p.getName(), (p::sendMessage));
+        }
     }
 
     private void selectStructByLocation(PlayerInteractEvent event) {
         Player p = event.getPlayer();
-        structService.getByLocation(event.getClickedBlock().getLocation()).ifPresentOrElse(struct -> {
-            structAdminService.setSelectedStruct(p.getName(), struct);
-            p.sendMessage(String.format(
-                "Id: %d\n SizeX: %d\n SizeY: %d\n SizeZ: %d\n",
-                struct.getId(),
-                struct.getX2() - struct.getX1() + 1,
-                struct.getY2() - struct.getY1() + 1,
-                struct.getZ2() - struct.getZ1() + 1));
-        }, () -> p.sendMessage("This location is not part of any structure"));
+        if (event.getClickedBlock() != null) {
+            structService.getByLocation(event.getClickedBlock().getLocation()).ifPresentOrElse(struct -> {
+                structAdminService.setSelectedStruct(p.getName(), struct);
+                p.sendMessage(String.format(
+                    "Id: %d\n SizeX: %d\n SizeY: %d\n SizeZ: %d\n",
+                    struct.getId(),
+                    struct.getX2() - struct.getX1() + 1,
+                    struct.getY2() - struct.getY1() + 1,
+                    struct.getZ2() - struct.getZ1() + 1));
+            }, () -> p.sendMessage("This location is not part of any structure"));
+        };
     }
     private void setStructCorner(PlayerInteractEvent event) {
         Player p = event.getPlayer();

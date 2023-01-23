@@ -14,7 +14,6 @@ import org.shrigorevich.ml.domain.npc.models.StructNpcModelImpl;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,70 +33,45 @@ public class NpcContextImpl extends BaseContext implements NpcContext {
             ResultSetHandler<Integer> h = new ScalarHandler<>();
             return run.insert(queryBuilder.saveNpc(npc), h);
         } catch (SQLException ex) {
-            getLogger().error("NpcContext. Save: " + ex);
-            return 0;
+            getLogger().error(ex.getMessage());
+            throw new Exception(String.format("Error while saving npc: %s", npc.getString()));
         }
     }
 
     @Override
-    public List<StructNpcModel> get() {
+    public List<StructNpcModel> get() throws Exception {
         try {
             QueryRunner run = new QueryRunner(getDataSource());
             ResultSetHandler<List<StructNpcModel>> h = new BeanListHandler(StructNpcModelImpl.class);
-            String sql = "select n.id, n.name, struct_id as structId, n.alive, n.role_id as roleId, s.world,\n" +
-            "sl.x as spawnX, sl.y as spawnY, sl.z as spawnZ, wl.x as workX, wl.y as workY, wl.z as workZ\n" +
-            "from struct_npc n \n" +
-            "join struct s on s.id = n.struct_id\n" +
-            "join location sl on sl.id = n.spawn\n" +
-            "join location wl on wl.id = n.work";
-            return run.query(sql, h);
+            return run.query(queryBuilder.getNpcList(), h);
         } catch (SQLException ex) {
-            getLogger().error("NpcContext. Get all: " + ex);
-            return new ArrayList<>(0);
+            getLogger().error(ex.getMessage());
+            throw new Exception("Error while getting npc list");
         }
     }
 
     @Override
-    public List<StructNpcModel> getByStructId(int structId) {
+    public List<StructNpcModel> getByStructId(int structId) throws Exception {
         try {
             QueryRunner run = new QueryRunner(getDataSource());
             ResultSetHandler<List<StructNpcModel>> h = new BeanListHandler(StructNpcModelImpl.class);
-            String sql = String.format(
-                    "select n.id, n.name, struct_id as structId, n.alive, n.role_id as roleId, s.world,\n" +
-                    "sl.x as spawnX, sl.y as spawnY, sl.z as spawnZ, wl.x as workX, wl.y as workY, wl.z as workZ\n" +
-                    "from struct_npc n \n" +
-                    "join struct s on s.id = n.struct_id\n" +
-                    "join location sl on sl.id = n.spawn\n" +
-                    "join location wl on wl.id = n.work\n" +
-                    "where n.struct_id = %d", structId);
-
-            return run.query(sql, h);
+            return run.query(queryBuilder.getByStructId(structId), h);
         } catch (SQLException ex) {
-            getLogger().error("NpcContext. Get by structId: " + ex);
-            return new ArrayList<>(0);
+            getLogger().error(ex.getMessage());
+            throw new Exception(String.format("Error while getting npc by struct id: %d", structId));
         }
     }
 
     @Override
-    public Optional<StructNpcModel> get(int id) {
+    public Optional<StructNpcModel> get(int id) throws Exception {
         try {
             QueryRunner run = new QueryRunner(getDataSource());
             ResultSetHandler<StructNpcModel> h = new BeanHandler(StructNpcModelImpl.class);
-            String sql = String.format(
-                    "select n.id, n.name, struct_id as structId, n.alive, n.role_id as roleId, s.world,\n" +
-                    "sl.x as spawnX, sl.y as spawnY, sl.z as spawnZ, wl.x as workX, wl.y as workY, wl.z as workZ\n" +
-                    "from struct_npc n \n" +
-                    "join struct s on s.id = n.struct_id\n" +
-                    "join location sl on sl.id = n.spawn\n" +
-                    "join location wl on wl.id = n.work\n" +
-                    "where n.id = %d", id);
-
-            StructNpcModel s = run.query(sql, h);
+            StructNpcModel s = run.query(queryBuilder.getById(id), h);
             return s == null ? Optional.empty() : Optional.of(s);
-
         } catch (SQLException ex) {
-            getLogger().error("NpcContext. GetById: " + ex);
-            return Optional.empty();
+            getLogger().error(ex.getMessage());
+            throw new Exception(String.format("Error while getting npc by id: %d", id));
         }
     }
 }
