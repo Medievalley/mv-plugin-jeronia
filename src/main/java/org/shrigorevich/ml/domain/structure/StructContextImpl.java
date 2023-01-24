@@ -18,7 +18,6 @@ import org.shrigorevich.ml.domain.structure.models.*;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -98,19 +97,19 @@ public class StructContextImpl extends BaseContext implements StructureContext {
     }
 
     @Override
-    public List<VolumeBlockModel> getVolumeBlocks(int volumeId) {
+    public List<VolumeBlockModel> getVolumeBlocks(int volumeId) throws Exception {
         try {
             QueryRunner run = new QueryRunner(getDataSource());
             ResultSetHandler<List<VolumeBlockModel>> volumeHandler = new BeanListHandler(VolumeBlockModelImpl.class);
             return run.query(volumeQueryBuilder.getBlocks(volumeId), volumeHandler);
         } catch (SQLException ex) {
-            getLogger().error(ex.toString());
-            return new ArrayList<>(0);
+            getLogger().error(ex.getMessage());
+            throw new Exception(String.format("Error while getting blocks for volume: %d", volumeId));
         }
     }
 
     @Override
-    public List<StructModel> getStructures() {
+    public List<StructModel> getStructures() throws Exception {
         try {
             QueryRunner run = new QueryRunner(getDataSource());
             ResultSetHandler<List<StructModel>> h = new BeanListHandler(StructModelImpl.class);
@@ -123,12 +122,12 @@ public class StructContextImpl extends BaseContext implements StructureContext {
 
         } catch (SQLException ex) {
             getLogger().error(ex.toString());
-            return new ArrayList<>(0);
+            throw new Exception(String.format("Error while getting list of structures"));
         }
     }
 
     @Override
-    public void setStructVolume(int structId, int volumeId) {
+    public void attachVolume(int structId, int volumeId) {
         try {
             getLogger().info(String.format("Set volume: %d, %d%n", structId, volumeId));
             QueryRunner run = new QueryRunner(getDataSource());
@@ -173,14 +172,26 @@ public class StructContextImpl extends BaseContext implements StructureContext {
     }
 
     @Override
-    public List<StructBlockModel> getStructBlocks(int structId) {
+    public List<StructBlockModel> getStructBlocks(int structId) throws Exception {
         try {
             QueryRunner run = new QueryRunner(getDataSource());
             ResultSetHandler<List<StructBlockModel>> h = new BeanListHandler(StructBlockModelImpl.class);
             return run.query(structQueryBuilder.getStructBlocks(structId), h);
         } catch (SQLException ex) {
             getLogger().error(ex.toString());
-            return new ArrayList<>(0);
+            throw new Exception(String.format("Error while getting blocks for struct: %d", structId));
+        }
+    }
+
+    @Override
+    public List<StructBlockModel> getStructBlocks() throws Exception {
+        try {
+            QueryRunner run = new QueryRunner(getDataSource());
+            ResultSetHandler<List<StructBlockModel>> h = new BeanListHandler(StructBlockModelImpl.class);
+            return run.query(structQueryBuilder.getStructBlocks(), h);
+        } catch (SQLException ex) {
+            getLogger().error(ex.getMessage());
+             throw new Exception("Error while getting all struct blocks");
         }
     }
 
@@ -248,28 +259,53 @@ public class StructContextImpl extends BaseContext implements StructureContext {
         }
     }
 
+    public int getBrokenBlocksCount(int structId) throws Exception {
+        try {
+            QueryRunner run = new QueryRunner(getDataSource());
+            ResultSetHandler<Integer> h = new ScalarHandler<>();
+            return run.query(structQueryBuilder.getBrokenBlockCount(structId), h);
+        } catch (SQLException ex) {
+            getLogger().error(ex.getMessage());
+            throw new Exception("Error while getting damaged struct ids");
+        }
+    }
+
     @Override
-    public void restoreBlock(int id) {
+    public int getStructBlocksCount(int structId) throws Exception {
+        try {
+            QueryRunner run = new QueryRunner(getDataSource());
+            ResultSetHandler<Integer> h = new ScalarHandler<>();
+            return run.query(structQueryBuilder.getStructBlockCount(structId), h);
+        } catch (SQLException ex) {
+            getLogger().error(ex.getMessage());
+            throw new Exception(String.format("Error while getting blocks count for struct: %d", structId));
+        }
+    }
+
+    @Override
+    public void restoreBlock(int id) throws Exception {
         try {
             QueryRunner run = new QueryRunner(getDataSource());
             run.update(structQueryBuilder.restoreBlock(id));
         } catch (SQLException ex) {
             getLogger().error(ex.toString());
+            throw new Exception(String.format("Error while restoring block with id: %d", id));
         }
     }
 
     @Override
-    public void restoreStruct(int structId) {
+    public void restoreStruct(int structId) throws Exception {
         try {
             QueryRunner run = new QueryRunner(getDataSource());
             run.update(structQueryBuilder.restoreStruct(structId));
         } catch (SQLException ex) {
             getLogger().error(ex.toString());
+            throw new Exception(String.format("Error while restoring struct: %d", structId));
         }
     }
 
     @Override
-    public void removeVolume(int structId) {
+    public void detachVolume(int structId) {
         try {
             QueryRunner run = new QueryRunner(getDataSource());
             run.update(structQueryBuilder.unAttachVolume(structId));

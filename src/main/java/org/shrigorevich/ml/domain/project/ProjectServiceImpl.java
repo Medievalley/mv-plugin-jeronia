@@ -52,6 +52,7 @@ public class ProjectServiceImpl extends BaseService implements ProjectService {
         projects.remove(project.getId());
         buildPlan.remove(project);
 
+        //TODO: should be moved to higher logic lvl
         if (getPlugin() instanceof AdventurePlugin) {
             ((AdventurePlugin) getPlugin()).showTitle(
                 String.format("Project %s finalized", project.getStruct().getName()),

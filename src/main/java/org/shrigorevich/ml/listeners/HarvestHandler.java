@@ -11,6 +11,7 @@ import org.bukkit.event.entity.ItemSpawnEvent;
 import org.shrigorevich.ml.domain.ai.contracts.TaskService;
 import org.shrigorevich.ml.domain.ai.tasks.HarvestTask;
 import org.shrigorevich.ml.domain.npc.contracts.NpcService;
+import org.shrigorevich.ml.domain.structure.contracts.FoodStructure;
 import org.shrigorevich.ml.domain.structure.contracts.StructureService;
 import org.shrigorevich.ml.events.HarvestStartedEvent;
 import org.shrigorevich.ml.events.StructPlantGrownEvent;
@@ -71,11 +72,14 @@ public class HarvestHandler implements Listener {
         }
     }
 
-    //TODO: refactor StructureType logic
+    //TODO: throw exception
     private void updateStock(UUID entityId) {
         npcService.getById(entityId).flatMap(npc ->
-            structService.getById(npc.getStructId())).ifPresent(loreStructure ->
-            loreStructure.updateFoodStock(1)); //TODO: get from config
+            structService.getById(npc.getStructId())).ifPresent(struct -> {
+            if (struct instanceof FoodStructure fs) {
+                fs.updateFoodStock(1); //TODO: get from config
+            }
+        });
     }
 
     private boolean isPlant(Material type) {

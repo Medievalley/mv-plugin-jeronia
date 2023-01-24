@@ -99,15 +99,9 @@ public final class Ml extends JavaPlugin implements AdventurePlugin {
         super.onEnable();
         setupListeners();
         setupExecutors();
-        try {
-            structService.load();
-            npcService.load();
-            projectService.load();
-            mobService.load();
-        } catch (IllegalArgumentException ex) {
-            Bukkit.getLogger().severe(ex.getMessage());
-        }
+        setupState();
     }
+
     @Override
     public void onDisable() {
         if(this.adventure != null) {
@@ -163,5 +157,16 @@ public final class Ml extends JavaPlugin implements AdventurePlugin {
                 Component.text(subTitle).color(TextColor.color(subTitleColor))
         );
         audience.showTitle(titleToShow);
+    }
+
+    private void setupState() {
+        try {
+            structService.load();
+            npcService.load();
+            projectService.load();
+            mobService.load();
+        } catch (Exception ex) {
+            Bukkit.getLogger().severe(ex.getMessage());
+        }
     }
 }

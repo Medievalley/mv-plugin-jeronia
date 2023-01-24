@@ -64,19 +64,27 @@ public class NpcServiceImpl extends BaseService implements NpcService {
     }
 
     public void load() {
-        List<StructNpcModel> models = context.get();
-        for (StructNpcModel m : models) {
-            if (m.isAlive()) {
-                spawn(m);
-            } else {
-                System.out.println("Dead NPC was not spawned. Id: " + m.getId());
+        try {
+            List<StructNpcModel> models = context.get();
+            for (StructNpcModel m : models) {
+                if (m.isAlive()) {
+                    spawn(m);
+                } else {
+                    System.out.println("Dead NPC was not spawned. Id: " + m.getId());
+                }
             }
+        } catch (Exception ex) {
+            getLogger().error(ex.getMessage());
         }
     }
 
     public void load(int id) {
-        Optional<StructNpcModel> npc = context.get(id);
-        npc.ifPresent(this::spawn);
+        try {
+            Optional<StructNpcModel> npc = context.get(id);
+            npc.ifPresent(this::spawn);
+        } catch (Exception ex) {
+            getLogger().error(ex.getMessage());
+        }
     }
 
     /** Called when the plugin stops */
@@ -99,7 +107,7 @@ public class NpcServiceImpl extends BaseService implements NpcService {
     @Override
     public void reload() {
         List<Entity> entities = Bukkit.getWorld("world").getEntities(); //TODO: fix hardcoded value
-        List<Entity> villagers = entities.stream().filter(e -> e.getType() == EntityType.VILLAGER).collect(Collectors.toList());
+        List<Entity> villagers = entities.stream().filter(e -> e.getType() == EntityType.VILLAGER).toList();
         for (Entity v : villagers) {
             if (v.getEntitySpawnReason() == CreatureSpawnEvent.SpawnReason.CUSTOM) {
                 v.remove();
@@ -111,21 +119,25 @@ public class NpcServiceImpl extends BaseService implements NpcService {
 
     @Override
     public void reloadByStruct(int structId) {
-        List<StructNpc> structNpcList = npcList.values().stream().filter(n -> n.getStructId() == structId).collect(Collectors.toList());
-        for (StructNpc npc : structNpcList) {
-            Entity e = Bukkit.getEntity(npc.getEntityId());
-            if (e != null) {
-                e.remove();
+        try {
+            List<StructNpc> structNpcList = npcList.values().stream().filter(n -> n.getStructId() == structId).toList();
+            for (StructNpc npc : structNpcList) {
+                Entity e = Bukkit.getEntity(npc.getEntityId());
+                if (e != null) {
+                    e.remove();
+                }
+                npcList.remove(npc.getEntityId());
+                load(npc.getId());
             }
-            npcList.remove(npc.getEntityId());
-            load(npc.getId());
-        }
 
-        if (structNpcList.size() == 0) {
-            List<StructNpcModel> models = context.getByStructId(structId);
-            for (StructNpcModel m : models) {
-                spawn(m);
+            if (structNpcList.size() == 0) {
+                List<StructNpcModel> models = context.getByStructId(structId);
+                for (StructNpcModel m : models) {
+                    spawn(m);
+                }
             }
+        } catch (Exception ex) {
+            getLogger().error(ex.getMessage());
         }
     }
 

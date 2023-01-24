@@ -65,7 +65,7 @@ public class BlockBreak implements Listener {
             int x = block.getX() - struct.getX1();
             int y = block.getY() - struct.getY1();
             int z = block.getZ() - struct.getZ1();
-            Optional<StructBlockModel> sb = struct.getBlock(x, y, z);
+            Optional<StructBlockModel> sb = structSvc.getBlock(x, y, z);
 
             if (sb.isPresent() && !sb.get().isBroken() && sb.get().isTriggerDestruction()) {
                 sb.get().setBroken(true);

@@ -17,14 +17,14 @@ import org.shrigorevich.ml.domain.project.BuildProjectImpl;
 import org.shrigorevich.ml.domain.project.contracts.ProjectService;
 import org.shrigorevich.ml.domain.scoreboard.BoardType;
 import org.shrigorevich.ml.domain.scoreboard.ScoreboardService;
-import org.shrigorevich.ml.domain.structure.contracts.FoodStructure;
 import org.shrigorevich.ml.domain.structure.contracts.StructureService;
+import org.shrigorevich.ml.domain.structure.contracts.TownInfra;
 import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
 import org.shrigorevich.ml.events.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 public class BuildProjectHandler implements Listener {
     private final ProjectService projectService;
@@ -46,37 +46,24 @@ public class BuildProjectHandler implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void OnStructLoaded(StructsLoadedEvent event) {
-        List<FoodStructure> structs = event.getStructures();
-        for (FoodStructure s : structs) {
-            List<StructBlockModel> blocks = s.getStructBlocks();
-            List<StructBlockModel> brokenBlocks = blocks.stream().filter(StructBlockModel::isBroken).collect(Collectors.toList());
-            BuildProject project = new BuildProjectImpl(s, blocks.size());
-            addPlannedBlocks(project, brokenBlocks);
-            projectService.addProject(project);
-            System.out.println("Project loaded: " + project.getId());
-        }
-        projectService.getCurrent().ifPresent(project -> {
-            System.out.printf("Current project: %s. Broken blocks: %d%n", project.getStruct().getName(), project.getBrokenSize());
-            scoreboardService.updateScoreboard(project, projectService.getResources());
-        });
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
     public void OnStructsDamaged(StructsDamagedEvent event) {
         Map<Integer, List<StructBlockModel>> brokenBlocks = event.getBrokenBlocks();
         for (int structId : brokenBlocks.keySet()) {
             structureService.getById(structId).ifPresent(struct -> {
-                if (struct instanceof FoodStructure ls) {
-                    BuildProject project = projectService.getProject(structId).orElseGet(() -> {
-                        List<StructBlockModel> blocks = ls.getStructBlocks();
-                        BuildProject newProject = new BuildProjectImpl(ls, blocks.size());
-                        projectService.addProject(newProject);
-                        return newProject;
-                    });
-                    addPlannedBlocks(project, brokenBlocks.get(structId));
+                if (struct instanceof TownInfra ti) {
+                    try {
+                        Optional<BuildProject> project = projectService.getProject(structId);
+                        if (project.isEmpty()) {
+                            int structBlocks = structureService.getStructBlocksCount(structId);
+                            BuildProject newProject = new BuildProjectImpl(ti, structBlocks);
+                            projectService.addProject(newProject);
+                            project = Optional.of(newProject);
+                        }
+                        addPlannedBlocks(project.get(), brokenBlocks.get(structId));
+                    } catch (Exception ex) {
+                        //TODO: Escalate struct damaged error
+                    }
                 }
-
             });
         }
 
@@ -95,11 +82,16 @@ public class BuildProjectHandler implements Listener {
         StructBlockModel block = event.getTask().getBlock();
 
         projectService.getProject(block.getStructId()).ifPresent(p -> {
-            p.restoreBlock(block);
-            taskService.finalize(entity.getUniqueId());
-            projectService.updateResources(-1);
-            if (p.getBrokenSize() == 0) {
-                projectService.finalizeProject(p);
+            try {
+                structureService.restoreBlock(block);
+                p.restoreOne();
+                taskService.finalize(entity.getUniqueId());
+                projectService.updateResources(-1);
+                if (p.getBrokenSize() == 0) {
+                    projectService.finalizeProject(p);
+                }
+            } catch (Exception ex) {
+                //TODO: inject logger
             }
         });
         updateProjectScoreboard();

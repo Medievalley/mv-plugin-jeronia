@@ -3,18 +3,19 @@ package org.shrigorevich.ml.domain.project;
 import org.jetbrains.annotations.NotNull;
 import org.shrigorevich.ml.domain.project.contracts.BuildProject;
 import org.shrigorevich.ml.domain.structure.contracts.FoodStructure;
+import org.shrigorevich.ml.domain.structure.contracts.TownInfra;
 import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
 import org.shrigorevich.ml.domain.volume.models.VolumeBlockModel;
 
 import java.util.*;
 
 public class BuildProjectImpl implements BuildProject {
-    private final FoodStructure structure;
+    private final TownInfra structure;
     private final int size;
     private int brokenSize;
     private final PriorityQueue<StructBlockModel> plannedBlocks;
 
-    public BuildProjectImpl(FoodStructure structure, int size) {
+    public BuildProjectImpl(TownInfra structure, int size) {
         this.structure = structure;
         this.plannedBlocks = new PriorityQueue<>(Comparator.comparingInt(VolumeBlockModel::getY));
         this.size = size;
@@ -34,6 +35,13 @@ public class BuildProjectImpl implements BuildProject {
     @Override
     public int getId() {
         return structure.getId();
+    }
+
+    @Override
+    public void addPlannedBlocks(List<StructBlockModel> blocks) {
+        for (StructBlockModel b : blocks) {
+            addPlannedBlock(b);
+        }
     }
 
     @Override
@@ -58,7 +66,7 @@ public class BuildProjectImpl implements BuildProject {
     }
 
     @Override
-    public FoodStructure getStruct() {
+    public TownInfra getStruct() {
         return structure;
     }
 
@@ -68,8 +76,7 @@ public class BuildProjectImpl implements BuildProject {
     }
 
     @Override
-    public void restoreBlock(StructBlockModel block) {
-        structure.restoreBlock(block);
+    public void restoreOne() {
         decrementBrokenSize();
     }
 

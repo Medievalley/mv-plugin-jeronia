@@ -22,10 +22,8 @@ public class StructureQueryBuilderImpl {
     public String getStructures() {
         return String.join("\n",
             "select id, name, volume_id as volumeId, priority, deposit, resources, type_id as typeId",
-            "world, x1, y1, z1, x2, y2, z2,",
-            "(select count(id)::int from struct_block where struct_id=s.id and broken=true) as brokenBlocks,",
-            "(select count(id)::int from struct_block where struct_id=s.id and broken=false) as blocks",
-            "from struct s");
+            "world, x1, y1, z1, x2, y2, z2",
+            "from struct");
     }
 
     public String setVolume(int structId, int volumeId) {
@@ -46,6 +44,18 @@ public class StructureQueryBuilderImpl {
         return String.join("\n",
             selectStructBlock(),
             String.format("where struct_id=%d", structId));
+    }
+
+    public String getStructBlocks() {
+        return selectStructBlock();
+    }
+
+    public String getBrokenBlockCount(int structId) {
+        return String.format("SELECT COUNT(*) FROM struct_block WHERE broken=true and struct_id=%d", structId);
+    }
+
+    public String getStructBlockCount(int structId) {
+        return String.format("SELECT COUNT(*) FROM struct_block WHERE struct_id=%d", structId);
     }
 
     public String getStructBlock(int id) {
@@ -97,3 +107,6 @@ public class StructureQueryBuilderImpl {
 //    )
 //    insert into struct (loc1, loc2, type_id, world)
 //    select ids[1], ids[2], 1, 'world' from (select array_agg(id) ids from rows) as locids;
+
+//"(select count(id)::int from struct_block where struct_id=s.id and broken=true) as brokenBlocks,",
+//"(select count(id)::int from struct_block where struct_id=s.id and broken=false) as blocks",

@@ -15,7 +15,9 @@ import org.shrigorevich.ml.domain.npc.NpcRole;
 import org.shrigorevich.ml.domain.npc.contracts.NpcService;
 import org.shrigorevich.ml.domain.npc.contracts.StructNpc;
 import org.shrigorevich.ml.domain.structure.contracts.FoodStructure;
+import org.shrigorevich.ml.domain.structure.contracts.Structure;
 import org.shrigorevich.ml.domain.structure.contracts.StructureService;
+import org.shrigorevich.ml.domain.structure.contracts.TownInfra;
 import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
 import org.shrigorevich.ml.events.CustomSpawnEvent;
 
@@ -48,11 +50,9 @@ public class CustomSpawn implements Listener {
                         npc.get().getId(), npc.get().isAlive(), npc.get().getRole());
 
                 switch (npc.get().getRole()) {
-                    case HARVESTER:
-                        assignToStruct(npc.get(), entity);
-                        break;
-                    default:
-                        break;
+                    case HARVESTER -> assignToStruct(npc.get(), entity);
+                    default -> {
+                    }
                 }
             }
         }
@@ -80,10 +80,10 @@ public class CustomSpawn implements Listener {
         );
     }
 
-    private void scanStructForTasks(FoodStructure structure, Villager entity) {
-        List<StructBlockModel> structBlocks = structure.getStructBlocks();
+    private void scanStructForTasks(Structure struct, Villager entity) {
+        List<StructBlockModel> structBlocks = structService.getStructBlocks(struct.getId());
         structBlocks.forEach(b -> {
-            Block wBlock = structure.getWorld().getBlockAt(b.getX(), b.getY(), b.getZ());
+            Block wBlock = struct.getWorld().getBlockAt(b.getX(), b.getY(), b.getZ());
             if (isStructPlant(wBlock.getType())) {
                 Ageable plant = (Ageable) wBlock.getBlockData();
                 if (plant.getAge() == plant.getMaximumAge() ) { //TODO: get from config

@@ -1,8 +1,7 @@
 package org.shrigorevich.ml.domain.structure.contracts;
 
-public interface FoodStructure extends TownInfra {
+public interface FoodStructure extends TownInfra, WorkPlace {
 
-    String getName();
     int getFoodStock();
     /** <p>Replenish or reduce food stock by the value passed</p>
      * Negative value - reduce food stock <br>

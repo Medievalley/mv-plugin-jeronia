@@ -1,7 +1,10 @@
 package org.shrigorevich.ml.domain.project.contracts;
 
 import org.shrigorevich.ml.domain.structure.contracts.FoodStructure;
+import org.shrigorevich.ml.domain.structure.contracts.TownInfra;
 import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
+
+import java.util.List;
 
 
 public interface BuildProject extends Comparable<BuildProject> {
@@ -9,10 +12,11 @@ public interface BuildProject extends Comparable<BuildProject> {
     int getBrokenSize();
     int getId();
     void addPlannedBlock(StructBlockModel block);
+    void addPlannedBlocks(List<StructBlockModel> blocks);
     StructBlockModel getPlannedBlock();
     boolean isPlanEmpty();
     int getPriority();
-    FoodStructure getStruct();
+    TownInfra getStruct();
     int getPlanSize();
-    void restoreBlock(StructBlockModel block);
+    void restoreOne();
 }
