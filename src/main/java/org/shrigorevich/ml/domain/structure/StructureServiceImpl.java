@@ -56,22 +56,6 @@ public class StructureServiceImpl extends BaseService implements StructureServic
     }
 
     @Override
-    public void load() throws Exception {
-        try {
-            List<StructModel> structs = context.getStructures();
-            for (StructModel s : structs) {
-                registerStructure(s);
-            }
-            List<StructBlockModel> structBlocks = context.getStructBlocks();
-            for (StructBlockModel b : structBlocks) {
-                registerBlock(b);
-            }
-        } catch (Exception ex) {
-            throw new Exception("Error while loading structures");
-        }
-    }
-
-    @Override
     public void setBlocksBroken(List<StructBlockModel> blocks) {
         context.updateBlocksStatus(blocks, true);
     }
@@ -203,8 +187,6 @@ public class StructureServiceImpl extends BaseService implements StructureServic
         return structBlocks.values().stream().filter(s -> s.getId() == structId).collect(Collectors.toList());
     }
 
-
-
     @Override
     public int getBrokenBlocksCount(int structId) throws Exception {
         try {
@@ -222,6 +204,22 @@ public class StructureServiceImpl extends BaseService implements StructureServic
         } catch (Exception ex) {
             getLogger().error(ex.getMessage());
             throw ex;
+        }
+    }
+
+    @Override
+    public void load() throws Exception {
+        try {
+            List<StructModel> structs = context.getStructures();
+            for (StructModel s : structs) {
+                registerStructure(s);
+            }
+            List<StructBlockModel> structBlocks = context.getStructBlocks();
+            for (StructBlockModel b : structBlocks) {
+                registerBlock(b);
+            }
+        } catch (Exception ex) {
+            throw new Exception("Error while loading structures");
         }
     }
 
@@ -263,6 +261,8 @@ public class StructureServiceImpl extends BaseService implements StructureServic
     private String getBlockKey(StructBlockModel b) {
         return getBlockKey(b.getX(), b.getY(), b.getZ());
     }
+
+
 
 }
 

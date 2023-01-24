@@ -78,6 +78,7 @@ public class HarvestHandler implements Listener {
             structService.getById(npc.getStructId())).ifPresent(struct -> {
             if (struct instanceof FoodStructure fs) {
                 fs.updateFoodStock(1); //TODO: get from config
+
             }
         });
     }

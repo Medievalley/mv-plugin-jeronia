@@ -45,24 +45,6 @@ public class NpcServiceImpl extends BaseService implements NpcService {
         }
     }
 
-    private void spawn(StructNpcModel model) {
-        World w = Bukkit.getWorld(model.getWorld());
-        if (w != null) {
-            Location spawnLocation = new Location(w, model.getSpawnX(), model.getSpawnY(), model.getSpawnZ());
-            w.spawnEntity(
-                spawnLocation,
-                EntityType.VILLAGER, CreatureSpawnEvent.SpawnReason.CUSTOM,
-                (e) -> {
-                    e.customName(Component.text(model.getName()));
-                    e.setCustomNameVisible(true);
-                    e.setMetadata("id", new FixedMetadataValue(getPlugin(), model.getId()));
-                    ((Villager) e).setAgeLock(true);
-                    register(new StructNpcImpl(model, e.getUniqueId()));
-                }
-            );
-        }
-    }
-
     public void load() {
         try {
             List<StructNpcModel> models = context.get();
@@ -70,7 +52,7 @@ public class NpcServiceImpl extends BaseService implements NpcService {
                 if (m.isAlive()) {
                     spawn(m);
                 } else {
-                    System.out.println("Dead NPC was not spawned. Id: " + m.getId());
+                    getLogger().info("Dead NPC was not spawned. Id: " + m.getId());
                 }
             }
         } catch (Exception ex) {
@@ -141,10 +123,6 @@ public class NpcServiceImpl extends BaseService implements NpcService {
         }
     }
 
-    private void register(StructNpc npc) {
-        npcList.put(npc.getEntityId(), npc);
-    }
-
     @Override
     public Optional<StructNpc> getById(UUID id) {
         StructNpc npc = npcList.get(id);
@@ -186,5 +164,27 @@ public class NpcServiceImpl extends BaseService implements NpcService {
     @Override
     public List<StructNpc> getNpcByRole(NpcRole role) {
         return npcList.values().stream().filter(n -> n.getRole() == role).collect(Collectors.toList());
+    }
+
+    private void spawn(StructNpcModel model) {
+        World w = Bukkit.getWorld(model.getWorld());
+        if (w != null) {
+            Location spawnLocation = new Location(w, model.getSpawnX(), model.getSpawnY(), model.getSpawnZ());
+            w.spawnEntity(
+                    spawnLocation,
+                    EntityType.VILLAGER, CreatureSpawnEvent.SpawnReason.CUSTOM,
+                    (e) -> {
+                        e.customName(Component.text(model.getName()));
+                        e.setCustomNameVisible(true);
+                        e.setMetadata("id", new FixedMetadataValue(getPlugin(), model.getId()));
+                        ((Villager) e).setAgeLock(true);
+                        register(new StructNpcImpl(model, e.getUniqueId()));
+                    }
+            );
+        }
+    }
+
+    private void register(StructNpc npc) {
+        npcList.put(npc.getEntityId(), npc);
     }
 }

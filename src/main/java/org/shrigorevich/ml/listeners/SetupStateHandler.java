@@ -1,5 +1,7 @@
 package org.shrigorevich.ml.listeners;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -19,6 +21,7 @@ import java.util.stream.Collectors;
 
 public class SetupStateHandler implements Listener {
 
+    private final Logger logger;
     private final StructureService structureService;
     private final ProjectService projectService;
     private final ScoreboardService scoreboardService;
@@ -36,12 +39,15 @@ public class SetupStateHandler implements Listener {
         this.npcService = npcService;
         this.mobService = mobService;
         this.scoreboardService = boardService;
+        this.logger = LogManager.getLogger("SetupStateHandler");
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void SetupState(SetupStateEvent event) {
         try {
             structureService.load();
+            setupProjects();
+            npcService.load();
         } catch (Exception ex) {
             //TODO: escalate error
         }
@@ -55,11 +61,11 @@ public class SetupStateHandler implements Listener {
             BuildProject project = new BuildProjectImpl(s, blocks.size());
             project.addPlannedBlocks(brokenBlocks);
             projectService.addProject(project);
-            System.out.println("Project loaded: " + project.getId()); //TODO: inject logger
+            logger.debug(String.format("Project loaded: " + project.getId()));
         }
         projectService.getCurrent().ifPresent(project -> {
             //TODO: inject logger
-            System.out.printf("Current project: %s. Broken blocks: %d%n", project.getStruct().getName(), project.getBrokenSize());
+            logger.debug(String.format("Current project: %s. Broken blocks: %d%n", project.getStruct().getName(), project.getBrokenSize()));
             scoreboardService.updateScoreboard(project, projectService.getResources());
         });
     }
