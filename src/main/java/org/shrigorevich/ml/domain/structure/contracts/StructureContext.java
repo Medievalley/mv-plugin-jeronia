@@ -21,8 +21,8 @@ public interface StructureContext extends Context {
      * @param volumeId Identifier of volume assigned to structure
      * @param structId Structure identifier
      */
-    void attachVolume(int structId, int volumeId);
-    void saveStructBlocks(List<StructBlockModel> blocks);
+    void attachVolume(int structId, int volumeId) throws Exception;
+    void saveStructBlocks(List<StructBlockModel> blocks) throws Exception;
     @Deprecated
     Optional<StructBlockModel> getStructBlock(int x, int y, int z, int volumeId, int structId);
     Optional<StructBlockModel> getStructBlock(int id);
@@ -30,7 +30,7 @@ public interface StructureContext extends Context {
     List<StructBlockModel> getStructBlocks() throws Exception;
     int getBrokenBlocksCount(int structId) throws Exception;
     int getStructBlocksCount(int structId) throws Exception;
-    void updateBlocksStatus(List<StructBlockModel> blocks, boolean isBroken);
+    void updateBlocksStatus(List<StructBlockModel> blocks, boolean isBroken) throws Exception;
     void restoreBlock(int id) throws Exception;
     void restoreStruct(int structId) throws Exception;
     void detachVolume(int structId);

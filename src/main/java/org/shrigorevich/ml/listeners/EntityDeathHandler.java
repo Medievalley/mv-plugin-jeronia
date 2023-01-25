@@ -110,7 +110,7 @@ public class EntityDeathHandler implements Listener {
     }
 
     private void clearNpcData(StructNpc npc) {
-        structService.getById(npc.getStructId()).ifPresent(s -> ((FoodStructure) s).setLaborer(null));
+        structService.getStruct(npc.getStructId()).ifPresent(s -> ((FoodStructure) s).setLaborer(null));
         taskService.clear(npc.getEntityId());
         npcService.remove(npc.getEntityId());
     };

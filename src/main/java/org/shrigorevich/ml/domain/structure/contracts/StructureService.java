@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface StructureService extends Service {
 
     void load() throws Exception;
-    Optional<Structure> getById(int id);
+    Optional<Structure> getStruct(int id);
     List<TownInfra> getDamagedStructs();
     Optional<Structure> getByLocation(Location location);
     void setBlocksBroken(List<StructBlockModel> blocks);
@@ -21,7 +21,8 @@ public interface StructureService extends Service {
     void create(String name, StructureType type, Location l1, Location l2, MsgCallback cb);
     void restoreBlock(StructBlockModel block) throws Exception;
     void restore(@NotNull TownInfra struct);
-    Optional<StructBlockModel> getBlock(int x, int y, int z);
+    Optional<StructBlockModel> getStructBlock(int x, int y, int z);
+    Optional<StructBlockModel> getStructBlock(Location l);
     List<StructBlockModel> getStructBlocks(int structId);
     int getBrokenBlocksCount(int structId) throws Exception;
     int getStructBlocksCount(int structId) throws Exception;

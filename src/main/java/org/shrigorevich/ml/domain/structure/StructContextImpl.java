@@ -100,7 +100,7 @@ public class StructContextImpl extends BaseContext implements StructureContext {
     public List<VolumeBlockModel> getVolumeBlocks(int volumeId) throws Exception {
         try {
             QueryRunner run = new QueryRunner(getDataSource());
-            ResultSetHandler<List<VolumeBlockModel>> volumeHandler = new BeanListHandler(VolumeBlockModelImpl.class);
+            ResultSetHandler<List<VolumeBlockModel>> volumeHandler = new BeanListHandler<>(VolumeBlockModelImpl.class);
             return run.query(volumeQueryBuilder.getBlocks(volumeId), volumeHandler);
         } catch (SQLException ex) {
             getLogger().error(ex.getMessage());
@@ -112,7 +112,7 @@ public class StructContextImpl extends BaseContext implements StructureContext {
     public List<StructModel> getStructures() throws Exception {
         try {
             QueryRunner run = new QueryRunner(getDataSource());
-            ResultSetHandler<List<StructModel>> h = new BeanListHandler(StructModelImpl.class);
+            ResultSetHandler<List<StructModel>> h = new BeanListHandler<>(StructModelImpl.class);
             List<StructModel> structs = run.query(structQueryBuilder.getStructures(), h);
             for (StructModel s : structs) {
                 getLogger().info(String.format("Id: %d, TypeId: %d, Name: %s, VolumeId: %d brokenBlocks: %d%n",
@@ -122,18 +122,19 @@ public class StructContextImpl extends BaseContext implements StructureContext {
 
         } catch (SQLException ex) {
             getLogger().error(ex.toString());
-            throw new Exception(String.format("Error while getting list of structures"));
+            throw new Exception("Error while getting list of structures");
         }
     }
 
     @Override
-    public void attachVolume(int structId, int volumeId) {
+    public void attachVolume(int structId, int volumeId) throws Exception {
         try {
             getLogger().info(String.format("Set volume: %d, %d%n", structId, volumeId));
             QueryRunner run = new QueryRunner(getDataSource());
             run.update(structQueryBuilder.setVolume(structId, volumeId));
         } catch (SQLException ex) {
             getLogger().error(ex.toString());
+            throw new Exception(String.format("Error while attaching volume: %d to struct: %d", volumeId, structId));
         }
     }
 
@@ -141,7 +142,7 @@ public class StructContextImpl extends BaseContext implements StructureContext {
     public Optional<VolumeModel> getVolumeById(int id) {
         try {
             QueryRunner run = new QueryRunner(getDataSource());
-            ResultSetHandler<VolumeModel> h = new BeanHandler(VolumeModelImpl.class);
+            ResultSetHandler<VolumeModel> h = new BeanHandler<>(VolumeModelImpl.class);
             VolumeModel volume = run.query(structQueryBuilder.getVolumeById(id), h);
             return volume == null ? Optional.empty() : Optional.of(volume);
 
@@ -152,7 +153,7 @@ public class StructContextImpl extends BaseContext implements StructureContext {
     }
 
     @Override
-    public void saveStructBlocks(List<StructBlockModel> blocks) {
+    public void saveStructBlocks(List<StructBlockModel> blocks) throws Exception {
         try {
             QueryRunner run = new QueryRunner(getDataSource());
             Object[][] brokenBlockValues = new Object[blocks.size()][3];
@@ -168,6 +169,7 @@ public class StructContextImpl extends BaseContext implements StructureContext {
             run.batch(structQueryBuilder.saveStructBlocks(), brokenBlockValues);
         } catch (SQLException ex) {
             getLogger().error(ex.toString());
+            throw new Exception("Error while saving struct blocks");
         }
     }
 
@@ -175,7 +177,7 @@ public class StructContextImpl extends BaseContext implements StructureContext {
     public List<StructBlockModel> getStructBlocks(int structId) throws Exception {
         try {
             QueryRunner run = new QueryRunner(getDataSource());
-            ResultSetHandler<List<StructBlockModel>> h = new BeanListHandler(StructBlockModelImpl.class);
+            ResultSetHandler<List<StructBlockModel>> h = new BeanListHandler<>(StructBlockModelImpl.class);
             return run.query(structQueryBuilder.getStructBlocks(structId), h);
         } catch (SQLException ex) {
             getLogger().error(ex.toString());
@@ -187,7 +189,7 @@ public class StructContextImpl extends BaseContext implements StructureContext {
     public List<StructBlockModel> getStructBlocks() throws Exception {
         try {
             QueryRunner run = new QueryRunner(getDataSource());
-            ResultSetHandler<List<StructBlockModel>> h = new BeanListHandler(StructBlockModelImpl.class);
+            ResultSetHandler<List<StructBlockModel>> h = new BeanListHandler<>(StructBlockModelImpl.class);
             return run.query(structQueryBuilder.getStructBlocks(), h);
         } catch (SQLException ex) {
             getLogger().error(ex.getMessage());
@@ -195,11 +197,12 @@ public class StructContextImpl extends BaseContext implements StructureContext {
         }
     }
 
+    @Deprecated // not use case
     @Override
     public Optional<StructBlockModel> getStructBlock(int id) {
         try {
             QueryRunner run = new QueryRunner(getDataSource());
-            ResultSetHandler<StructBlockModel> h = new BeanHandler(StructBlockModelImpl.class);
+            BeanHandler<StructBlockModel> h = new BeanHandler<>(StructBlockModelImpl.class);
             StructBlockModel block = run.query(structQueryBuilder.getStructBlock(id), h);
             if (block == null) {
                 getLogger().error(String.format("Struct block with id: %d not found", id));
@@ -207,7 +210,6 @@ public class StructContextImpl extends BaseContext implements StructureContext {
             return block == null ? Optional.empty() : Optional.of(block);
         } catch (SQLException ex) {
             getLogger().error(ex.toString());
-            //TODO: throw exception instead of return value
             return Optional.empty();
         }
     }
@@ -217,14 +219,16 @@ public class StructContextImpl extends BaseContext implements StructureContext {
     public Optional<StructBlockModel> getStructBlock(int x, int y, int z, int volumeId, int structId) {
         try {
             QueryRunner run = new QueryRunner(getDataSource());
-            ResultSetHandler<StructBlockModel> h = new BeanHandler(StructBlockModelImpl.class);
+            ResultSetHandler<StructBlockModel> h = new BeanHandler<>(StructBlockModelImpl.class);
             String sql = String.format(
-                    "select b.id, s.id as structId, v.id as volumeBlockId, v.type, v.block_data as blockData, b.broken, b.trigger_destruction as triggerDestruction,\n" +
-                    "v.x+s.x1 as x, v.y+s.y1 as y, v.z+s.z1 as z\n" +
-                    "from struct_block b \n" +
-                    "join volume_block v ON b.volume_block_id=v.id\n" +
-                    "join struct s ON b.struct_id = s.id\n" +
-                    "where v.x=%d and v.y=%d and v.z=%d and v.volume_id=%d and struct_id=%d",
+                    """
+                    select b.id, s.id as structId, v.id as volumeBlockId, v.type, v.block_data as blockData,
+                    b.broken, b.trigger_destruction as triggerDestruction,
+                    v.x+s.x1 as x, v.y+s.y1 as y, v.z+s.z1 as z
+                    from struct_block b
+                    join volume_block v ON b.volume_block_id=v.id
+                    join struct s ON b.struct_id = s.id
+                    where v.x=%d and v.y=%d and v.z=%d and v.volume_id=%d and struct_id=%d""",
                     x, y, z, volumeId, structId);
 
             StructBlockModel block = run.query(sql, h);
@@ -240,7 +244,7 @@ public class StructContextImpl extends BaseContext implements StructureContext {
     }
 
     @Override
-    public void updateBlocksStatus(List<StructBlockModel> blocks, boolean isBroken) {
+    public void updateBlocksStatus(List<StructBlockModel> blocks, boolean isBroken) throws Exception {
         try {
             QueryRunner run = new QueryRunner(getDataSource());
             Object[][] blockValues = new Object[blocks.size()][2];
@@ -252,10 +256,10 @@ public class StructContextImpl extends BaseContext implements StructureContext {
                         b.getId()
                 };
             }
-            int[] rows = run.batch(structQueryBuilder.updateBlocksStatus(), blockValues);
+            run.batch(structQueryBuilder.updateBlocksStatus(), blockValues);
         } catch (SQLException ex) {
             getLogger().error(ex.toString());
-            //TODO: Throw exception
+            throw new Exception("Error while updating blocks broken status");
         }
     }
 

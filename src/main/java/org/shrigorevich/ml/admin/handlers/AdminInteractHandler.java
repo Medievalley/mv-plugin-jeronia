@@ -16,6 +16,7 @@ import org.shrigorevich.ml.domain.ai.goals.HoldGoal;
 import org.shrigorevich.ml.domain.npc.contracts.NpcService;
 import org.shrigorevich.ml.domain.npc.SafeLocImpl;
 import org.shrigorevich.ml.domain.structure.contracts.StructureService;
+import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
 import org.shrigorevich.ml.domain.users.UserRole;
 import org.shrigorevich.ml.domain.users.contracts.User;
 import org.shrigorevich.ml.domain.users.UserServiceImpl;
@@ -121,11 +122,14 @@ public class AdminInteractHandler implements Listener {
     private void draftNpc(PlayerInteractEvent event) {
         if (event.getClickedBlock() != null) {
             Player p = event.getPlayer();
-            Location l = event.getClickedBlock().getLocation();
-
-            structService.getByLocation(l).ifPresent(structure -> npcAdminService.draftNpcSetWork(
-                l.getBlockX(), l.getBlockY() + 1, l.getBlockZ(),
-                structure.getId(), p.getName(), (p::sendMessage)));
+            structService.getStructBlock(event.getClickedBlock().getLocation())
+                .ifPresentOrElse(block -> structService.getStruct(block.getStructId())
+                    .ifPresentOrElse(struct -> npcAdminService.draftNpcSetWork(
+                        block.getX(), block.getY() + 1, block.getZ(),
+                        struct.getId(), p.getName(), (p::sendMessage)),
+                            () -> event.getPlayer().sendMessage(
+                                String.format("Structure with id %d not found", block.getStructId()))),
+                        () -> event.getPlayer().sendMessage("Block is not part of any structure"));
         }
     }
 

@@ -7,7 +7,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
-import org.shrigorevich.ml.domain.structure.contracts.FoodStructure;
 import org.shrigorevich.ml.domain.structure.contracts.Structure;
 import org.shrigorevich.ml.domain.structure.contracts.StructureService;
 import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
@@ -51,22 +50,24 @@ public class BlockBreak implements Listener {
                 blocksPerStruct.put(b.getStructId(), new ArrayList<>(Collections.singletonList(b)));
             }
         }
+        //TODO: move call event logic to handler
         if (!blocksPerStruct.isEmpty()) {
             Bukkit.getScheduler().runTask(structSvc.getPlugin(),
                     () -> Bukkit.getPluginManager().callEvent(new StructsDamagedEvent(blocksPerStruct)));
         }
     }
 
-    //TODO: refactor struct logic
+    //TODO: refactor struct logic. Verify block coords is correct
     private Optional<StructBlockModel> getBrokenBlock(Block block) {
-        Optional<Structure> optional = structSvc.getByLocation(block.getLocation());
-        if (optional.isPresent()) {
-            FoodStructure struct = (FoodStructure) optional.get();
-            int x = block.getX() - struct.getX1();
-            int y = block.getY() - struct.getY1();
-            int z = block.getZ() - struct.getZ1();
-            Optional<StructBlockModel> sb = structSvc.getBlock(x, y, z);
-
+        Optional<Structure> optionalStruct = structSvc.getByLocation(block.getLocation());
+        if (optionalStruct.isPresent()) {
+//            int x = block.getX() - optionalStruct.get().getX1();
+//            int y = block.getY() - optionalStruct.get().getY1();
+//            int z = block.getZ() - optionalStruct.get().getZ1();
+            int x = block.getX();
+            int y = block.getY();
+            int z = block.getZ();
+            Optional<StructBlockModel> sb = structSvc.getStructBlock(x, y, z);
             if (sb.isPresent() && !sb.get().isBroken() && sb.get().isTriggerDestruction()) {
                 sb.get().setBroken(true);
                 return sb;

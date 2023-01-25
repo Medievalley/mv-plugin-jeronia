@@ -49,7 +49,7 @@ public class BuildProjectHandler implements Listener {
     public void OnStructsDamaged(StructsDamagedEvent event) {
         Map<Integer, List<StructBlockModel>> brokenBlocks = event.getBrokenBlocks();
         for (int structId : brokenBlocks.keySet()) {
-            structureService.getById(structId).ifPresent(struct -> {
+            structureService.getStruct(structId).ifPresent(struct -> {
                 if (struct instanceof TownInfra ti) {
                     try {
                         Optional<BuildProject> project = projectService.getProject(structId);

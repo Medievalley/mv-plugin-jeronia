@@ -75,7 +75,7 @@ public class HarvestHandler implements Listener {
     //TODO: throw exception
     private void updateStock(UUID entityId) {
         npcService.getById(entityId).flatMap(npc ->
-            structService.getById(npc.getStructId())).ifPresent(struct -> {
+            structService.getStruct(npc.getStructId())).ifPresent(struct -> {
             if (struct instanceof FoodStructure fs) {
                 fs.updateFoodStock(1); //TODO: get from config
 

@@ -17,7 +17,6 @@ import org.shrigorevich.ml.domain.npc.contracts.StructNpc;
 import org.shrigorevich.ml.domain.structure.contracts.FoodStructure;
 import org.shrigorevich.ml.domain.structure.contracts.Structure;
 import org.shrigorevich.ml.domain.structure.contracts.StructureService;
-import org.shrigorevich.ml.domain.structure.contracts.TownInfra;
 import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
 import org.shrigorevich.ml.events.CustomSpawnEvent;
 
@@ -60,7 +59,7 @@ public class CustomSpawn implements Listener {
 
     //TODO: refactor StructureType logic
     private void assignToStruct(StructNpc npc, Villager entity) {
-        structService.getById(npc.getStructId()).ifPresent(s -> {
+        structService.getStruct(npc.getStructId()).ifPresent(s -> {
             if(s instanceof FoodStructure ls) {
                 ((FoodStructure) s).setLaborer(entity);
                 if (npc.getRole() == NpcRole.HARVESTER) {

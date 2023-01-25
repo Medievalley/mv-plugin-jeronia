@@ -34,7 +34,7 @@ public class StructureServiceImpl extends BaseService implements StructureServic
     }
 
     @Override
-    public Optional<Structure> getById (int id) {
+    public Optional<Structure> getStruct(int id) {
         return structures.containsKey(id) ? Optional.of(structures.get(id)) : Optional.empty();
     }
 
@@ -57,7 +57,14 @@ public class StructureServiceImpl extends BaseService implements StructureServic
 
     @Override
     public void setBlocksBroken(List<StructBlockModel> blocks) {
-        context.updateBlocksStatus(blocks, true);
+        try {
+            context.updateBlocksStatus(blocks, true);
+            for (StructBlockModel b : blocks) {
+                structBlocks.get(getBlockKey(b)).setBroken(true);
+            }
+        } catch (Exception ex) {
+            getLogger().error(ex.getMessage());
+        }
     }
 
     @Override
@@ -176,10 +183,15 @@ public class StructureServiceImpl extends BaseService implements StructureServic
     }
 
     @Override
-    public Optional<StructBlockModel> getBlock(int x, int y, int z) {
+    public Optional<StructBlockModel> getStructBlock(int x, int y, int z) {
         return structBlocks.containsKey(getBlockKey(x, y, z)) ?
                 Optional.of(structBlocks.get(getBlockKey(x, y, z))) :
                 Optional.empty();
+    }
+
+    @Override
+    public Optional<StructBlockModel> getStructBlock(Location l) {
+        return getStructBlock(l.getBlockX(), l.getBlockY(), l.getBlockZ());
     }
 
     @Override
