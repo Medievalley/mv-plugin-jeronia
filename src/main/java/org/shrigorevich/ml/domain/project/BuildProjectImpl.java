@@ -2,10 +2,8 @@ package org.shrigorevich.ml.domain.project;
 
 import org.jetbrains.annotations.NotNull;
 import org.shrigorevich.ml.domain.project.contracts.BuildProject;
-import org.shrigorevich.ml.domain.structure.contracts.FoodStructure;
+import org.shrigorevich.ml.domain.structure.contracts.StructBlock;
 import org.shrigorevich.ml.domain.structure.contracts.TownInfra;
-import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
-import org.shrigorevich.ml.domain.volume.models.VolumeBlockModel;
 
 import java.util.*;
 
@@ -13,11 +11,11 @@ public class BuildProjectImpl implements BuildProject {
     private final TownInfra structure;
     private final int size;
     private int brokenSize;
-    private final PriorityQueue<StructBlockModel> plannedBlocks;
+    private final PriorityQueue<StructBlock> plannedBlocks;
 
     public BuildProjectImpl(TownInfra structure, int size) {
         this.structure = structure;
-        this.plannedBlocks = new PriorityQueue<>(Comparator.comparingInt(VolumeBlockModel::getY));
+        this.plannedBlocks = new PriorityQueue<>(Comparator.comparingInt(StructBlock::getY)); //TODO: verify the new comparator works correct
         this.size = size;
         this.brokenSize = 0;
     }
@@ -38,20 +36,20 @@ public class BuildProjectImpl implements BuildProject {
     }
 
     @Override
-    public void addPlannedBlocks(List<StructBlockModel> blocks) {
-        for (StructBlockModel b : blocks) {
+    public void addPlannedBlocks(List<StructBlock> blocks) {
+        for (StructBlock b : blocks) {
             addPlannedBlock(b);
         }
     }
 
     @Override
-    public void addPlannedBlock(StructBlockModel block) {
+    public void addPlannedBlock(StructBlock block) {
         brokenSize+=1;
         plannedBlocks.add(block);
     }
 
     @Override
-    public StructBlockModel getPlannedBlock() {
+    public StructBlock getPlannedBlock() {
         return plannedBlocks.poll();
     }
 

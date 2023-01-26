@@ -1,5 +1,6 @@
 package org.shrigorevich.ml.domain.structure;
 
+import org.shrigorevich.ml.domain.structure.contracts.StructBlock;
 import org.shrigorevich.ml.domain.structure.contracts.TownInfra;
 import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
 import org.shrigorevich.ml.domain.structure.models.StructModel;
@@ -10,9 +11,9 @@ public abstract class TownInfraImpl extends StructureImpl implements TownInfra {
 
     private final int priority;
     private final int volumeId;
-    private final List<StructBlockModel> structBlocks;
+    private final List<StructBlock> structBlocks;
 
-    public TownInfraImpl(StructModel m, List<StructBlockModel> structBlocks) {
+    public TownInfraImpl(StructModel m, List<StructBlock> structBlocks) {
         super(m);
         this.priority = m.getPriority();
         this.volumeId = m.getVolumeId();
@@ -20,13 +21,13 @@ public abstract class TownInfraImpl extends StructureImpl implements TownInfra {
     }
 
     @Override
-    public List<StructBlockModel> getStructBlocks() {
+    public List<StructBlock> getStructBlocks() {
         return structBlocks;
     }
 
     @Override
-    public List<StructBlockModel> getBrokenBlocks() {
-        return structBlocks.stream().filter(StructBlockModel::isBroken).toList();
+    public List<StructBlock> getBrokenBlocks() {
+        return structBlocks.stream().filter(StructBlock::isBroken).toList();
     }
 
     @Override

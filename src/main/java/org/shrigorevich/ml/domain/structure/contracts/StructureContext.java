@@ -44,7 +44,7 @@ public interface StructureContext extends Context {
      */
     @Deprecated
     int getBrokenBlocksCount(int structId) throws Exception;
-    void updateBlocksStatus(List<StructBlockModel> blocks, boolean isBroken) throws Exception;
+    void updateBlocksStatus(List<StructBlock> blocks, boolean isBroken) throws Exception;
     void restoreBlock(int id) throws Exception;
     void restoreStruct(int structId) throws Exception;
     void detachVolume(int structId);

@@ -22,7 +22,7 @@ import java.util.*;
 public class StructureServiceImpl extends BaseService implements StructureService {
     private final StructureContext context;
     private final Map<Integer, Structure> structures;
-    private final Map<String, StructBlockModel> structBlocks;
+    private final Map<String, ModifiableStructBlock> structBlocks;
 
     public StructureServiceImpl(StructureContext structureContext, Plugin plugin) {
         super(plugin, LogManager.getLogger("StructureServiceImpl"));
@@ -43,20 +43,20 @@ public class StructureServiceImpl extends BaseService implements StructureServic
 
     @Override
     public Optional<Structure> getByLocation(Location l) {
-        for (Structure s : structures.values()) {
-            if(s.contains(l)) {
-                return Optional.of(s);
-            }
+        String key = getBlockKey(l);
+        if (structBlocks.containsKey(key) &&
+            structures.containsKey(structBlocks.get(key).getStructId())) {
+            return Optional.of(structures.get(structBlocks.get(key).getStructId()));
         }
         return Optional.empty();
     }
 
     @Override
-    public void setBlocksBroken(List<StructBlockModel> blocks) {
+    public void setBlocksBroken(List<StructBlock> blocks) {
         try {
             context.updateBlocksStatus(blocks, true);
-            for (StructBlockModel b : blocks) {
-                b.setBroken(true);
+            for (StructBlock b : blocks) {
+                ((ModifiableStructBlock) b).setIsBroken(true);
             }
         } catch (Exception ex) {
             getLogger().error(ex.getMessage());
@@ -110,7 +110,7 @@ public class StructureServiceImpl extends BaseService implements StructureServic
     }
 
     @Override
-    public void restoreBlock(StructBlockModel block) throws Exception {
+    public void restoreBlock(StructBlock block) throws Exception {
         try {
             if (structures.containsKey(block.getStructId())) {
                 context.restoreBlock(block.getId());
@@ -133,7 +133,12 @@ public class StructureServiceImpl extends BaseService implements StructureServic
             context.restoreStruct(structId);
             List<StructBlockModel> blocks = context.getStructBlocks(structId);
             context.getById(structId).ifPresent(model -> {
-                Structure struct = createStructure(model, blocks);
+                List<StructBlock> structBlocks = new ArrayList<>();
+                for (StructBlockModel b : blocks) {
+                    structBlocks.add(new ModifiableStructBlockImpl(b));
+                }
+
+                Structure struct = createStructure(model, structBlocks);
                 if (structures.containsKey(structId)) {
                     structures.replace(structId, struct);
                 } else {
@@ -162,6 +167,7 @@ public class StructureServiceImpl extends BaseService implements StructureServic
             context.detachVolume(struct.getId());
             context.attachVolume(struct.getId(), volumeId);
             List<VolumeBlockModel> volumeBlocks = context.getVolumeBlocks(volumeId);
+            //TODO: use DraftStructBlock instead of StructBlockModelImpl
             List<StructBlockModel> structBlocks = new ArrayList<>();
             for (VolumeBlockModel vb : volumeBlocks) {
                 structBlocks.add(new StructBlockModelImpl(struct.getId(), vb.getId(), true));
@@ -173,7 +179,7 @@ public class StructureServiceImpl extends BaseService implements StructureServic
         }
     }
 
-    private Structure createStructure(StructModel s, List<StructBlockModel> blocks) {
+    private Structure createStructure(StructModel s, List<StructBlock> blocks) {
         StructureType type = StructureType.valueOf(s.getTypeId());
         if (type != null) {
             switch (type) {
@@ -190,14 +196,14 @@ public class StructureServiceImpl extends BaseService implements StructureServic
     }
 
     @Override
-    public Optional<StructBlockModel> getStructBlock(int x, int y, int z) {
+    public Optional<StructBlock> getStructBlock(int x, int y, int z) {
         return structBlocks.containsKey(getBlockKey(x, y, z)) ?
                 Optional.of(structBlocks.get(getBlockKey(x, y, z))) :
                 Optional.empty();
     }
 
     @Override
-    public Optional<StructBlockModel> getStructBlock(Location l) {
+    public Optional<StructBlock> getStructBlock(Location l) {
         return getStructBlock(l.getBlockX(), l.getBlockY(), l.getBlockZ());
     }
 
@@ -225,17 +231,18 @@ public class StructureServiceImpl extends BaseService implements StructureServic
     public void load() throws Exception {
         try {
             List<StructModel> structs = context.getStructures();
-            HashMap<Integer, List<StructBlockModel>> blocksPerStruct = new HashMap<>();
+            HashMap<Integer, List<StructBlock>> blocksPerStruct = new HashMap<>();
             List<StructBlockModel> structBlocks = context.getStructBlocks();
 
             for (StructBlockModel b : structBlocks) {
+                ModifiableStructBlock newBlock = new ModifiableStructBlockImpl(b);
                 if (blocksPerStruct.containsKey(b.getStructId())) {
-                    blocksPerStruct.get(b.getStructId()).add(b);
+                    blocksPerStruct.get(b.getStructId()).add(newBlock);
                 } else {
-                    blocksPerStruct.put(b.getStructId(), List.of(b)); //todo: verify it is correct
+                    blocksPerStruct.put(b.getStructId(), List.of(newBlock)); //todo: verify it is correct
                 }
                 //TODO: need to implement non collision logic
-                this.structBlocks.put(getBlockKey(b), b);
+                this.structBlocks.put(getBlockKey(b), newBlock);
             }
 
             for (StructModel s : structs) {
@@ -269,6 +276,7 @@ public class StructureServiceImpl extends BaseService implements StructureServic
             struct.getSizeZ() == volume.getSizeZ();
     }
 
+
     private String getBlockKey(int x, int y, int z) {
         return String.format("%d:%d:%d", x, y, z);
     }
@@ -277,31 +285,31 @@ public class StructureServiceImpl extends BaseService implements StructureServic
         return getBlockKey(b.getX(), b.getY(), b.getZ());
     }
 
+    private String getBlockKey(Location l) {
+        return getBlockKey(l.getBlockX(), l.getBlockY(), l.getBlockZ());
+    }
+
     private interface ModifiableStructBlock extends StructBlock {
         void setIsBroken(boolean isBroken);
         void setIsHealthPoint(boolean isHealthPoint);
     }
 
     private static class ModifiableStructBlockImpl implements ModifiableStructBlock {
-
+        private final int id;
         private final int structId;
         private final int x, y, z;
         private boolean isBroken;
         private boolean isHealthPoint;
+        private final String blockData;
         public ModifiableStructBlockImpl(StructBlockModel m) {
+            this.id = m.getId();
             this.structId = m.getStructId();
             this.x = m.getX();
             this.y = m.getY();
             this.z = m.getZ();
             this.isBroken = m.isBroken();
             this.isHealthPoint = m.isTriggerDestruction();
-        }
-
-        public ModifiableStructBlockImpl(int structId, int x, int y, int z) {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-            this.structId = structId;
+            this.blockData = m.getBlockData();
         }
 
         @Override
@@ -312,6 +320,11 @@ public class StructureServiceImpl extends BaseService implements StructureServic
         @Override
         public void setIsHealthPoint(boolean isHealthPoint) {
             this.isHealthPoint = isHealthPoint;
+        }
+
+        @Override
+        public int getId() {
+            return id;
         }
 
         @Override
@@ -342,6 +355,10 @@ public class StructureServiceImpl extends BaseService implements StructureServic
         @Override
         public boolean isHealthPoint() {
             return isHealthPoint;
+        }
+
+        public String getBlockData() {
+            return blockData;
         }
     }
 }

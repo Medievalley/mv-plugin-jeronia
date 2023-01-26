@@ -24,7 +24,7 @@ public class NpcContextImpl extends BaseContext implements NpcContext {
     public NpcContextImpl(DataSource dataSource) {
         super(dataSource, LogManager.getLogger("NpcContextImpl"));
         this.queryBuilder = new NpcQueryBuilder();
-    };
+    }
 
     @Override
     public int save(DraftNpc npc) throws Exception {
@@ -42,7 +42,7 @@ public class NpcContextImpl extends BaseContext implements NpcContext {
     public List<StructNpcModel> get() throws Exception {
         try {
             QueryRunner run = new QueryRunner(getDataSource());
-            ResultSetHandler<List<StructNpcModel>> h = new BeanListHandler(StructNpcModelImpl.class);
+            ResultSetHandler<List<StructNpcModel>> h = new BeanListHandler<>(StructNpcModelImpl.class);
             return run.query(queryBuilder.getNpcList(), h);
         } catch (SQLException ex) {
             getLogger().error(ex.getMessage());
@@ -54,7 +54,7 @@ public class NpcContextImpl extends BaseContext implements NpcContext {
     public List<StructNpcModel> getByStructId(int structId) throws Exception {
         try {
             QueryRunner run = new QueryRunner(getDataSource());
-            ResultSetHandler<List<StructNpcModel>> h = new BeanListHandler(StructNpcModelImpl.class);
+            ResultSetHandler<List<StructNpcModel>> h = new BeanListHandler<>(StructNpcModelImpl.class);
             return run.query(queryBuilder.getByStructId(structId), h);
         } catch (SQLException ex) {
             getLogger().error(ex.getMessage());
@@ -66,7 +66,7 @@ public class NpcContextImpl extends BaseContext implements NpcContext {
     public Optional<StructNpcModel> get(int id) throws Exception {
         try {
             QueryRunner run = new QueryRunner(getDataSource());
-            ResultSetHandler<StructNpcModel> h = new BeanHandler(StructNpcModelImpl.class);
+            ResultSetHandler<StructNpcModel> h = new BeanHandler<>(StructNpcModelImpl.class);
             StructNpcModel s = run.query(queryBuilder.getById(id), h);
             return s == null ? Optional.empty() : Optional.of(s);
         } catch (SQLException ex) {

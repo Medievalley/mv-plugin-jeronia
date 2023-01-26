@@ -20,6 +20,7 @@ import org.shrigorevich.ml.domain.project.BuildProjectImpl;
 import org.shrigorevich.ml.domain.project.contracts.ProjectService;
 import org.shrigorevich.ml.domain.scoreboard.BoardType;
 import org.shrigorevich.ml.domain.scoreboard.ScoreboardService;
+import org.shrigorevich.ml.domain.structure.contracts.StructBlock;
 import org.shrigorevich.ml.domain.structure.contracts.StructureService;
 import org.shrigorevich.ml.domain.structure.contracts.TownInfra;
 import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
@@ -52,7 +53,7 @@ public class BuildProjectHandler implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void OnStructsDamaged(StructsDamagedEvent event) {
-        Map<Integer, List<StructBlockModel>> brokenBlocks = event.getBrokenBlocks();
+        Map<Integer, List<StructBlock>> brokenBlocks = event.getBrokenBlocks();
         for (int structId : brokenBlocks.keySet()) {
             structureService.getStruct(structId).ifPresent(struct -> {
                 if (struct instanceof TownInfra ti) {
@@ -85,7 +86,7 @@ public class BuildProjectHandler implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void OnBuildStart(BuildStartedEvent event) {
         Entity entity = event.getEntity();
-        StructBlockModel block = event.getTask().getBlock();
+        StructBlock block = event.getTask().getBlock();
 
         projectService.getProject(block.getStructId()).ifPresent(p -> {
             try {
@@ -117,8 +118,8 @@ public class BuildProjectHandler implements Listener {
         updateProjectScoreboard();
     }
 
-    private void addPlannedBlocks(BuildProject project, List<StructBlockModel> brokenBlocks) {
-        for (StructBlockModel block : brokenBlocks) {
+    private void addPlannedBlocks(BuildProject project, List<StructBlock> brokenBlocks) {
+        for (StructBlock block : brokenBlocks) {
             project.addPlannedBlock(block);
         }
     }
@@ -139,7 +140,7 @@ public class BuildProjectHandler implements Listener {
     }
 
     private void addTask(StructNpc npc, BuildProject project) {
-        StructBlockModel block = project.getPlannedBlock();
+        StructBlock block = project.getPlannedBlock();
         World world = Bukkit.getWorld(npc.getWorld());
         if (world != null) {
             BuildTask task = new BuildTaskImpl(

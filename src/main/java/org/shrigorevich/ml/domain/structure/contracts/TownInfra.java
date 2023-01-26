@@ -9,6 +9,6 @@ public interface TownInfra extends Structure {
     String getName();
     int getPriority();
     int getVolumeId();
-    List<StructBlockModel> getStructBlocks();
-    List<StructBlockModel> getBrokenBlocks();
+    List<StructBlock> getStructBlocks();
+    List<StructBlock> getBrokenBlocks();
 }

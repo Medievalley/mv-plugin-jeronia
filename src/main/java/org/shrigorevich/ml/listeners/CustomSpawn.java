@@ -17,6 +17,7 @@ import org.shrigorevich.ml.domain.npc.NpcRole;
 import org.shrigorevich.ml.domain.npc.contracts.NpcService;
 import org.shrigorevich.ml.domain.npc.contracts.StructNpc;
 import org.shrigorevich.ml.domain.structure.contracts.FoodStructure;
+import org.shrigorevich.ml.domain.structure.contracts.StructBlock;
 import org.shrigorevich.ml.domain.structure.contracts.StructureService;
 import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
 import org.shrigorevich.ml.events.CustomSpawnEvent;
@@ -82,7 +83,7 @@ public class CustomSpawn implements Listener {
     }
 
     private void scanStructForTasks(FoodStructure struct, Villager entity) {
-        List<StructBlockModel> structBlocks = struct.getStructBlocks();
+        List<StructBlock> structBlocks = struct.getStructBlocks();
         structBlocks.forEach(b -> {
             Block wBlock = struct.getWorld().getBlockAt(b.getX(), b.getY(), b.getZ());
             if (isStructPlant(wBlock.getType())) {

@@ -10,21 +10,22 @@ import org.shrigorevich.ml.common.Utils;
 import org.shrigorevich.ml.domain.ai.*;
 import org.shrigorevich.ml.domain.ai.contracts.BuildTask;
 import org.shrigorevich.ml.domain.ai.goals.BuildGoal;
+import org.shrigorevich.ml.domain.structure.contracts.StructBlock;
 import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
 
 public class BuildTaskImpl extends BaseTask implements BuildTask {
     private final Location target;
     private Goal<Mob> goal;
-    private final StructBlockModel block;
+    private final StructBlock block;
 
-    public BuildTaskImpl(Plugin plugin, Mob entity, StructBlockModel block, Location l) {
+    public BuildTaskImpl(Plugin plugin, Mob entity, StructBlock block, Location l) {
         super(plugin, TaskType.BUILD, TaskPriority.MIDDLE, entity);
         this.block = block;
         this.target = l;
     }
 
     @Override
-    public StructBlockModel getBlock() {
+    public StructBlock getBlock() {
         return block;
     }
 

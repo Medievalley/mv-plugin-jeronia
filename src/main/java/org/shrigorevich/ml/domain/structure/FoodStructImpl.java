@@ -5,6 +5,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Villager;
 import org.shrigorevich.ml.domain.structure.contracts.FoodStructure;
+import org.shrigorevich.ml.domain.structure.contracts.StructBlock;
 import org.shrigorevich.ml.domain.structure.contracts.StructureContext;
 import org.shrigorevich.ml.domain.structure.contracts.WorkPlace;
 import org.shrigorevich.ml.domain.structure.models.*;
@@ -22,7 +23,7 @@ public class FoodStructImpl extends TownInfraImpl implements FoodStructure {
     private int foodStock;
 
 
-    public FoodStructImpl(StructModel m, List<StructBlockModel> structBlocks) {
+    public FoodStructImpl(StructModel m, List<StructBlock> structBlocks) {
         super(m, structBlocks);
         this.name = m.getName();
         this.priority = m.getPriority();

@@ -1,6 +1,8 @@
 package org.shrigorevich.ml.listeners;
 
 import net.kyori.adventure.text.Component;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -21,9 +23,9 @@ import org.shrigorevich.ml.domain.npc.contracts.NpcService;
 import org.shrigorevich.ml.domain.npc.contracts.StructNpc;
 import org.shrigorevich.ml.domain.project.contracts.BuildProject;
 import org.shrigorevich.ml.domain.structure.contracts.FoodStructure;
+import org.shrigorevich.ml.domain.structure.contracts.StructBlock;
 import org.shrigorevich.ml.domain.structure.contracts.StructureService;
 import org.shrigorevich.ml.domain.project.contracts.ProjectService;
-import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
 
 import java.util.*;
 
@@ -33,12 +35,14 @@ public class EntityDeathHandler implements Listener {
     private final ProjectService projectService;
     private final TaskService taskService;
     private final StructureService structService;
+    private final Logger logger;
 
     public EntityDeathHandler(NpcService npcService, ProjectService projectService, TaskService taskService, StructureService structService) {
         this.npcService = npcService;
         this.projectService = projectService;
         this.taskService = taskService;
         this.structService = structService;
+        this.logger = LogManager.getLogger("EntityDeathHandler");
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -73,7 +77,7 @@ public class EntityDeathHandler implements Listener {
             if (event.getCause() == EntityDamageEvent.DamageCause.SUFFOCATION) {
                 event.setCancelled(true);
             } else {
-//                System.out.println("Damage cause:" + event.getCause());
+                logger.debug("Damage cause:" + event.getCause());
             }
         }
     }
@@ -86,7 +90,7 @@ public class EntityDeathHandler implements Listener {
                 List<Task> npcTasks = taskService.getEntityTasks(npc.getEntityId());
                 for (Task task : npcTasks) {
                     if (task.getType() == TaskType.BUILD) {
-                        StructBlockModel block = ((BuildTask) task).getBlock();
+                        StructBlock block = ((BuildTask) task).getBlock();
                         projectService.getProject(block.getStructId()).ifPresent(project -> {
                             project.addPlannedBlock(block);
                             projectService.updateResources(1);
@@ -95,7 +99,7 @@ public class EntityDeathHandler implements Listener {
                             isCurrentProject = true;
                         }
                     }
-                };
+                }
                 if (isCurrentProject) {
                     System.out.println("Current project updated");
                 }
@@ -113,7 +117,7 @@ public class EntityDeathHandler implements Listener {
         structService.getStruct(npc.getStructId()).ifPresent(s -> ((FoodStructure) s).setLaborer(null));
         taskService.clear(npc.getEntityId());
         npcService.remove(npc.getEntityId());
-    };
+    }
 
     private int getReward(EntityType type) {
         return switch (type) {

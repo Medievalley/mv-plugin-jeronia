@@ -16,18 +16,18 @@ public interface StructureService extends Service {
     Optional<Structure> getStruct(int id);
     List<Structure> getDamagedStructs();
     Optional<Structure> getByLocation(Location location);
-    void setBlocksBroken(List<StructBlockModel> blocks);
+    void setBlocksBroken(List<StructBlock> blocks);
     void exportVolume(Structure structure, String volumeName, MsgCallback cb);
     void create(String name, StructureType type, Location l1, Location l2, MsgCallback cb);
-    void restoreBlock(StructBlockModel block) throws Exception;
+    void restoreBlock(StructBlock block) throws Exception;
 
      /**
      * Restore and reload struct by passed ID
      * @param structId - structure identifier
      */
     void restore(int structId);
-    Optional<StructBlockModel> getStructBlock(int x, int y, int z);
-    Optional<StructBlockModel> getStructBlock(Location l);
+    Optional<StructBlock> getStructBlock(int x, int y, int z);
+    Optional<StructBlock> getStructBlock(Location l);
     @Deprecated
     int getBrokenBlocksCount(int structId) throws Exception;
     @Deprecated

@@ -8,6 +8,7 @@ import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.apache.logging.log4j.LogManager;
 import org.shrigorevich.ml.common.BaseContext;
 import org.shrigorevich.ml.common.Coordinates;
+import org.shrigorevich.ml.domain.structure.contracts.StructBlock;
 import org.shrigorevich.ml.domain.structure.contracts.StructureContext;
 import org.shrigorevich.ml.domain.structure.models.StructBlockModelImpl;
 import org.shrigorevich.ml.domain.volume.models.VolumeBlockModel;
@@ -244,13 +245,13 @@ public class StructContextImpl extends BaseContext implements StructureContext {
     }
 
     @Override
-    public void updateBlocksStatus(List<StructBlockModel> blocks, boolean isBroken) throws Exception {
+    public void updateBlocksStatus(List<StructBlock> blocks, boolean isBroken) throws Exception {
         try {
             QueryRunner run = new QueryRunner(getDataSource());
             Object[][] blockValues = new Object[blocks.size()][2];
 
             for (int i = 0; i < blocks.size(); i++) {
-                StructBlockModel b = blocks.get(i);
+                StructBlock b = blocks.get(i);
                 blockValues[i] = new Object[] {
                         isBroken,
                         b.getId()

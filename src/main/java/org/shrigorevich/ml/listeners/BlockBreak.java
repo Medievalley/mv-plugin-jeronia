@@ -7,6 +7,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.shrigorevich.ml.domain.structure.contracts.StructBlock;
 import org.shrigorevich.ml.domain.structure.contracts.Structure;
 import org.shrigorevich.ml.domain.structure.contracts.StructureService;
 import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
@@ -35,15 +36,14 @@ public class BlockBreak implements Listener {
     }
 
     private void processDestroyedBlocksAsync(List<Block> blocks) {
-        List<StructBlockModel> brokenBlocks = new ArrayList<>();
+        List<StructBlock> brokenBlocks = new ArrayList<>();
         for (Block block : blocks) {
-            Optional<StructBlockModel> b = getBrokenBlock(block);
-            b.ifPresent(brokenBlocks::add);
+            getBrokenBlock(block).ifPresent(brokenBlocks::add);
         }
         structSvc.setBlocksBroken(brokenBlocks);
 
-        Map<Integer, List<StructBlockModel>> blocksPerStruct = new HashMap<>();
-        for (StructBlockModel b : brokenBlocks) {
+        Map<Integer, List<StructBlock>> blocksPerStruct = new HashMap<>();
+        for (StructBlock b : brokenBlocks) {
             if(blocksPerStruct.containsKey(b.getStructId())) {
                 blocksPerStruct.get(b.getStructId()).add(b);
             } else {
@@ -58,9 +58,9 @@ public class BlockBreak implements Listener {
     }
 
     //TODO: refactor struct logic. Verify block coords is correct
-    private Optional<StructBlockModel> getBrokenBlock(Block block) {
-        Optional<StructBlockModel> sb = structSvc.getStructBlock(block.getLocation());
-        if (sb.isPresent() && !sb.get().isBroken() && sb.get().isTriggerDestruction()) {
+    private Optional<StructBlock> getBrokenBlock(Block block) {
+        Optional<StructBlock> sb = structSvc.getStructBlock(block.getLocation());
+        if (sb.isPresent() && !sb.get().isBroken() && sb.get().isHealthPoint()) {
             return sb;
         }
         return Optional.empty();
