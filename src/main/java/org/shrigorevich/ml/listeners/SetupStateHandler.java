@@ -11,13 +11,12 @@ import org.shrigorevich.ml.domain.project.BuildProjectImpl;
 import org.shrigorevich.ml.domain.project.contracts.BuildProject;
 import org.shrigorevich.ml.domain.project.contracts.ProjectService;
 import org.shrigorevich.ml.domain.scoreboard.ScoreboardService;
+import org.shrigorevich.ml.domain.structure.contracts.Structure;
 import org.shrigorevich.ml.domain.structure.contracts.StructureService;
 import org.shrigorevich.ml.domain.structure.contracts.TownInfra;
-import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
 import org.shrigorevich.ml.events.SetupStateEvent;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class SetupStateHandler implements Listener {
 
@@ -48,20 +47,21 @@ public class SetupStateHandler implements Listener {
             structureService.load();
             setupProjects();
             npcService.load();
+            mobService.load();
         } catch (Exception ex) {
             //TODO: escalate error
         }
     }
 
     private void setupProjects() {
-        List<TownInfra> structs = structureService.getDamagedStructs();
-        for (TownInfra s : structs) {
-            List<StructBlockModel> blocks = structureService.getStructBlocks(s.getId());
-            List<StructBlockModel> brokenBlocks = blocks.stream().filter(StructBlockModel::isBroken).collect(Collectors.toList());
-            BuildProject project = new BuildProjectImpl(s, blocks.size());
-            project.addPlannedBlocks(brokenBlocks);
-            projectService.addProject(project);
-            logger.debug(String.format("Project loaded: " + project.getId()));
+        List<Structure> structs = structureService.getDamagedStructs();
+        for (Structure s : structs) {
+            if (s instanceof TownInfra ti) {
+                BuildProject project = new BuildProjectImpl((TownInfra) s, ti.getStructBlocks().size());
+                project.addPlannedBlocks(ti.getBrokenBlocks());
+                projectService.addProject(project);
+                logger.debug(String.format("Project loaded: " + project.getId()));
+            }
         }
         projectService.getCurrent().ifPresent(project -> {
             //TODO: inject logger

@@ -275,18 +275,6 @@ public class StructContextImpl extends BaseContext implements StructureContext {
     }
 
     @Override
-    public int getStructBlocksCount(int structId) throws Exception {
-        try {
-            QueryRunner run = new QueryRunner(getDataSource());
-            ResultSetHandler<Integer> h = new ScalarHandler<>();
-            return run.query(structQueryBuilder.getStructBlockCount(structId), h);
-        } catch (SQLException ex) {
-            getLogger().error(ex.getMessage());
-            throw new Exception(String.format("Error while getting blocks count for struct: %d", structId));
-        }
-    }
-
-    @Override
     public void restoreBlock(int id) throws Exception {
         try {
             QueryRunner run = new QueryRunner(getDataSource());

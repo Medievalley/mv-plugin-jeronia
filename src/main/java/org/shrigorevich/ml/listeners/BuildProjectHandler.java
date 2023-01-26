@@ -1,6 +1,9 @@
 package org.shrigorevich.ml.listeners;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
@@ -32,6 +35,7 @@ public class BuildProjectHandler implements Listener {
     private final NpcService npcService;
     private final TaskService taskService;
     private final StructureService structureService;
+    private final Logger logger;
 
     public BuildProjectHandler(
             ProjectService projectService, ScoreboardService scoreboardService,
@@ -43,6 +47,7 @@ public class BuildProjectHandler implements Listener {
         this.npcService = npcService;
         this.taskService = taskService;
         this.structureService = structureService;
+        this.logger = LogManager.getLogger("BuildProjectHandler");
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -54,7 +59,7 @@ public class BuildProjectHandler implements Listener {
                     try {
                         Optional<BuildProject> project = projectService.getProject(structId);
                         if (project.isEmpty()) {
-                            int structBlocks = structureService.getStructBlocksCount(structId);
+                            int structBlocks = ti.getStructBlocks().size();
                             BuildProject newProject = new BuildProjectImpl(ti, structBlocks);
                             projectService.addProject(newProject);
                             project = Optional.of(newProject);
@@ -71,7 +76,8 @@ public class BuildProjectHandler implements Listener {
             if (brokenBlocks.containsKey(project.getId())) {
                 callBuilders(project);
                 scoreboardService.updateScoreboard(project, projectService.getResources());
-                System.out.printf("Current project: %s. Storage: %d%n", project.getStruct().getName(), projectService.getResources());
+                logger.info(String.format("Current project: %s. Storage: %d%n",
+                    project.getStruct().getName(), projectService.getResources()));
             }
         });
     }
@@ -88,7 +94,7 @@ public class BuildProjectHandler implements Listener {
                 taskService.finalize(entity.getUniqueId());
                 projectService.updateResources(-1);
                 if (p.getBrokenSize() == 0) {
-                    projectService.finalizeProject(p);
+                    projectService.finalizeProject(p.getId());
                 }
             } catch (Exception ex) {
                 //TODO: inject logger
@@ -107,7 +113,7 @@ public class BuildProjectHandler implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void OnProjectFinalize(FinalizeProjectEvent event) {
-        projectService.finalizeProject(event.getProject());
+        projectService.finalizeProject(event.getProject().getId());
         updateProjectScoreboard();
     }
 
@@ -134,13 +140,18 @@ public class BuildProjectHandler implements Listener {
 
     private void addTask(StructNpc npc, BuildProject project) {
         StructBlockModel block = project.getPlannedBlock();
-        BuildTask task = new BuildTaskImpl(
-                npcService.getPlugin(),
-                (Villager) Bukkit.getEntity(npc.getEntityId()),
-                block,
-                Bukkit.getWorld(npc.getWorld())
-                        .getBlockAt(block.getX(), block.getY(), block.getZ()).getLocation());
-        taskService.add(task);
+        World world = Bukkit.getWorld(npc.getWorld());
+        if (world != null) {
+            BuildTask task = new BuildTaskImpl(
+                    npcService.getPlugin(),
+                    (Villager) Bukkit.getEntity(npc.getEntityId()),
+                    block,
+                    world.getBlockAt(block.getX(), block.getY(), block.getZ()).getLocation());
+            taskService.add(task);
+        } else {
+            logger.error(String.format("Can not get the world by name: %s", npc.getWorld()));
+        }
+
     }
 
     void updateProjectScoreboard() {
@@ -149,5 +160,5 @@ public class BuildProjectHandler implements Listener {
         } else {
             scoreboardService.closeScoreboard(BoardType.PROJECT);
         }
-    };
+    }
 }

@@ -72,16 +72,18 @@ public class StructureExecutor implements CommandExecutor {
     private void applyVolume(String structId, String volumeId) {
         structService.getStruct(Integer.parseInt(structId)).ifPresent(s -> {
             if(s instanceof TownInfra ti) {
+                projectService.finalizeProject(ti.getId());
                 structService.applyVolume(ti, Integer.parseInt(volumeId));
+
             }
         });
     }
 
     private void restore(String structId) {
         structService.getStruct(Integer.parseInt(structId)).ifPresent(s -> {
-            if (s instanceof TownInfra ti) {
-                structService.restore(ti);
-                projectService.getProject(ti.getId()).ifPresent(project ->
+            if (s instanceof TownInfra) {
+                structService.restore(s.getId());
+                projectService.getProject(s.getId()).ifPresent(project ->
                     Bukkit.getServer().getPluginManager().callEvent(new FinalizeProjectEvent(project)));
             }
         });
@@ -101,8 +103,8 @@ public class StructureExecutor implements CommandExecutor {
     }
 
     private void exportVolume(Player player, String volumeName) {
-        structAdminService.getSelectedStruct(player.getName()).ifPresentOrElse(struct -> {
-            structService.exportVolume(struct, volumeName, player::sendMessage);
-        }, () -> player.sendMessage("First choose a structure"));
+        structAdminService.getSelectedStruct(player.getName())
+            .ifPresentOrElse(struct -> structService.exportVolume(struct, volumeName, player::sendMessage),
+                () -> player.sendMessage("First choose a structure"));
     }
 }

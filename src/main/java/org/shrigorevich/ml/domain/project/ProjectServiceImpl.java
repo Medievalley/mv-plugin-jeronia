@@ -48,18 +48,19 @@ public class ProjectServiceImpl extends BaseService implements ProjectService {
     }
 
     @Override
-    public void finalizeProject(BuildProject project) {
-        projects.remove(project.getId());
-        buildPlan.remove(project);
-
-        //TODO: should be moved to higher logic lvl
-        if (getPlugin() instanceof AdventurePlugin) {
-            ((AdventurePlugin) getPlugin()).showTitle(
-                String.format("Project %s finalized", project.getStruct().getName()),
-                "Congratulations", Color.AQUA.asRGB()
-            );
-        } else {
-            Bukkit.broadcast(Component.text(String.format("Project %s finalized", project.getStruct().getName())));
+    public void finalizeProject(int structId) {
+        if (projects.containsKey(structId)) {
+            BuildProject proj = projects.remove(structId);
+            buildPlan.removeIf(p -> p.getId() == structId);
+            //TODO: should be moved to higher logic lvl
+            if (getPlugin() instanceof AdventurePlugin) {
+                ((AdventurePlugin) getPlugin()).showTitle(
+                    String.format("Project %s finalized", proj.getStruct().getName()),
+                    "Congratulations", Color.AQUA.asRGB()
+                );
+            } else {
+                Bukkit.broadcast(Component.text(String.format("Project %s finalized", proj.getStruct().getName())));
+            }
         }
     }
 

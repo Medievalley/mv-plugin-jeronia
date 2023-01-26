@@ -21,8 +21,9 @@ public class FoodStructImpl extends TownInfraImpl implements FoodStructure {
     private final int priority;
     private int foodStock;
 
-    public FoodStructImpl(StructModel m) {
-        super(m);
+
+    public FoodStructImpl(StructModel m, List<StructBlockModel> structBlocks) {
+        super(m, structBlocks);
         this.name = m.getName();
         this.priority = m.getPriority();
     }

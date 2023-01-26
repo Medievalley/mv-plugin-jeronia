@@ -1,5 +1,7 @@
 package org.shrigorevich.ml.listeners;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
@@ -15,7 +17,6 @@ import org.shrigorevich.ml.domain.npc.NpcRole;
 import org.shrigorevich.ml.domain.npc.contracts.NpcService;
 import org.shrigorevich.ml.domain.npc.contracts.StructNpc;
 import org.shrigorevich.ml.domain.structure.contracts.FoodStructure;
-import org.shrigorevich.ml.domain.structure.contracts.Structure;
 import org.shrigorevich.ml.domain.structure.contracts.StructureService;
 import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
 import org.shrigorevich.ml.events.CustomSpawnEvent;
@@ -29,27 +30,28 @@ public class CustomSpawn implements Listener {
     private final TaskService taskService;
     private final NpcService npcService;
     private final StructureService structService;
+    private final Logger logger;
 
     public CustomSpawn(TaskService taskService, NpcService npcService, StructureService structureService) {
         this.taskService = taskService;
         this.npcService = npcService;
         this.structService = structureService;
+        this.logger = LogManager.getLogger("CustomSpawn");
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void OnCustomSpawn(CustomSpawnEvent event) {
-        if (event.getEntity() instanceof Villager) {
-            Villager entity = (Villager) event.getEntity();
+        if (event.getEntity() instanceof Villager entity) {
             Optional<StructNpc> npc = npcService.getById(entity.getUniqueId());
-
             if (npc.isPresent()) {
                 taskService.setDefaultAI(entity);
                 setTask(npc.get(), entity);
-                System.out.printf("Custom spawned: %d, %s, %s%n",
-                        npc.get().getId(), npc.get().isAlive(), npc.get().getRole());
+                logger.debug(String.format("Custom spawned: %d, %s, %s%n",
+                        npc.get().getId(), npc.get().isAlive(), npc.get().getRole()));
 
                 switch (npc.get().getRole()) {
                     case HARVESTER -> assignToStruct(npc.get(), entity);
+                    case WARDEN, BUILDER,
                     default -> {
                     }
                 }
@@ -79,8 +81,8 @@ public class CustomSpawn implements Listener {
         );
     }
 
-    private void scanStructForTasks(Structure struct, Villager entity) {
-        List<StructBlockModel> structBlocks = structService.getStructBlocks(struct.getId());
+    private void scanStructForTasks(FoodStructure struct, Villager entity) {
+        List<StructBlockModel> structBlocks = struct.getStructBlocks();
         structBlocks.forEach(b -> {
             Block wBlock = struct.getWorld().getBlockAt(b.getX(), b.getY(), b.getZ());
             if (isStructPlant(wBlock.getType())) {

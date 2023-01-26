@@ -22,11 +22,11 @@ public class BlockBreak implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void BlockBroken(BlockBreakEvent event) {
-        processDestroyedBlocksAsync(new ArrayList<>(Collections.singletonList(event.getBlock())));
+        processDestroyedBlocksAsync(new ArrayList<>(List.of(event.getBlock())));
     }
     @EventHandler(priority = EventPriority.HIGHEST)
     public void BlockBroken(BlockDestroyEvent event) {
-        processDestroyedBlocksAsync(new ArrayList<>(Collections.singletonList(event.getBlock())));
+        processDestroyedBlocksAsync(new ArrayList<>(List.of(event.getBlock())));
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -59,26 +59,13 @@ public class BlockBreak implements Listener {
 
     //TODO: refactor struct logic. Verify block coords is correct
     private Optional<StructBlockModel> getBrokenBlock(Block block) {
-        Optional<Structure> optionalStruct = structSvc.getByLocation(block.getLocation());
-        if (optionalStruct.isPresent()) {
+        Optional<StructBlockModel> sb = structSvc.getStructBlock(block.getLocation());
+        if (sb.isPresent() && !sb.get().isBroken() && sb.get().isTriggerDestruction()) {
+            return sb;
+        }
+        return Optional.empty();
 //            int x = block.getX() - optionalStruct.get().getX1();
 //            int y = block.getY() - optionalStruct.get().getY1();
 //            int z = block.getZ() - optionalStruct.get().getZ1();
-            int x = block.getX();
-            int y = block.getY();
-            int z = block.getZ();
-            Optional<StructBlockModel> sb = structSvc.getStructBlock(x, y, z);
-            if (sb.isPresent() && !sb.get().isBroken() && sb.get().isTriggerDestruction()) {
-                sb.get().setBroken(true);
-                return sb;
-            }
-        }
-        return Optional.empty();
     }
-
-//
-//    @EventHandler(priority = EventPriority.HIGHEST)
-//    public void DoorBrokenByEntity(EntitySpellCastEvent event) {
-//        //TODO: Check to possibility of creating custom spells
-//    }
 }

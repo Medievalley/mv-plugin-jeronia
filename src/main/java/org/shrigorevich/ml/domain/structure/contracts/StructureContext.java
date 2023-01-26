@@ -25,11 +25,25 @@ public interface StructureContext extends Context {
     void saveStructBlocks(List<StructBlockModel> blocks) throws Exception;
     @Deprecated
     Optional<StructBlockModel> getStructBlock(int x, int y, int z, int volumeId, int structId);
+
+    /**
+     * Deprecated: not use case
+     * @param id - block identifier
+     * @return - Optional of StructBlockModel
+     */
+    @Deprecated
     Optional<StructBlockModel> getStructBlock(int id);
     List<StructBlockModel> getStructBlocks(int structId) throws Exception;
     List<StructBlockModel> getStructBlocks() throws Exception;
+
+    /**
+     * Deprecated: not use case
+     * @param structId - struct identifier
+     * @return Number of broken struct blocs
+     * @throws Exception - db script execution error
+     */
+    @Deprecated
     int getBrokenBlocksCount(int structId) throws Exception;
-    int getStructBlocksCount(int structId) throws Exception;
     void updateBlocksStatus(List<StructBlockModel> blocks, boolean isBroken) throws Exception;
     void restoreBlock(int id) throws Exception;
     void restoreStruct(int structId) throws Exception;

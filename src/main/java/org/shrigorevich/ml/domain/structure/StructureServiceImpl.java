@@ -17,13 +17,11 @@ import org.shrigorevich.ml.domain.volume.models.VolumeBlockModel;
 import org.shrigorevich.ml.domain.volume.models.VolumeBlockModelImpl;
 import org.shrigorevich.ml.domain.volume.models.VolumeModel;
 
-import java.sql.SQLException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class StructureServiceImpl extends BaseService implements StructureService {
     private final StructureContext context;
-    private final Map<Integer, FoodStructure> structures;
+    private final Map<Integer, Structure> structures;
     private final Map<String, StructBlockModel> structBlocks;
 
     public StructureServiceImpl(StructureContext structureContext, Plugin plugin) {
@@ -39,15 +37,13 @@ public class StructureServiceImpl extends BaseService implements StructureServic
     }
 
     @Override
-    public List<TownInfra> getDamagedStructs() {
-        return structures.values().stream().filter(
-            s -> structBlocks.values().stream().anyMatch(
-                b -> b.getStructId() == s.getId())).collect(Collectors.toList());
+    public List<Structure> getDamagedStructs() {
+        return structures.values().stream().filter(s -> s instanceof TownInfra ti && ti.getBrokenBlocks().size() > 0).toList();
     }
 
     @Override
     public Optional<Structure> getByLocation(Location l) {
-        for (FoodStructure s : structures.values()) {
+        for (Structure s : structures.values()) {
             if(s.contains(l)) {
                 return Optional.of(s);
             }
@@ -60,7 +56,7 @@ public class StructureServiceImpl extends BaseService implements StructureServic
         try {
             context.updateBlocksStatus(blocks, true);
             for (StructBlockModel b : blocks) {
-                structBlocks.get(getBlockKey(b)).setBroken(true);
+                b.setBroken(true);
             }
         } catch (Exception ex) {
             getLogger().error(ex.getMessage());
@@ -75,7 +71,7 @@ public class StructureServiceImpl extends BaseService implements StructureServic
 
             if (structId != 0) {
                 Optional<StructModel> model = context.getById(structId);
-                model.ifPresent(this::registerStructure);
+                model.ifPresent(m -> structures.put(m.getId(), createStructure(m, new ArrayList<>())));
                 cb.result(String.format("StructId: %d", structId));
             }
         } catch (Exception e) {
@@ -131,20 +127,24 @@ public class StructureServiceImpl extends BaseService implements StructureServic
         }
     }
 
-    //TODO: this function should restore only broken blocks
     @Override
-    public void restore(@NotNull TownInfra struct) {
+    public void restore(int structId) {
         try {
-            context.restoreStruct(struct.getId()); //TODO: return list of restored blocks (Coords) //TODO: db call
-            List<StructBlockModel> blocks = context.getStructBlocks(struct.getId());
-            for (StructBlockModel sb : blocks) {
-                if (structBlocks.containsKey(getBlockKey(sb))) {
-                    structBlocks.get(getBlockKey(sb)).setBroken(false);
+            context.restoreStruct(structId);
+            List<StructBlockModel> blocks = context.getStructBlocks(structId);
+            context.getById(structId).ifPresent(model -> {
+                Structure struct = createStructure(model, blocks);
+                if (structures.containsKey(structId)) {
+                    structures.replace(structId, struct);
+                } else {
+                    structures.put(structId, struct);
                 }
-                struct.getWorld()
-                    .getBlockAt(sb.getX(), sb.getY(), sb.getZ())
-                    .setBlockData(Bukkit.createBlockData(sb.getBlockData()));
-            }
+                for (StructBlockModel sb :  blocks) {
+                    struct.getWorld()
+                        .getBlockAt(sb.getX(), sb.getY(), sb.getZ())
+                        .setBlockData(Bukkit.createBlockData(sb.getBlockData()));
+                }
+            });
         } catch (Exception ex) {
             getLogger().error(ex.getMessage());
         }
@@ -159,27 +159,34 @@ public class StructureServiceImpl extends BaseService implements StructureServic
             if(!isSizeEqual(struct, volume.get()))
                 throw new IllegalArgumentException("Structure and volume sizes are not equal");
 
-            context.detachVolume(struct.getId()); //TODO: db call
-            context.attachVolume(struct.getId(), volumeId); //TODO: db call
+            context.detachVolume(struct.getId());
+            context.attachVolume(struct.getId(), volumeId);
             List<VolumeBlockModel> volumeBlocks = context.getVolumeBlocks(volumeId);
             List<StructBlockModel> structBlocks = new ArrayList<>();
             for (VolumeBlockModel vb : volumeBlocks) {
                 structBlocks.add(new StructBlockModelImpl(struct.getId(), vb.getId(), true));
             }
             context.saveStructBlocks(structBlocks);
-            restore(struct);
+            restore(struct.getId());
         } catch (Exception ex) {
-
+            getLogger().error(ex.getMessage());
         }
-        //TODO: need to reload struct
-//        struct.volumeId = volumeId;
-//        restore(struct);
     }
 
-    //TODO: create fabric
-    private void registerStructure(StructModel s) {
-        FoodStructure newStruct = new FoodStructImpl(s);
-        structures.put(newStruct.getId(), newStruct);
+    private Structure createStructure(StructModel s, List<StructBlockModel> blocks) {
+        StructureType type = StructureType.valueOf(s.getTypeId());
+        if (type != null) {
+            switch (type) {
+                case AGRONOMIC -> {
+                    return new FoodStructImpl(s, blocks);
+                }
+                case PRIVATE, MOB_ABODE,
+                default -> throw new IllegalArgumentException(
+                    String.format("Structure type: %d is not supported", s.getTypeId()));
+            }
+        } else {
+            throw new IllegalArgumentException(String.format("Structure type: %d is not supported", s.getTypeId()));
+        }
     }
 
     @Override
@@ -192,11 +199,6 @@ public class StructureServiceImpl extends BaseService implements StructureServic
     @Override
     public Optional<StructBlockModel> getStructBlock(Location l) {
         return getStructBlock(l.getBlockX(), l.getBlockY(), l.getBlockZ());
-    }
-
-    @Override
-    public List<StructBlockModel> getStructBlocks(int structId) {
-        return structBlocks.values().stream().filter(s -> s.getId() == structId).collect(Collectors.toList());
     }
 
     @Override
@@ -223,21 +225,27 @@ public class StructureServiceImpl extends BaseService implements StructureServic
     public void load() throws Exception {
         try {
             List<StructModel> structs = context.getStructures();
-            for (StructModel s : structs) {
-                registerStructure(s);
-            }
+            HashMap<Integer, List<StructBlockModel>> blocksPerStruct = new HashMap<>();
             List<StructBlockModel> structBlocks = context.getStructBlocks();
+
             for (StructBlockModel b : structBlocks) {
-                registerBlock(b);
+                if (blocksPerStruct.containsKey(b.getStructId())) {
+                    blocksPerStruct.get(b.getStructId()).add(b);
+                } else {
+                    blocksPerStruct.put(b.getStructId(), List.of(b)); //todo: verify it is correct
+                }
+                //TODO: need to implement non collision logic
+                this.structBlocks.put(getBlockKey(b), b);
             }
+
+            for (StructModel s : structs) {
+                structures.put(s.getId(),
+                    createStructure(s, blocksPerStruct.getOrDefault(s.getId(), new ArrayList<>())));
+            }
+
         } catch (Exception ex) {
             throw new Exception("Error while loading structures");
         }
-    }
-
-    //not implemented
-    public int getStructBlocksCount(int structId, boolean isBroken) {
-        return 0;
     }
 
     private Coordinates getMinCoords(Location l1, Location l2) {
@@ -261,11 +269,6 @@ public class StructureServiceImpl extends BaseService implements StructureServic
             struct.getSizeZ() == volume.getSizeZ();
     }
 
-    private void registerBlock(StructBlockModel b) {
-        //TODO: need to implement non collision logic
-        structBlocks.put(getBlockKey(b), b);
-    }
-
     private String getBlockKey(int x, int y, int z) {
         return String.format("%d:%d:%d", x, y, z);
     }
@@ -274,7 +277,72 @@ public class StructureServiceImpl extends BaseService implements StructureServic
         return getBlockKey(b.getX(), b.getY(), b.getZ());
     }
 
+    private interface ModifiableStructBlock extends StructBlock {
+        void setIsBroken(boolean isBroken);
+        void setIsHealthPoint(boolean isHealthPoint);
+    }
 
+    private static class ModifiableStructBlockImpl implements ModifiableStructBlock {
 
+        private final int structId;
+        private final int x, y, z;
+        private boolean isBroken;
+        private boolean isHealthPoint;
+        public ModifiableStructBlockImpl(StructBlockModel m) {
+            this.structId = m.getStructId();
+            this.x = m.getX();
+            this.y = m.getY();
+            this.z = m.getZ();
+            this.isBroken = m.isBroken();
+            this.isHealthPoint = m.isTriggerDestruction();
+        }
+
+        public ModifiableStructBlockImpl(int structId, int x, int y, int z) {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.structId = structId;
+        }
+
+        @Override
+        public void setIsBroken(boolean isBroken) {
+            this.isBroken = isBroken;
+        }
+
+        @Override
+        public void setIsHealthPoint(boolean isHealthPoint) {
+            this.isHealthPoint = isHealthPoint;
+        }
+
+        @Override
+        public int getX() {
+            return x;
+        }
+
+        @Override
+        public int getY() {
+            return y;
+        }
+
+        @Override
+        public int getZ() {
+            return z;
+        }
+
+        @Override
+        public int getStructId() {
+            return structId;
+        }
+
+        @Override
+        public boolean isBroken() {
+            return isBroken;
+        }
+
+        @Override
+        public boolean isHealthPoint() {
+            return isHealthPoint;
+        }
+    }
 }
 
