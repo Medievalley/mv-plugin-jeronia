@@ -3,8 +3,7 @@ package org.shrigorevich.ml.events;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
-import org.shrigorevich.ml.domain.structure.contracts.StructBlock;
-import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
+import org.shrigorevich.ml.domain.structure.StructBlock;
 
 import java.util.List;
 import java.util.Map;

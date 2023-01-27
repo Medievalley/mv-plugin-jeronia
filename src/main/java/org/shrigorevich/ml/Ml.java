@@ -31,10 +31,10 @@ import org.shrigorevich.ml.domain.project.contracts.ProjectContext;
 import org.shrigorevich.ml.domain.project.ProjectContextImpl;
 import org.shrigorevich.ml.domain.scoreboard.ScoreboardService;
 import org.shrigorevich.ml.domain.scoreboard.ScoreboardServiceImpl;
-import org.shrigorevich.ml.domain.structure.StructContextImpl;
-import org.shrigorevich.ml.domain.structure.contracts.StructureContext;
-import org.shrigorevich.ml.domain.structure.contracts.StructureService;
-import org.shrigorevich.ml.domain.structure.StructureServiceImpl;
+import org.shrigorevich.ml.domain.structure.impl.StructContextImpl;
+import org.shrigorevich.ml.domain.structure.StructureContext;
+import org.shrigorevich.ml.domain.structure.StructureService;
+import org.shrigorevich.ml.domain.structure.impl.StructureServiceImpl;
 import org.shrigorevich.ml.domain.users.contracts.UserService;
 import org.shrigorevich.ml.domain.users.contracts.UserContext;
 import org.shrigorevich.ml.domain.users.UserContextImpl;
@@ -47,8 +47,6 @@ import javax.sql.DataSource;
 
 public final class Ml extends JavaPlugin implements AdventurePlugin {
 
-    private Configuration config;
-    private DataSource dataSource;
     private UserService userService;
     private StructureService structService;
     private NpcService npcService;
@@ -74,8 +72,8 @@ public final class Ml extends JavaPlugin implements AdventurePlugin {
         getConfig().options().copyDefaults(true);
         saveConfig();
 
-        config = new Configuration(this);
-        dataSource = DataSourceCreator.createDataSource(config);
+        Configuration config = new Configuration(this);
+        DataSource dataSource = DataSourceCreator.createDataSource(config);
 
         UserContext userContext = new UserContextImpl(dataSource);
         StructureContext structureContext = new StructContextImpl(dataSource);

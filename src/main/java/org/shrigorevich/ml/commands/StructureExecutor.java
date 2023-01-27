@@ -12,10 +12,10 @@ import org.jetbrains.annotations.NotNull;
 import org.shrigorevich.ml.admin.StructAdminService;
 import org.shrigorevich.ml.domain.project.contracts.ProjectService;
 import org.shrigorevich.ml.domain.structure.StructureType;
-import org.shrigorevich.ml.domain.structure.contracts.TownInfra;
+import org.shrigorevich.ml.domain.structure.TownInfra;
 import org.shrigorevich.ml.domain.users.UserRole;
 import org.shrigorevich.ml.domain.users.contracts.User;
-import org.shrigorevich.ml.domain.structure.contracts.StructureService;
+import org.shrigorevich.ml.domain.structure.StructureService;
 import org.shrigorevich.ml.domain.users.contracts.UserService;
 import org.shrigorevich.ml.events.FinalizeProjectEvent;
 

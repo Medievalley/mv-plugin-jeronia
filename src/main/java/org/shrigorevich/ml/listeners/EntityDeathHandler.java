@@ -22,9 +22,9 @@ import org.shrigorevich.ml.domain.ai.TaskType;
 import org.shrigorevich.ml.domain.npc.contracts.NpcService;
 import org.shrigorevich.ml.domain.npc.contracts.StructNpc;
 import org.shrigorevich.ml.domain.project.contracts.BuildProject;
-import org.shrigorevich.ml.domain.structure.contracts.FoodStructure;
-import org.shrigorevich.ml.domain.structure.contracts.StructBlock;
-import org.shrigorevich.ml.domain.structure.contracts.StructureService;
+import org.shrigorevich.ml.domain.structure.FoodStructure;
+import org.shrigorevich.ml.domain.structure.StructBlock;
+import org.shrigorevich.ml.domain.structure.StructureService;
 import org.shrigorevich.ml.domain.project.contracts.ProjectService;
 
 import java.util.*;
@@ -51,8 +51,6 @@ public class EntityDeathHandler implements Listener {
         if (entity.getEntitySpawnReason() == CreatureSpawnEvent.SpawnReason.CUSTOM) {
             if (entity.getType() == EntityType.VILLAGER) {
                 npcService.getById(entity.getUniqueId()).ifPresent(this::processNpcDeath);
-            } else {
-                //TODO: handle custom spawned mobs;
             }
         } else if (getReward(entity.getType()) > 0){
             ItemStack item = new ItemStack(Material.NETHER_STAR, getReward(entity.getType()));
@@ -84,7 +82,7 @@ public class EntityDeathHandler implements Listener {
 
     private void processNpcDeath(StructNpc npc) {
         switch (npc.getRole()) {
-            case BUILDER:
+            case BUILDER -> {
                 boolean isCurrentProject = false;
                 Optional<BuildProject> current = projectService.getCurrent();
                 List<Task> npcTasks = taskService.getEntityTasks(npc.getEntityId());
@@ -95,7 +93,7 @@ public class EntityDeathHandler implements Listener {
                             project.addPlannedBlock(block);
                             projectService.updateResources(1);
                         });
-                        if (current.isPresent() && current.get().getId() == block.getStructId()){
+                        if (current.isPresent() && current.get().getId() == block.getStructId()) {
                             isCurrentProject = true;
                         }
                     }
@@ -103,12 +101,9 @@ public class EntityDeathHandler implements Listener {
                 if (isCurrentProject) {
                     System.out.println("Current project updated");
                 }
-
-                break;
-            case HARVESTER:
-                break;
-            default:
-                break;
+            }
+            case HARVESTER, default -> {
+            }
         }
         clearNpcData(npc);
     }

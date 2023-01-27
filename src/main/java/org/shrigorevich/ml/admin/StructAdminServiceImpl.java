@@ -4,7 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.bukkit.Location;
 import org.bukkit.plugin.Plugin;
 import org.shrigorevich.ml.common.BaseService;
-import org.shrigorevich.ml.domain.structure.contracts.Structure;
+import org.shrigorevich.ml.domain.structure.Structure;
 
 import java.util.*;
 

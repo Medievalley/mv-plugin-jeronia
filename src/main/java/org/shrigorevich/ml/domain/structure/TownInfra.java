@@ -1,6 +1,4 @@
-package org.shrigorevich.ml.domain.structure.contracts;
-
-import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
+package org.shrigorevich.ml.domain.structure;
 
 import java.util.List;
 

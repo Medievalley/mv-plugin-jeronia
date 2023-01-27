@@ -11,8 +11,8 @@ import org.bukkit.event.entity.ItemSpawnEvent;
 import org.shrigorevich.ml.domain.ai.contracts.TaskService;
 import org.shrigorevich.ml.domain.ai.tasks.HarvestTask;
 import org.shrigorevich.ml.domain.npc.contracts.NpcService;
-import org.shrigorevich.ml.domain.structure.contracts.FoodStructure;
-import org.shrigorevich.ml.domain.structure.contracts.StructureService;
+import org.shrigorevich.ml.domain.structure.FoodStructure;
+import org.shrigorevich.ml.domain.structure.StructureService;
 import org.shrigorevich.ml.events.HarvestStartedEvent;
 import org.shrigorevich.ml.events.StructPlantGrownEvent;
 import org.shrigorevich.ml.events.UnableToHarvestEvent;
@@ -72,36 +72,22 @@ public class HarvestHandler implements Listener {
         }
     }
 
-    //TODO: throw exception
     private void updateStock(UUID entityId) {
-        npcService.getById(entityId).flatMap(npc ->
-            structService.getStruct(npc.getStructId())).ifPresent(struct -> {
-            if (struct instanceof FoodStructure fs) {
-                fs.updateFoodStock(1); //TODO: get from config
-
-            }
-        });
+        //TODO: get "amount" from config
+        npcService.getById(entityId).ifPresent(npc -> structService.updateResources(npc.getStructId(), 1));
     }
 
     private boolean isPlant(Material type) {
-        switch (type) {
-            case WHEAT:
-            case POTATOES:
-            case CARROTS:
-                return true;
-            default:
-                return false;
-        }
+        return switch (type) {
+            case WHEAT, POTATOES, CARROTS -> true;
+            default -> false;
+        };
     }
 
     private boolean isPlantFood(Material type) {
-        switch (type) {
-            case WHEAT:
-            case POTATO:
-            case CARROT:
-                return true;
-            default:
-                return false;
-        }
+        return switch (type) {
+            case WHEAT, POTATO, CARROT -> true;
+            default -> false;
+        };
     }
 }

@@ -1,4 +1,4 @@
-package org.shrigorevich.ml.domain.structure.contracts;
+package org.shrigorevich.ml.domain.structure;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;

@@ -20,10 +20,9 @@ import org.shrigorevich.ml.domain.project.BuildProjectImpl;
 import org.shrigorevich.ml.domain.project.contracts.ProjectService;
 import org.shrigorevich.ml.domain.scoreboard.BoardType;
 import org.shrigorevich.ml.domain.scoreboard.ScoreboardService;
-import org.shrigorevich.ml.domain.structure.contracts.StructBlock;
-import org.shrigorevich.ml.domain.structure.contracts.StructureService;
-import org.shrigorevich.ml.domain.structure.contracts.TownInfra;
-import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
+import org.shrigorevich.ml.domain.structure.StructBlock;
+import org.shrigorevich.ml.domain.structure.StructureService;
+import org.shrigorevich.ml.domain.structure.TownInfra;
 import org.shrigorevich.ml.events.*;
 
 import java.util.List;

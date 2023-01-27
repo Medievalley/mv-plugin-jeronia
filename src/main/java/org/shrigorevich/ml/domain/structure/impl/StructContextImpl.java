@@ -1,4 +1,4 @@
-package org.shrigorevich.ml.domain.structure;
+package org.shrigorevich.ml.domain.structure.impl;
 
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
@@ -8,8 +8,8 @@ import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.apache.logging.log4j.LogManager;
 import org.shrigorevich.ml.common.BaseContext;
 import org.shrigorevich.ml.common.Coordinates;
-import org.shrigorevich.ml.domain.structure.contracts.StructBlock;
-import org.shrigorevich.ml.domain.structure.contracts.StructureContext;
+import org.shrigorevich.ml.domain.structure.StructBlock;
+import org.shrigorevich.ml.domain.structure.StructureContext;
 import org.shrigorevich.ml.domain.structure.models.StructBlockModelImpl;
 import org.shrigorevich.ml.domain.volume.models.VolumeBlockModel;
 import org.shrigorevich.ml.domain.volume.models.VolumeBlockModelImpl;

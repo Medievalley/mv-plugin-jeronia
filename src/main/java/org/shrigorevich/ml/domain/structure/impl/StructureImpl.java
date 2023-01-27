@@ -1,4 +1,4 @@
-package org.shrigorevich.ml.domain.structure;
+package org.shrigorevich.ml.domain.structure.impl;
 
 import java.util.*;
 
@@ -7,7 +7,8 @@ import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.shrigorevich.ml.domain.structure.contracts.Structure;
+import org.shrigorevich.ml.domain.structure.Structure;
+import org.shrigorevich.ml.domain.structure.StructureType;
 import org.shrigorevich.ml.domain.structure.models.StructModel;
 
 public abstract class StructureImpl implements Structure {

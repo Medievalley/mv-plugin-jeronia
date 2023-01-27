@@ -1,4 +1,4 @@
-package org.shrigorevich.ml.domain.structure;
+package org.shrigorevich.ml.domain.structure.impl;
 
 import org.apache.logging.log4j.LogManager;
 import org.bukkit.Bukkit;
@@ -11,7 +11,7 @@ import org.shrigorevich.ml.common.BaseService;
 import org.shrigorevich.ml.common.Coordinates;
 import org.shrigorevich.ml.common.CoordinatesImpl;
 import org.shrigorevich.ml.domain.callbacks.MsgCallback;
-import org.shrigorevich.ml.domain.structure.contracts.*;
+import org.shrigorevich.ml.domain.structure.*;
 import org.shrigorevich.ml.domain.structure.models.*;
 import org.shrigorevich.ml.domain.volume.models.VolumeBlockModel;
 import org.shrigorevich.ml.domain.volume.models.VolumeBlockModelImpl;
@@ -22,7 +22,7 @@ import java.util.*;
 public class StructureServiceImpl extends BaseService implements StructureService {
     private final StructureContext context;
     private final Map<Integer, Structure> structures;
-    private final Map<String, ModifiableStructBlock> structBlocks;
+    private final Map<String, ExStructBlock> structBlocks;
 
     public StructureServiceImpl(StructureContext structureContext, Plugin plugin) {
         super(plugin, LogManager.getLogger("StructureServiceImpl"));
@@ -56,7 +56,7 @@ public class StructureServiceImpl extends BaseService implements StructureServic
         try {
             context.updateBlocksStatus(blocks, true);
             for (StructBlock b : blocks) {
-                ((ModifiableStructBlock) b).setIsBroken(true);
+                ((ExStructBlock) b).setIsBroken(true);
             }
         } catch (Exception ex) {
             getLogger().error(ex.getMessage());
@@ -135,7 +135,7 @@ public class StructureServiceImpl extends BaseService implements StructureServic
             context.getById(structId).ifPresent(model -> {
                 List<StructBlock> structBlocks = new ArrayList<>();
                 for (StructBlockModel b : blocks) {
-                    structBlocks.add(new ModifiableStructBlockImpl(b));
+                    structBlocks.add(new ExStructBlockImpl(b));
                 }
 
                 Structure struct = createStructure(model, structBlocks);
@@ -176,6 +176,20 @@ public class StructureServiceImpl extends BaseService implements StructureServic
             restore(struct.getId());
         } catch (Exception ex) {
             getLogger().error(ex.getMessage());
+        }
+    }
+
+    @Override
+    public void updateResources(int structId, int amount) {
+        if (structures.containsKey(structId) && structures.get(structId) instanceof ExStorage s) {
+            try {
+                context.updateResources(structId, amount);
+                s.updateResources(amount);
+            } catch (Exception ex) {
+                getLogger().error(ex.getMessage());
+            }
+        } else {
+            getLogger().error(String.format("Struct %d not found or has no storage", structId));
         }
     }
 
@@ -235,7 +249,7 @@ public class StructureServiceImpl extends BaseService implements StructureServic
             List<StructBlockModel> structBlocks = context.getStructBlocks();
 
             for (StructBlockModel b : structBlocks) {
-                ModifiableStructBlock newBlock = new ModifiableStructBlockImpl(b);
+                ExStructBlock newBlock = new ExStructBlockImpl(b);
                 if (blocksPerStruct.containsKey(b.getStructId())) {
                     blocksPerStruct.get(b.getStructId()).add(newBlock);
                 } else {
@@ -276,7 +290,6 @@ public class StructureServiceImpl extends BaseService implements StructureServic
             struct.getSizeZ() == volume.getSizeZ();
     }
 
-
     private String getBlockKey(int x, int y, int z) {
         return String.format("%d:%d:%d", x, y, z);
     }
@@ -287,79 +300,6 @@ public class StructureServiceImpl extends BaseService implements StructureServic
 
     private String getBlockKey(Location l) {
         return getBlockKey(l.getBlockX(), l.getBlockY(), l.getBlockZ());
-    }
-
-    private interface ModifiableStructBlock extends StructBlock {
-        void setIsBroken(boolean isBroken);
-        void setIsHealthPoint(boolean isHealthPoint);
-    }
-
-    private static class ModifiableStructBlockImpl implements ModifiableStructBlock {
-        private final int id;
-        private final int structId;
-        private final int x, y, z;
-        private boolean isBroken;
-        private boolean isHealthPoint;
-        private final String blockData;
-        public ModifiableStructBlockImpl(StructBlockModel m) {
-            this.id = m.getId();
-            this.structId = m.getStructId();
-            this.x = m.getX();
-            this.y = m.getY();
-            this.z = m.getZ();
-            this.isBroken = m.isBroken();
-            this.isHealthPoint = m.isTriggerDestruction();
-            this.blockData = m.getBlockData();
-        }
-
-        @Override
-        public void setIsBroken(boolean isBroken) {
-            this.isBroken = isBroken;
-        }
-
-        @Override
-        public void setIsHealthPoint(boolean isHealthPoint) {
-            this.isHealthPoint = isHealthPoint;
-        }
-
-        @Override
-        public int getId() {
-            return id;
-        }
-
-        @Override
-        public int getX() {
-            return x;
-        }
-
-        @Override
-        public int getY() {
-            return y;
-        }
-
-        @Override
-        public int getZ() {
-            return z;
-        }
-
-        @Override
-        public int getStructId() {
-            return structId;
-        }
-
-        @Override
-        public boolean isBroken() {
-            return isBroken;
-        }
-
-        @Override
-        public boolean isHealthPoint() {
-            return isHealthPoint;
-        }
-
-        public String getBlockData() {
-            return blockData;
-        }
     }
 }
 

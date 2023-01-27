@@ -1,4 +1,4 @@
-package org.shrigorevich.ml.domain.structure.contracts;
+package org.shrigorevich.ml.domain.structure;
 
 public interface StructBlock {
     int getId();

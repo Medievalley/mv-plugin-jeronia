@@ -2,7 +2,7 @@ package org.shrigorevich.ml.admin;
 
 import org.bukkit.Location;
 import org.shrigorevich.ml.common.Service;
-import org.shrigorevich.ml.domain.structure.contracts.Structure;
+import org.shrigorevich.ml.domain.structure.Structure;
 
 import java.util.ArrayList;
 import java.util.Optional;

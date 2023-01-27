@@ -1,6 +1,6 @@
-package org.shrigorevich.ml.domain.structure;
+package org.shrigorevich.ml.domain.structure.impl;
 
-import org.shrigorevich.ml.domain.structure.contracts.Storage;
+import org.shrigorevich.ml.domain.structure.Storage;
 
 public class StorageImpl implements Storage {
 

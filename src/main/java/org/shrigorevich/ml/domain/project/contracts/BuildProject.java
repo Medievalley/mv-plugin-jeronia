@@ -1,7 +1,7 @@
 package org.shrigorevich.ml.domain.project.contracts;
 
-import org.shrigorevich.ml.domain.structure.contracts.StructBlock;
-import org.shrigorevich.ml.domain.structure.contracts.TownInfra;
+import org.shrigorevich.ml.domain.structure.StructBlock;
+import org.shrigorevich.ml.domain.structure.TownInfra;
 
 import java.util.List;
 

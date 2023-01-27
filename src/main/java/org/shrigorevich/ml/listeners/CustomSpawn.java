@@ -16,10 +16,9 @@ import org.shrigorevich.ml.domain.ai.tasks.HoldSpawnTask;
 import org.shrigorevich.ml.domain.npc.NpcRole;
 import org.shrigorevich.ml.domain.npc.contracts.NpcService;
 import org.shrigorevich.ml.domain.npc.contracts.StructNpc;
-import org.shrigorevich.ml.domain.structure.contracts.FoodStructure;
-import org.shrigorevich.ml.domain.structure.contracts.StructBlock;
-import org.shrigorevich.ml.domain.structure.contracts.StructureService;
-import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
+import org.shrigorevich.ml.domain.structure.FoodStructure;
+import org.shrigorevich.ml.domain.structure.StructBlock;
+import org.shrigorevich.ml.domain.structure.StructureService;
 import org.shrigorevich.ml.events.CustomSpawnEvent;
 
 import java.util.List;

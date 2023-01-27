@@ -11,9 +11,9 @@ import org.shrigorevich.ml.domain.project.BuildProjectImpl;
 import org.shrigorevich.ml.domain.project.contracts.BuildProject;
 import org.shrigorevich.ml.domain.project.contracts.ProjectService;
 import org.shrigorevich.ml.domain.scoreboard.ScoreboardService;
-import org.shrigorevich.ml.domain.structure.contracts.Structure;
-import org.shrigorevich.ml.domain.structure.contracts.StructureService;
-import org.shrigorevich.ml.domain.structure.contracts.TownInfra;
+import org.shrigorevich.ml.domain.structure.Structure;
+import org.shrigorevich.ml.domain.structure.StructureService;
+import org.shrigorevich.ml.domain.structure.TownInfra;
 import org.shrigorevich.ml.events.SetupStateEvent;
 
 import java.util.List;

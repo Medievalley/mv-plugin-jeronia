@@ -1,11 +1,9 @@
-package org.shrigorevich.ml.domain.structure.contracts;
+package org.shrigorevich.ml.domain.structure;
 
 import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
 import org.shrigorevich.ml.common.Service;
 import org.shrigorevich.ml.domain.callbacks.MsgCallback;
-import org.shrigorevich.ml.domain.structure.StructureType;
-import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
 
 import java.util.List;
 import java.util.Optional;
@@ -43,4 +41,5 @@ public interface StructureService extends Service {
      *
      */
     void applyVolume(@NotNull TownInfra struct, int volumeId) throws IllegalArgumentException;
+    void updateResources(int structId, int amount);
 }

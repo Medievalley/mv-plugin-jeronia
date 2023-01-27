@@ -1,4 +1,4 @@
-package org.shrigorevich.ml.domain.structure.contracts;
+package org.shrigorevich.ml.domain.structure;
 import org.shrigorevich.ml.common.Context;
 import org.shrigorevich.ml.common.Coordinates;
 import org.shrigorevich.ml.domain.structure.models.*;

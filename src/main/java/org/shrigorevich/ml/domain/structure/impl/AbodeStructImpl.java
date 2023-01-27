@@ -1,6 +1,6 @@
-package org.shrigorevich.ml.domain.structure;
+package org.shrigorevich.ml.domain.structure.impl;
 
-import org.shrigorevich.ml.domain.structure.contracts.AbodeStruct;
+import org.shrigorevich.ml.domain.structure.AbodeStruct;
 import org.shrigorevich.ml.domain.structure.models.StructModel;
 
 public class AbodeStructImpl extends StructureImpl implements AbodeStruct {

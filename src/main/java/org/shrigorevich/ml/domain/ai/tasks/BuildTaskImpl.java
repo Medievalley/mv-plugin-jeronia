@@ -10,8 +10,7 @@ import org.shrigorevich.ml.common.Utils;
 import org.shrigorevich.ml.domain.ai.*;
 import org.shrigorevich.ml.domain.ai.contracts.BuildTask;
 import org.shrigorevich.ml.domain.ai.goals.BuildGoal;
-import org.shrigorevich.ml.domain.structure.contracts.StructBlock;
-import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
+import org.shrigorevich.ml.domain.structure.StructBlock;
 
 public class BuildTaskImpl extends BaseTask implements BuildTask {
     private final Location target;
