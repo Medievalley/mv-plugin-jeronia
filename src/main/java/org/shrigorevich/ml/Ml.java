@@ -56,7 +56,6 @@ public final class Ml extends JavaPlugin implements AdventurePlugin {
     private MobService mobService;
     private StructAdminService structAdminService;
     private NpcAdminService npcAdminService;
-
     private BukkitAudiences adventure;
 
     public @NotNull BukkitAudiences adventure() {

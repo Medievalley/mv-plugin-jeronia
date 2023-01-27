@@ -183,8 +183,8 @@ public class StructureServiceImpl extends BaseService implements StructureServic
     public void updateResources(int structId, int amount) {
         if (structures.containsKey(structId) && structures.get(structId) instanceof ExStorage s) {
             try {
-                context.updateResources(structId, amount);
                 s.updateResources(amount);
+                context.updateResources(structId, s.getResources());
             } catch (Exception ex) {
                 getLogger().error(ex.getMessage());
             }
