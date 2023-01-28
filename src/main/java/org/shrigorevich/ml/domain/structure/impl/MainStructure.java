@@ -2,19 +2,21 @@ package org.shrigorevich.ml.domain.structure.impl;
 
 import org.bukkit.entity.Villager;
 import org.shrigorevich.ml.domain.structure.StructBlock;
-import org.shrigorevich.ml.domain.structure.models.*;
+import org.shrigorevich.ml.domain.structure.models.StructModel;
 
 import java.util.List;
 import java.util.Optional;
 
-class FoodStructImpl extends TownInfraImpl implements ExFoodStructure {
+class MainStructure extends TownInfraImpl implements ExMainStructure {
 
     private Villager laborer;
     private int resources;
+    private int deposit;
 
-
-    public FoodStructImpl(StructModel m, List<StructBlock> structBlocks) {
-        super(m, structBlocks);
+    public MainStructure(StructModel m, List<StructBlock> blocks) {
+        super(m, blocks);
+        this.resources = m.getResources();
+        this.deposit = m.getDeposit();
     }
 
     @Override
@@ -35,5 +37,15 @@ class FoodStructImpl extends TownInfraImpl implements ExFoodStructure {
     @Override
     public void updateResources(int amount) {
         this.resources+=amount;
+    }
+
+    @Override
+    public int getDeposit() {
+        return deposit;
+    }
+
+    @Override
+    public void updateDeposit(int amount) {
+        this.deposit+=amount;
     }
 }

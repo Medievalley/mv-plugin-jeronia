@@ -200,6 +200,9 @@ public class StructureServiceImpl extends BaseService implements StructureServic
                 case AGRONOMIC -> {
                     return new FoodStructImpl(s, blocks);
                 }
+                case MAIN -> {
+                    return new MainStructure(s, blocks);
+                }
                 case PRIVATE, MOB_ABODE,
                 default -> throw new IllegalArgumentException(
                     String.format("Structure type: %d is not supported", s.getTypeId()));
