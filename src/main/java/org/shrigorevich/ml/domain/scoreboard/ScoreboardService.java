@@ -4,7 +4,7 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 import org.shrigorevich.ml.common.Service;
-import org.shrigorevich.ml.domain.project.contracts.BuildProject;
+import org.shrigorevich.ml.domain.project.BuildProject;
 
 public interface ScoreboardService extends Service {
     Scoreboard getScoreboard(BoardType type);

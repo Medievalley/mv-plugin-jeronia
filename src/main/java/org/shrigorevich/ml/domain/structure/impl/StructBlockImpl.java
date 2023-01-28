@@ -2,14 +2,14 @@ package org.shrigorevich.ml.domain.structure.impl;
 
 import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
 
-class ExStructBlockImpl implements ExStructBlock {
+class StructBlockImpl implements ExStructBlock {
     private final int id;
     private final int structId;
     private final int x, y, z;
     private boolean isBroken;
     private boolean isHealthPoint;
     private final String blockData;
-    public ExStructBlockImpl(StructBlockModel m) {
+    public StructBlockImpl(StructBlockModel m) {
         this.id = m.getId();
         this.structId = m.getStructId();
         this.x = m.getX();

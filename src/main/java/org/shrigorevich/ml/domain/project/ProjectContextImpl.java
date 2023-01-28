@@ -1,17 +1,12 @@
 package org.shrigorevich.ml.domain.project;
 
 import org.apache.commons.dbutils.QueryRunner;
-import org.apache.commons.dbutils.ResultSetHandler;
-import org.apache.commons.dbutils.handlers.BeanHandler;
 import org.apache.logging.log4j.LogManager;
 import org.shrigorevich.ml.common.BaseContext;
-import org.shrigorevich.ml.domain.project.contracts.ProjectContext;
 import org.shrigorevich.ml.domain.project.models.StorageModel;
-import org.shrigorevich.ml.domain.project.models.StorageModelImpl;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.logging.Logger;
 
 public class ProjectContextImpl extends BaseContext implements ProjectContext {
     public ProjectContextImpl(DataSource dataSource) {
@@ -19,27 +14,17 @@ public class ProjectContextImpl extends BaseContext implements ProjectContext {
     }
 
     @Override
-    public StorageModel getStorage() {
-        try {
-            QueryRunner run = new QueryRunner(getDataSource());
-            ResultSetHandler<StorageModel> h = new BeanHandler(StorageModelImpl.class);
-            String sql = "SELECT deposit, resources FROM storage ORDER BY id asc limit 1";
-
-            return run.query(sql, h);
-        } catch (SQLException ex) {
-            getLogger().error("Get storage: " + ex);
-            return new StorageModelImpl();
-        }
+    public StorageModel getStorage(int storageId) {
+        return null;
     }
 
     @Override
-    public void updateResources(int amount) {
+    public void updateResources(int structId, int amount) {
         try {
             QueryRunner run = new QueryRunner(getDataSource());
-            String sql = String.format("UPDATE storage SET resources=%d", amount);
-            run.update(sql);
+            run.update(String.format("UPDATE struct SET resources=%d WHERE id=%d", amount, structId));
         } catch (SQLException ex) {
-            getLogger().error("Update resources: " + ex);
+            getLogger().error(ex.getMessage());
         }
     }
 }

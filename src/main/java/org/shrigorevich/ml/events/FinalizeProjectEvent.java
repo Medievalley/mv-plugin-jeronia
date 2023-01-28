@@ -3,7 +3,7 @@ package org.shrigorevich.ml.events;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
-import org.shrigorevich.ml.domain.project.contracts.BuildProject;
+import org.shrigorevich.ml.domain.project.BuildProject;
 
 public class FinalizeProjectEvent extends Event {
 

@@ -7,25 +7,20 @@ import org.bukkit.Color;
 import org.bukkit.plugin.Plugin;
 import org.shrigorevich.ml.AdventurePlugin;
 import org.shrigorevich.ml.common.BaseService;
-import org.shrigorevich.ml.domain.project.contracts.BuildProject;
-import org.shrigorevich.ml.domain.project.contracts.ProjectContext;
-import org.shrigorevich.ml.domain.project.contracts.ProjectService;
-import org.shrigorevich.ml.domain.project.contracts.Storage;
-import org.shrigorevich.ml.domain.project.models.StorageModel;
+import org.shrigorevich.ml.domain.structure.MainStructure;
 
 import java.util.*;
 
 public class ProjectServiceImpl extends BaseService implements ProjectService {
     private final Map<Integer, BuildProject> projects;
-    private Storage storage;
     private final ProjectContext context;
     private final PriorityQueue<BuildProject> buildPlan;
+    private MainStructure mainStructure;
 
     public ProjectServiceImpl(Plugin plugin, ProjectContext context) {
         super(plugin, LogManager.getLogger("ProjectServiceImpl"));
         this.context = context;
         this.projects = new HashMap<>();
-        this.storage = new StorageImpl(0, 0);
         this.buildPlan = new PriorityQueue<>();
     }
 
@@ -66,18 +61,16 @@ public class ProjectServiceImpl extends BaseService implements ProjectService {
 
     @Override
     public int getResources() {
-        return storage.getResources();
+        return mainStructure.getResources();
     }
 
     @Override
-    public void updateResources(int amount) {
-        storage.updateResources(amount);
-        context.updateResources(getResources());
+    public int getStorageId() {
+        return mainStructure.getId();
     }
 
     @Override
-    public void load() {
-        StorageModel storageModel = context.getStorage();
-        this.storage = new StorageImpl(storageModel);
+    public void setup() {
+        this.mainStructure = structure;
     }
 }

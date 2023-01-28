@@ -10,7 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.shrigorevich.ml.admin.StructAdminService;
-import org.shrigorevich.ml.domain.project.contracts.ProjectService;
+import org.shrigorevich.ml.domain.project.ProjectService;
 import org.shrigorevich.ml.domain.structure.StructureType;
 import org.shrigorevich.ml.domain.structure.TownInfra;
 import org.shrigorevich.ml.domain.users.UserRole;

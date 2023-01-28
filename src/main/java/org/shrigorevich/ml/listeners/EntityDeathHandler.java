@@ -21,11 +21,11 @@ import org.shrigorevich.ml.domain.ai.contracts.TaskService;
 import org.shrigorevich.ml.domain.ai.TaskType;
 import org.shrigorevich.ml.domain.npc.contracts.NpcService;
 import org.shrigorevich.ml.domain.npc.contracts.StructNpc;
-import org.shrigorevich.ml.domain.project.contracts.BuildProject;
+import org.shrigorevich.ml.domain.project.BuildProject;
 import org.shrigorevich.ml.domain.structure.FoodStructure;
 import org.shrigorevich.ml.domain.structure.StructBlock;
 import org.shrigorevich.ml.domain.structure.StructureService;
-import org.shrigorevich.ml.domain.project.contracts.ProjectService;
+import org.shrigorevich.ml.domain.project.ProjectService;
 
 import java.util.*;
 

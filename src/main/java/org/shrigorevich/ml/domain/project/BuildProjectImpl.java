@@ -1,7 +1,6 @@
 package org.shrigorevich.ml.domain.project;
 
 import org.jetbrains.annotations.NotNull;
-import org.shrigorevich.ml.domain.project.contracts.BuildProject;
 import org.shrigorevich.ml.domain.structure.StructBlock;
 import org.shrigorevich.ml.domain.structure.TownInfra;
 

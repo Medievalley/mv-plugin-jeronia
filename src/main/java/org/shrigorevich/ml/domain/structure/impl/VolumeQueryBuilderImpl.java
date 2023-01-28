@@ -1,8 +1,6 @@
 package org.shrigorevich.ml.domain.structure.impl;
 
-import org.shrigorevich.ml.domain.volume.models.VolumeModel;
-
-public class VolumeQueryBuilderImpl {
+class VolumeQueryBuilderImpl {
 
     String create(String name, int sizeX, int sizeY, int sizeZ) {
         return String.format(

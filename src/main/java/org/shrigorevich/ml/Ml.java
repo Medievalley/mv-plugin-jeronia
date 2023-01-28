@@ -27,7 +27,7 @@ import org.shrigorevich.ml.domain.npc.contracts.NpcContext;
 import org.shrigorevich.ml.domain.npc.NpcContextImpl;
 import org.shrigorevich.ml.domain.npc.contracts.NpcService;
 import org.shrigorevich.ml.domain.npc.NpcServiceImpl;
-import org.shrigorevich.ml.domain.project.contracts.ProjectContext;
+import org.shrigorevich.ml.domain.project.ProjectContext;
 import org.shrigorevich.ml.domain.project.ProjectContextImpl;
 import org.shrigorevich.ml.domain.scoreboard.ScoreboardService;
 import org.shrigorevich.ml.domain.scoreboard.ScoreboardServiceImpl;
@@ -39,8 +39,9 @@ import org.shrigorevich.ml.domain.users.contracts.UserService;
 import org.shrigorevich.ml.domain.users.contracts.UserContext;
 import org.shrigorevich.ml.domain.users.UserContextImpl;
 import org.shrigorevich.ml.domain.users.UserServiceImpl;
-import org.shrigorevich.ml.domain.project.contracts.ProjectService;
+import org.shrigorevich.ml.domain.project.ProjectService;
 import org.shrigorevich.ml.domain.project.ProjectServiceImpl;
+import org.shrigorevich.ml.events.SetupStateEvent;
 import org.shrigorevich.ml.listeners.*;
 
 import javax.sql.DataSource;
@@ -158,11 +159,9 @@ public final class Ml extends JavaPlugin implements AdventurePlugin {
 
     private void setupState() {
         try {
-            structService.load();
-            npcService.load();
-            projectService.load();
-            mobService.load();
+            Bukkit.getPluginManager().callEvent(new SetupStateEvent());
         } catch (Exception ex) {
+            //TODO: inject logger
             Bukkit.getLogger().severe(ex.getMessage());
         }
     }

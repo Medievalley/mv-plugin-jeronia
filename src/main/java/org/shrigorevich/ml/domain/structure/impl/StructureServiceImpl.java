@@ -135,7 +135,7 @@ public class StructureServiceImpl extends BaseService implements StructureServic
             context.getById(structId).ifPresent(model -> {
                 List<StructBlock> structBlocks = new ArrayList<>();
                 for (StructBlockModel b : blocks) {
-                    structBlocks.add(new ExStructBlockImpl(b));
+                    structBlocks.add(new StructBlockImpl(b));
                 }
 
                 Structure struct = createStructure(model, structBlocks);
@@ -252,7 +252,7 @@ public class StructureServiceImpl extends BaseService implements StructureServic
             List<StructBlockModel> structBlocks = context.getStructBlocks();
 
             for (StructBlockModel b : structBlocks) {
-                ExStructBlock newBlock = new ExStructBlockImpl(b);
+                ExStructBlock newBlock = new StructBlockImpl(b);
                 if (blocksPerStruct.containsKey(b.getStructId())) {
                     blocksPerStruct.get(b.getStructId()).add(newBlock);
                 } else {

@@ -8,8 +8,8 @@ import org.bukkit.event.Listener;
 import org.shrigorevich.ml.domain.mob.MobService;
 import org.shrigorevich.ml.domain.npc.contracts.NpcService;
 import org.shrigorevich.ml.domain.project.BuildProjectImpl;
-import org.shrigorevich.ml.domain.project.contracts.BuildProject;
-import org.shrigorevich.ml.domain.project.contracts.ProjectService;
+import org.shrigorevich.ml.domain.project.BuildProject;
+import org.shrigorevich.ml.domain.project.ProjectService;
 import org.shrigorevich.ml.domain.scoreboard.ScoreboardService;
 import org.shrigorevich.ml.domain.structure.Structure;
 import org.shrigorevich.ml.domain.structure.StructureService;
@@ -45,6 +45,7 @@ public class SetupStateHandler implements Listener {
     public void SetupState(SetupStateEvent event) {
         try {
             structureService.load();
+            projectService.setup();
             setupProjects();
             npcService.load();
             mobService.load();

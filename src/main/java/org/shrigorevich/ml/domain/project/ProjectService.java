@@ -1,4 +1,4 @@
-package org.shrigorevich.ml.domain.project.contracts;
+package org.shrigorevich.ml.domain.project;
 
 import org.shrigorevich.ml.common.Service;
 
@@ -11,6 +11,6 @@ public interface ProjectService extends Service {
     void addProject(BuildProject project);
     void finalizeProject(int structId);
     int getResources();
-    void updateResources(int amount);
-    void load();
+    int getStorageId();
+    void setup();
 }

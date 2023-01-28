@@ -1,4 +1,4 @@
-package org.shrigorevich.ml.domain.project.contracts;
+package org.shrigorevich.ml.domain.project;
 
 public interface Storage {
     void updateDeposit(int amount);

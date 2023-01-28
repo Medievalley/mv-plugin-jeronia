@@ -13,7 +13,7 @@ import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.shrigorevich.ml.domain.npc.NpcRole;
 import org.shrigorevich.ml.domain.npc.contracts.NpcService;
-import org.shrigorevich.ml.domain.project.contracts.ProjectService;
+import org.shrigorevich.ml.domain.project.ProjectService;
 import org.shrigorevich.ml.events.StorageReplenishedEvent;
 
 import java.util.Map;

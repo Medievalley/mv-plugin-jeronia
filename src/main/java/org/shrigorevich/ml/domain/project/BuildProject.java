@@ -1,4 +1,4 @@
-package org.shrigorevich.ml.domain.project.contracts;
+package org.shrigorevich.ml.domain.project;
 
 import org.shrigorevich.ml.domain.structure.StructBlock;
 import org.shrigorevich.ml.domain.structure.TownInfra;

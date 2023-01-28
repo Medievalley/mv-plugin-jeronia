@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scoreboard.*;
 import org.shrigorevich.ml.common.BaseService;
-import org.shrigorevich.ml.domain.project.contracts.BuildProject;
+import org.shrigorevich.ml.domain.project.BuildProject;
 
 import java.util.HashMap;
 import java.util.Map;
