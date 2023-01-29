@@ -8,5 +8,6 @@ public interface StructBlock {
     int getStructId();
     boolean isBroken();
     boolean isHealthPoint();
+    BlockType getType();
     String getBlockData();
 }

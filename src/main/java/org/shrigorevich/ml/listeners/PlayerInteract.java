@@ -14,9 +14,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.shrigorevich.ml.domain.ai.contracts.TaskService;
-import org.shrigorevich.ml.domain.npc.contracts.NpcService;
+import org.shrigorevich.ml.domain.npc.NpcService;
 import org.shrigorevich.ml.domain.structure.StructureService;
-import org.shrigorevich.ml.events.DangerIsGoneEvent;
+import org.shrigorevich.ml.domain.npc.events.DangerIsGoneEvent;
 
 public class PlayerInteract implements Listener {
 

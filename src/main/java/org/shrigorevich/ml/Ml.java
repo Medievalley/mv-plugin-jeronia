@@ -9,25 +9,28 @@ import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitScheduler;
 import org.jetbrains.annotations.NotNull;
 import org.shrigorevich.ml.admin.NpcAdminService;
 import org.shrigorevich.ml.admin.NpcAdminServiceImpl;
 import org.shrigorevich.ml.admin.StructAdminService;
 import org.shrigorevich.ml.admin.StructAdminServiceImpl;
 import org.shrigorevich.ml.admin.handlers.AdminInteractHandler;
+import org.shrigorevich.ml.commands.ConfigExecutor;
 import org.shrigorevich.ml.commands.NpcExecutor;
 import org.shrigorevich.ml.commands.ScoreBoardExecutor;
 import org.shrigorevich.ml.commands.StructureExecutor;
 import org.shrigorevich.ml.config.ConfigurationImpl;
 import org.shrigorevich.ml.common.DataSourceCreator;
+import org.shrigorevich.ml.config.MlConfiguration;
 import org.shrigorevich.ml.domain.ai.contracts.TaskService;
 import org.shrigorevich.ml.domain.ai.TaskServiceImpl;
 import org.shrigorevich.ml.domain.mob.MobService;
 import org.shrigorevich.ml.domain.mob.MobServiceImpl;
-import org.shrigorevich.ml.domain.npc.contracts.NpcContext;
-import org.shrigorevich.ml.domain.npc.NpcContextImpl;
-import org.shrigorevich.ml.domain.npc.contracts.NpcService;
-import org.shrigorevich.ml.domain.npc.NpcServiceImpl;
+import org.shrigorevich.ml.domain.npc.NpcContext;
+import org.shrigorevich.ml.domain.npc.impl.NpcContextImpl;
+import org.shrigorevich.ml.domain.npc.NpcService;
+import org.shrigorevich.ml.domain.npc.impl.NpcServiceImpl;
 import org.shrigorevich.ml.domain.project.ProjectContext;
 import org.shrigorevich.ml.domain.project.ProjectContextImpl;
 import org.shrigorevich.ml.domain.scoreboard.ScoreboardService;
@@ -42,12 +45,12 @@ import org.shrigorevich.ml.domain.users.UserContextImpl;
 import org.shrigorevich.ml.domain.users.UserServiceImpl;
 import org.shrigorevich.ml.domain.project.ProjectService;
 import org.shrigorevich.ml.domain.project.ProjectServiceImpl;
-import org.shrigorevich.ml.events.SetupStateEvent;
 import org.shrigorevich.ml.listeners.*;
 
 import javax.sql.DataSource;
+import java.util.Objects;
 
-public final class Ml extends JavaPlugin implements AdventurePlugin {
+public final class Ml extends JavaPlugin implements MlPlugin {
 
     private UserService userService;
     private StructureService structService;
@@ -59,6 +62,7 @@ public final class Ml extends JavaPlugin implements AdventurePlugin {
     private StructAdminService structAdminService;
     private NpcAdminService npcAdminService;
     private BukkitAudiences adventure;
+    private MlConfiguration config;
 
     public @NotNull BukkitAudiences adventure() {
         if(this.adventure == null) {
@@ -73,7 +77,7 @@ public final class Ml extends JavaPlugin implements AdventurePlugin {
         getConfig().options().copyDefaults(true);
         saveConfig();
 
-        ConfigurationImpl config = new ConfigurationImpl(this);
+        this.config = new ConfigurationImpl(this);
         DataSource dataSource = DataSourceCreator.createDataSource(config);
 
         UserContext userContext = new UserContextImpl(dataSource);
@@ -131,12 +135,18 @@ public final class Ml extends JavaPlugin implements AdventurePlugin {
         pm.registerEvents(new BuildProjectHandler(projectService, scoreboardService, npcService, taskService, structService), this);
         pm.registerEvents(new SetupStateHandler(structService, projectService, npcService, mobService, scoreboardService), this);
         pm.registerEvents(new AdminInteractHandler(structAdminService, structService, npcService, npcAdminService, userService), this);
+        pm.registerEvents(new EnemySpawnHandler(config, this), this);
     }
 
     private void setupExecutors() {
-        getCommand("struct").setExecutor(new StructureExecutor(userService, structService, projectService, structAdminService));
-        getCommand("npc").setExecutor(new NpcExecutor(npcService, npcAdminService, taskService, mobService));
-        getCommand("score").setExecutor(new ScoreBoardExecutor(scoreboardService));
+        Objects.requireNonNull(getCommand("struct"))
+            .setExecutor(new StructureExecutor(userService, structService, projectService, structAdminService));
+        Objects.requireNonNull(getCommand("npc"))
+            .setExecutor(new NpcExecutor(npcService, npcAdminService, taskService, mobService));
+        Objects.requireNonNull(getCommand("score"))
+            .setExecutor(new ScoreBoardExecutor(scoreboardService));
+        Objects.requireNonNull(getCommand("config"))
+            .setExecutor(new ConfigExecutor(config));
     }
 
     //TODO: move to separate class
@@ -161,13 +171,15 @@ public final class Ml extends JavaPlugin implements AdventurePlugin {
     }
 
     private void setupState() {
-//        BukkitTask task = getServer().getScheduler().runTaskTimerAsynchronously(this, () -> {}, 5, 5);
-//        getServer().getScheduler().cancelTask(task.getTaskId());
         try {
             Bukkit.getPluginManager().callEvent(new SetupStateEvent()); //TODO: Maybe move to command executor
         } catch (Exception ex) {
             //TODO: inject logger
             Bukkit.getLogger().severe(ex.getMessage());
         }
+    }
+
+    public BukkitScheduler getScheduler() {
+        return this.getScheduler();
     }
 }

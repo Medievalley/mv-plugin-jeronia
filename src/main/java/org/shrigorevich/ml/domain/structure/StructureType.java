@@ -4,7 +4,8 @@ public enum StructureType {
     MAIN(1, "main"),
     AGRONOMIC(2, "agronomic"),
     PRIVATE(3, "private"),
-    MOB_ABODE(4, "abode");
+    WAVE_ABODE(4, "wave_abode"),
+    REGULAR_ABODE(5, "regular_abode");
 
     private final int typeId;
     private final String name;

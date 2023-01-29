@@ -14,12 +14,12 @@ import org.shrigorevich.ml.domain.ai.contracts.TaskService;
 import org.shrigorevich.ml.domain.ai.tasks.HarvestTask;
 import org.shrigorevich.ml.domain.ai.tasks.HoldSpawnTask;
 import org.shrigorevich.ml.domain.npc.NpcRole;
-import org.shrigorevich.ml.domain.npc.contracts.NpcService;
-import org.shrigorevich.ml.domain.npc.contracts.StructNpc;
+import org.shrigorevich.ml.domain.npc.NpcService;
+import org.shrigorevich.ml.domain.npc.StructNpc;
 import org.shrigorevich.ml.domain.structure.FoodStructure;
 import org.shrigorevich.ml.domain.structure.StructBlock;
 import org.shrigorevich.ml.domain.structure.StructureService;
-import org.shrigorevich.ml.events.CustomSpawnEvent;
+import org.shrigorevich.ml.domain.npc.events.CustomSpawnEvent;
 
 import java.util.List;
 import java.util.Optional;

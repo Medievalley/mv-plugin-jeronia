@@ -7,7 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Mob;
 import org.bukkit.plugin.Plugin;
 import org.shrigorevich.ml.domain.ai.contracts.BuildTask;
-import org.shrigorevich.ml.events.LocationReachedEvent;
+import org.shrigorevich.ml.domain.npc.events.LocationReachedEvent;
 
 import java.util.EnumSet;
 

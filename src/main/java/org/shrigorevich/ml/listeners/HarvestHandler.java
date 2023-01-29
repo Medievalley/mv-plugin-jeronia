@@ -10,12 +10,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ItemSpawnEvent;
 import org.shrigorevich.ml.domain.ai.contracts.TaskService;
 import org.shrigorevich.ml.domain.ai.tasks.HarvestTask;
-import org.shrigorevich.ml.domain.npc.contracts.NpcService;
-import org.shrigorevich.ml.domain.structure.FoodStructure;
+import org.shrigorevich.ml.domain.npc.NpcService;
 import org.shrigorevich.ml.domain.structure.StructureService;
-import org.shrigorevich.ml.events.HarvestStartedEvent;
-import org.shrigorevich.ml.events.StructPlantGrownEvent;
-import org.shrigorevich.ml.events.UnableToHarvestEvent;
+import org.shrigorevich.ml.domain.npc.events.HarvestStartedEvent;
+import org.shrigorevich.ml.domain.structure.events.StructPlantGrownEvent;
+import org.shrigorevich.ml.domain.npc.events.UnableToHarvestEvent;
 
 import java.util.UUID;
 

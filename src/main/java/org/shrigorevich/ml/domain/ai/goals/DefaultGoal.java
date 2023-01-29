@@ -10,7 +10,7 @@ import org.bukkit.entity.Mob;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Villager;
 import org.shrigorevich.ml.domain.ai.contracts.TaskService;
-import org.shrigorevich.ml.events.NpcInDangerEvent;
+import org.shrigorevich.ml.domain.npc.events.NpcInDangerEvent;
 
 import java.util.EnumSet;
 import java.util.List;

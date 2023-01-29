@@ -3,7 +3,7 @@ package org.shrigorevich.ml.admin;
 import org.shrigorevich.ml.common.Service;
 import org.shrigorevich.ml.domain.callbacks.MsgCallback;
 import org.shrigorevich.ml.domain.npc.NpcRole;
-import org.shrigorevich.ml.domain.npc.contracts.DraftNpc;
+import org.shrigorevich.ml.domain.npc.DraftNpc;
 
 import java.util.Optional;
 

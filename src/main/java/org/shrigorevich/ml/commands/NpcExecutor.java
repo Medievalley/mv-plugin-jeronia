@@ -11,7 +11,7 @@ import org.shrigorevich.ml.admin.NpcAdminService;
 import org.shrigorevich.ml.domain.ai.contracts.TaskService;
 import org.shrigorevich.ml.domain.mob.MobService;
 import org.shrigorevich.ml.domain.npc.NpcRole;
-import org.shrigorevich.ml.domain.npc.contracts.NpcService;
+import org.shrigorevich.ml.domain.npc.NpcService;
 
 public class NpcExecutor implements CommandExecutor {
 

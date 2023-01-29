@@ -12,9 +12,9 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.shrigorevich.ml.domain.npc.NpcRole;
-import org.shrigorevich.ml.domain.npc.contracts.NpcService;
+import org.shrigorevich.ml.domain.npc.NpcService;
 import org.shrigorevich.ml.domain.project.ProjectService;
-import org.shrigorevich.ml.events.StorageReplenishedEvent;
+import org.shrigorevich.ml.domain.project.events.StorageReplenishedEvent;
 
 import java.util.Map;
 

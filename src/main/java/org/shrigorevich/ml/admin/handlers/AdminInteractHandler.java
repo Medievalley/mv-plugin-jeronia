@@ -15,12 +15,11 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.shrigorevich.ml.admin.NpcAdminService;
 import org.shrigorevich.ml.admin.StructAdminService;
 import org.shrigorevich.ml.domain.ai.goals.HoldGoal;
-import org.shrigorevich.ml.domain.npc.contracts.NpcService;
-import org.shrigorevich.ml.domain.npc.SafeLocImpl;
+import org.shrigorevich.ml.domain.npc.NpcService;
+import org.shrigorevich.ml.domain.npc.impl.SafeLocImpl;
 import org.shrigorevich.ml.domain.structure.StructureService;
 import org.shrigorevich.ml.domain.users.UserRole;
 import org.shrigorevich.ml.domain.users.contracts.User;
-import org.shrigorevich.ml.domain.users.UserServiceImpl;
 import org.shrigorevich.ml.domain.users.contracts.UserService;
 
 import java.util.Optional;

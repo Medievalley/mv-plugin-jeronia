@@ -9,7 +9,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.shrigorevich.ml.domain.structure.StructBlock;
 import org.shrigorevich.ml.domain.structure.StructureService;
-import org.shrigorevich.ml.events.StructsDamagedEvent;
+import org.shrigorevich.ml.domain.structure.events.StructsDamagedEvent;
 
 import java.util.*;
 

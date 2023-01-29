@@ -12,7 +12,7 @@ import org.bukkit.event.block.BlockGrowEvent;
 import org.shrigorevich.ml.domain.structure.StructureType;
 import org.shrigorevich.ml.domain.structure.StructureService;
 import org.shrigorevich.ml.domain.structure.FoodStructure;
-import org.shrigorevich.ml.events.StructPlantGrownEvent;
+import org.shrigorevich.ml.domain.structure.events.StructPlantGrownEvent;
 
 import java.util.Optional;
 

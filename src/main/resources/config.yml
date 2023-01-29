@@ -6,4 +6,13 @@ database:
   password: strongpass
   poolSize: 8
 
-regular_spawn_interval: 1
+mob_spawn:
+  regular_spawn_interval: 1 # min
+  #not loaded
+  wave_spawn_interval: 15 # min
+
+#not loaded
+enemy_power:
+  regular_number_players_factor: 1.0 # PlayersCountMultiplier for Number of single spawned mobs
+  days_factor: 1.0 # DaysCountMultiplier
+

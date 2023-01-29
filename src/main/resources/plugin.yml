@@ -16,4 +16,7 @@ commands:
   score:
     description: "Show scoreboards"
     usage: "/<command> village"
+  config:
+    description: "Edit config"
+    usage: "/<command> [section] [property] [value]"
 

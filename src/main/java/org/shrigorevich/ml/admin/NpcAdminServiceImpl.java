@@ -6,8 +6,8 @@ import org.shrigorevich.ml.common.BaseService;
 import org.shrigorevich.ml.common.CoordinatesImpl;
 import org.shrigorevich.ml.domain.callbacks.MsgCallback;
 import org.shrigorevich.ml.domain.npc.NpcRole;
-import org.shrigorevich.ml.domain.npc.contracts.DraftNpc;
-import org.shrigorevich.ml.domain.npc.contracts.DraftNpcImpl;
+import org.shrigorevich.ml.domain.npc.DraftNpc;
+import org.shrigorevich.ml.domain.npc.impl.DraftNpcImpl;
 
 import java.util.HashMap;
 import java.util.Map;

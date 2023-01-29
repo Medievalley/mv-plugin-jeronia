@@ -1,5 +1,6 @@
 package org.shrigorevich.ml.domain.structure.impl;
 
+import org.shrigorevich.ml.domain.structure.BlockType;
 import org.shrigorevich.ml.domain.structure.models.StructBlockModel;
 
 class StructBlockImpl implements ExStructBlock {
@@ -9,6 +10,7 @@ class StructBlockImpl implements ExStructBlock {
     private boolean isBroken;
     private boolean isHealthPoint;
     private final String blockData;
+    private BlockType type;
     public StructBlockImpl(StructBlockModel m) {
         this.id = m.getId();
         this.structId = m.getStructId();
@@ -18,6 +20,7 @@ class StructBlockImpl implements ExStructBlock {
         this.isBroken = m.isBroken();
         this.isHealthPoint = m.isTriggerDestruction();
         this.blockData = m.getBlockData();
+        this.type = BlockType.valueOf(m.getTypeId());
     }
 
     @Override
@@ -28,6 +31,15 @@ class StructBlockImpl implements ExStructBlock {
     @Override
     public void setIsHealthPoint(boolean isHealthPoint) {
         this.isHealthPoint = isHealthPoint;
+    }
+
+    @Override
+    public BlockType getType() {
+        return type;
+    }
+    @Override
+    public void setType(BlockType type) {
+        this.type = type;
     }
 
     @Override

@@ -1,49 +1,56 @@
 package org.shrigorevich.ml.commands;
 
-import org.bukkit.Bukkit;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.shrigorevich.ml.config.ConfigurationImpl;
-import org.shrigorevich.ml.domain.scoreboard.BoardType;
+import org.jetbrains.annotations.NotNull;
+import org.shrigorevich.ml.config.MlConfiguration;
+
 
 public class ConfigExecutor implements CommandExecutor {
 
-    private final ConfigurationImpl config;
+    private final MlConfiguration config;
+    private final Logger logger;
 
-    public ConfigExecutor(ConfigurationImpl config) {
+    public ConfigExecutor(MlConfiguration config) {
         this.config = config;
+        this.logger = LogManager.getLogger("ConfigExecutor");
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args){
         if(args.length > 0){
-            if(sender instanceof Player){
-                Player player = (Player) sender;
+            if(sender instanceof Player player){
                 try {
-                    switch (args[0].toLowerCase()) {
-                        case "project":
-                            showScoreboard(player);
-                            break;
-                        default:
-                            player.sendMessage(ChatColor.YELLOW + String.format("Command '%s' not found", args[0]));
-                            break;
-                    }
+                    UpdateConfig(args[1], args[2], args[3]);
                 }
                 catch (Exception ex) {
-                    Bukkit.getLogger().severe(ex.toString());
+                    logger.error(ex.getMessage());
                     player.sendMessage(ChatColor.RED + ex.getMessage());
                 }
             } else {
-                System.out.println("You can`t use this command through console");
+                logger.error("You can`t use this command through console");
             }
         }
         return true;
     }
 
-    private void showScoreboard(Player player) {
-        player.setScoreboard(scoreboardService.getScoreboard(BoardType.PROJECT));
+    private void UpdateConfig(String section, String property, String value) throws Exception {
+        switch (section.toLowerCase()) {
+            case "mobspawn" -> updateMobSpawnSection(property, value);
+            default -> throw new Exception("Section does not exist");
+        }
     }
+
+    private void updateMobSpawnSection(String property, String value) throws Exception {
+        switch (property.toLowerCase()) {
+            case "regspawninterval", "rsi" -> config.updateRegSpawnInterval(Integer.parseInt(value));
+            default -> throw new Exception("Property does not exist");
+        }
+    }
+
 }

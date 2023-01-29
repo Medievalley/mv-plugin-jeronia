@@ -2,10 +2,12 @@ package org.shrigorevich.ml.config;
 
 import org.bukkit.plugin.Plugin;
 
-public class ConfigurationImpl {
+import java.util.Objects;
+
+public class ConfigurationImpl implements MlConfiguration {
     private final Plugin plugin;
 
-    private Database database;
+    private DatabaseConf database;
     private MobSpawn mobSpawn;
 
     public ConfigurationImpl(Plugin plugin) {
@@ -14,8 +16,11 @@ public class ConfigurationImpl {
     }
 
     public void reload() {
-        database = new Database(plugin.getConfig().getConfigurationSection("database").getValues(false));
-        System.out.println("My Database user: " + database.getUser());
+        this.database = new DatabaseConfImpl(Objects.requireNonNull(
+                plugin.getConfig().getConfigurationSection("database")).getValues(false));
+        this.mobSpawn = new MobSpawn(Objects.requireNonNull(
+                plugin.getConfig().getConfigurationSection("mob_spawn")).getValues(false));
+
     }
 
     public void updateRegSpawnInterval(int value) {
@@ -26,7 +31,7 @@ public class ConfigurationImpl {
         return plugin;
     }
 
-    public Database getDatabase() {
+    public DatabaseConf getDb() {
         return database;
     }
 }

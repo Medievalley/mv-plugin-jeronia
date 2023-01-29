@@ -6,7 +6,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.plugin.Plugin;
-import org.shrigorevich.ml.events.CustomSpawnEvent;
+import org.shrigorevich.ml.domain.npc.events.CustomSpawnEvent;
 
 public class EntitySpawn implements Listener {
 

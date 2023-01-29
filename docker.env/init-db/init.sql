@@ -116,8 +116,9 @@ INSERT INTO npc_role (id, name, description) VALUES
 (3, 'builder', 'A villager who builds and repairs structures');
 
 INSERT INTO struct_block_type (id, name, description) VALUES
-(1, 'default', 'block without special behavior'),
-(2, 'abode spawn', 'Block where monsters spawn in the abode');
+(1, 'Default', 'block without special behavior'),
+(2, 'Safe location', 'Safe location for npc'),
+(3, 'Abode spawn', 'Block where monsters spawn in the abode');
 
 -- MOCK SCRIPT
  with rows as (

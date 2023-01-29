@@ -17,7 +17,7 @@ import org.shrigorevich.ml.domain.users.UserRole;
 import org.shrigorevich.ml.domain.users.contracts.User;
 import org.shrigorevich.ml.domain.structure.StructureService;
 import org.shrigorevich.ml.domain.users.contracts.UserService;
-import org.shrigorevich.ml.events.FinalizeProjectEvent;
+import org.shrigorevich.ml.domain.project.events.FinalizeProjectEvent;
 
 import java.util.Optional;
 
