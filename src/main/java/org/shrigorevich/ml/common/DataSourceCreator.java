@@ -2,13 +2,13 @@ package org.shrigorevich.ml.common;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import org.shrigorevich.ml.config.Configuration;
+import org.shrigorevich.ml.config.ConfigurationImpl;
 import javax.sql.DataSource;
 import java.util.Properties;
 
 public class DataSourceCreator {
 
-    public static DataSource createDataSource(Configuration pluginConfig) {
+    public static DataSource createDataSource(ConfigurationImpl pluginConfig) {
 
         Properties hikariProps = new Properties();
 

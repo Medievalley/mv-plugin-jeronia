@@ -5,3 +5,5 @@ database:
   user: shrigorevich
   password: strongpass
   poolSize: 8
+
+regular_spawn_interval: 1

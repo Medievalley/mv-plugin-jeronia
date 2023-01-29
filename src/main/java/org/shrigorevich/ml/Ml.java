@@ -18,7 +18,7 @@ import org.shrigorevich.ml.admin.handlers.AdminInteractHandler;
 import org.shrigorevich.ml.commands.NpcExecutor;
 import org.shrigorevich.ml.commands.ScoreBoardExecutor;
 import org.shrigorevich.ml.commands.StructureExecutor;
-import org.shrigorevich.ml.config.Configuration;
+import org.shrigorevich.ml.config.ConfigurationImpl;
 import org.shrigorevich.ml.common.DataSourceCreator;
 import org.shrigorevich.ml.domain.ai.contracts.TaskService;
 import org.shrigorevich.ml.domain.ai.TaskServiceImpl;
@@ -73,7 +73,7 @@ public final class Ml extends JavaPlugin implements AdventurePlugin {
         getConfig().options().copyDefaults(true);
         saveConfig();
 
-        Configuration config = new Configuration(this);
+        ConfigurationImpl config = new ConfigurationImpl(this);
         DataSource dataSource = DataSourceCreator.createDataSource(config);
 
         UserContext userContext = new UserContextImpl(dataSource);
@@ -161,8 +161,10 @@ public final class Ml extends JavaPlugin implements AdventurePlugin {
     }
 
     private void setupState() {
+//        BukkitTask task = getServer().getScheduler().runTaskTimerAsynchronously(this, () -> {}, 5, 5);
+//        getServer().getScheduler().cancelTask(task.getTaskId());
         try {
-            Bukkit.getPluginManager().callEvent(new SetupStateEvent());
+            Bukkit.getPluginManager().callEvent(new SetupStateEvent()); //TODO: Maybe move to command executor
         } catch (Exception ex) {
             //TODO: inject logger
             Bukkit.getLogger().severe(ex.getMessage());
