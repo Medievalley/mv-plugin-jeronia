@@ -5,7 +5,7 @@ import org.shrigorevich.ml.domain.volume.models.VolumeBlockModelImpl;
 public class StructBlockModelImpl extends VolumeBlockModelImpl implements StructBlockModel {
     private int id, structId, volumeBlockId;
     private boolean broken, triggerDestruction;
-    private String type;
+    private int typeId;
 
     public StructBlockModelImpl(int structId, int volumeBlockId, boolean triggerDestruction) {
         super();
@@ -44,11 +44,11 @@ public class StructBlockModelImpl extends VolumeBlockModelImpl implements Struct
         return triggerDestruction;
     }
     @Override
-    public String getType() {
-        return type;
+    public int getTypeId() {
+        return typeId;
     }
     @Override
-    public void setType(String type) {
-        this.type = type;
+    public void setTypeId(int typeId) {
+        this.typeId = typeId;
     }
 }

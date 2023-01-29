@@ -28,7 +28,6 @@ public class StructureExecutor implements CommandExecutor {
     private final StructAdminService structAdminService;
     private final Logger logger;
 
-    //TODO: inject logger
     public StructureExecutor(
             UserService userService,
             StructureService structService,
@@ -96,10 +95,10 @@ public class StructureExecutor implements CommandExecutor {
                     String.format("Specify the coordinates of two structure corners. Now defined: %d", locs.size()));
 
             structService.create(
-                name, StructureType.valueOf(type),
+                name, StructureType.getByName(type),
                 locs.get(0), locs.get(1), player::sendMessage
             );
-        }, () -> player.sendMessage("First choose corners"));
+        }, () -> player.sendMessage("First specify struct corners"));
     }
 
     private void exportVolume(Player player, String volumeName) {

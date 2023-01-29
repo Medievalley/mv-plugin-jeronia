@@ -6,5 +6,5 @@ import org.bukkit.inventory.ItemStack;
 public interface MobService {
 
     ItemStack getSkull(EntityType type);
-    void load();
+    void setup();
 }

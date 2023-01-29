@@ -4,14 +4,14 @@ import org.shrigorevich.ml.domain.users.models.UserModel;
 
 public class UserModelImpl implements UserModel {
 
-    private int id;
+    private String id;
     private String name;
     private String ip;
     private int lives;
     private boolean verified;
     private int roleId;
 
-    public int getId() {
+    public String getId() {
         return id;
     }
     public String getName() {
@@ -42,7 +42,7 @@ public class UserModelImpl implements UserModel {
         this.ip = ip;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 

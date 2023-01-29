@@ -58,6 +58,7 @@ public class UserServiceImpl extends BaseService implements UserService {
 
 
         } catch (Exception ex) {
+            getLogger().error(ex.getMessage());
             cb.onСheck(false, dataAccessErrorMsg);
         }
     }

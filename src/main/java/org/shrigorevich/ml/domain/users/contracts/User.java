@@ -3,7 +3,7 @@ package org.shrigorevich.ml.domain.users.contracts;
 import org.shrigorevich.ml.domain.users.UserRole;
 
 public interface User {
-    int getId();
+    String getId();
     String getName();
     UserRole getRole();
     int getLives();

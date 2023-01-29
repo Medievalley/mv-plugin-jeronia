@@ -5,4 +5,5 @@ public interface Storage {
     void updateResources(int amount);
     int getDeposit();
     int getResources();
+    int getId();
 }

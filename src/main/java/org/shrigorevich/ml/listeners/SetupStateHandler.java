@@ -44,13 +44,14 @@ public class SetupStateHandler implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void SetupState(SetupStateEvent event) {
         try {
-            structureService.load();
+            structureService.setup();
             projectService.setup();
             setupProjects();
-            npcService.load();
-            mobService.load();
+            npcService.setup();
+            mobService.setup();
+            logger.info("All services are loaded successfully");
         } catch (Exception ex) {
-            //TODO: escalate error
+            logger.error(ex.getMessage());
         }
     }
 
@@ -65,7 +66,6 @@ public class SetupStateHandler implements Listener {
             }
         }
         projectService.getCurrent().ifPresent(project -> {
-            //TODO: inject logger
             logger.debug(String.format("Current project: %s. Broken blocks: %d%n", project.getStruct().getName(), project.getBrokenSize()));
             scoreboardService.updateScoreboard(project, projectService.getResources());
         });

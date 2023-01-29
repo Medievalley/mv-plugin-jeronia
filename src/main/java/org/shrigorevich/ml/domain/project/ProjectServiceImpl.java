@@ -7,7 +7,6 @@ import org.bukkit.Color;
 import org.bukkit.plugin.Plugin;
 import org.shrigorevich.ml.AdventurePlugin;
 import org.shrigorevich.ml.common.BaseService;
-import org.shrigorevich.ml.domain.structure.MainStructure;
 
 import java.util.*;
 
@@ -15,7 +14,7 @@ public class ProjectServiceImpl extends BaseService implements ProjectService {
     private final Map<Integer, BuildProject> projects;
     private final ProjectContext context;
     private final PriorityQueue<BuildProject> buildPlan;
-    private MainStructure mainStructure;
+    private Storage storage;
 
     public ProjectServiceImpl(Plugin plugin, ProjectContext context) {
         super(plugin, LogManager.getLogger("ProjectServiceImpl"));
@@ -61,16 +60,43 @@ public class ProjectServiceImpl extends BaseService implements ProjectService {
 
     @Override
     public int getResources() {
-        return mainStructure.getResources();
+        return storage.getResources();
     }
 
     @Override
-    public int getStorageId() {
-        return mainStructure.getId();
+    public int getDeposit() {
+        return storage.getDeposit();
     }
 
     @Override
-    public void setup() {
-        this.mainStructure = structure;
+    public void updateResources(int amount) {
+        try {
+            storage.updateResources(amount);
+            context.updateResources(storage.getId(), storage.getResources());
+        } catch (Exception ex) {
+            getLogger().error(ex.getMessage());
+        }
+    }
+
+    @Override
+    public void updateDeposit(int amount) {
+        try {
+            storage.updateDeposit(amount);
+            context.updateDeposit(storage.getId(), storage.getDeposit());
+        } catch (Exception ex) {
+            getLogger().error(ex.getMessage());
+        }
+    }
+
+    @Override
+    public void setup() throws Exception {
+        try {
+            context.getStorage().ifPresentOrElse(model -> {
+                this.storage = new StorageImpl(model);
+            }, () -> getLogger().warn("Storage not configured"));
+        } catch (Exception ex) {
+            getLogger().error(ex.getMessage());
+            throw new Exception("Error while setup project service");
+        }
     }
 }

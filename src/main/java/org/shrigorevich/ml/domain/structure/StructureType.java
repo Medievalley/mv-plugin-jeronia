@@ -36,6 +36,6 @@ public enum StructureType {
                 return st;
             }
         }
-        return null;
+        throw new IllegalArgumentException("No constant named " + name);
     }
 }

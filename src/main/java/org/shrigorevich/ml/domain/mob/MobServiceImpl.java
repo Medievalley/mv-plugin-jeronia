@@ -48,7 +48,7 @@ public class MobServiceImpl extends BaseService implements MobService {
     }
 
     @Override
-    public void load() {
+    public void setup() {
         SkullModelImpl skeletonSkull = new SkullModelImpl();
         skeletonSkull.setName("Skeleton");
         skeletonSkull.setSkin("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWQ0NmViNjQyZGMzYTRkZmJiNWFkNTI5N2VkYWUyOTk2ZWE0Y2ZmZjkyYWMyZWI1NmRmYWU5ZWUxZDU4ZTQwOCJ9fX0=");

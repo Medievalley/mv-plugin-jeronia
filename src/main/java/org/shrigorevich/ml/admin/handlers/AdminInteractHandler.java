@@ -1,6 +1,8 @@
 package org.shrigorevich.ml.admin.handlers;
 
 import com.destroystokyo.paper.entity.ai.Goal;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
@@ -19,6 +21,7 @@ import org.shrigorevich.ml.domain.structure.StructureService;
 import org.shrigorevich.ml.domain.users.UserRole;
 import org.shrigorevich.ml.domain.users.contracts.User;
 import org.shrigorevich.ml.domain.users.UserServiceImpl;
+import org.shrigorevich.ml.domain.users.contracts.UserService;
 
 import java.util.Optional;
 
@@ -28,20 +31,22 @@ public class AdminInteractHandler implements Listener {
     private final StructureService structService;
     private final NpcService npcService;
     private final NpcAdminService npcAdminService;
-    private final UserServiceImpl userService;
+    private final UserService userService;
     private Villager villager;
+    private Logger logger;
 
     public AdminInteractHandler(
             StructAdminService structAdminService,
             StructureService structService,
             NpcService npcService,
             NpcAdminService npcAdminService,
-            UserServiceImpl userService) {
+            UserService userService) {
         this.structAdminService = structAdminService;
         this.structService = structService;
         this.npcService = npcService;
         this.userService = userService;
         this.npcAdminService = npcAdminService;
+        this.logger = LogManager.getLogger("AdminInteractHandler");
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -160,6 +165,7 @@ public class AdminInteractHandler implements Listener {
         Player p = event.getPlayer();
         structAdminService.setCorner(p.getName(), event.getClickedBlock().getLocation());
         structAdminService.getStructCorners(p.getName()).ifPresent(locs -> {
+            p.sendMessage("Corners:");
             for(Location l : locs) {
                 p.sendMessage(String.format("%d, %d, %d", l.getBlockX(), l.getBlockY(), l.getBlockZ()));
             }

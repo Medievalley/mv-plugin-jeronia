@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface StructureService extends Service {
 
-    void load() throws Exception;
+    void setup() throws Exception;
     Optional<Structure> getStruct(int id);
     List<Structure> getDamagedStructs();
     Optional<Structure> getByLocation(Location location);

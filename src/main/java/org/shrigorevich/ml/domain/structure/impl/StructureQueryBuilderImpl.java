@@ -14,14 +14,14 @@ public class StructureQueryBuilderImpl {
     @Deprecated
     public String getById(int id) {
         return String.format(
-            "select ls.struct_id as id, ls.name, ls.volume_id as volumeId, ls.priority, s.type_id as typeId, " +
-            "s.world, s.x1, s.y1, s.z1, s.x2, s.y2, s.z2\n" +
-            "from lore_struct ls JOIN struct s ON s.id = ls.struct_id where ls.struct_id=%d ", id);
+            "select id, name, volume_id as volumeId, priority, deposit, resources, type_id as typeId, " +
+            "world, x1, y1, z1, x2, y2, z2\n" +
+            "from struct where id=%d ", id);
     }
 
     public String getStructures() {
         return String.join("\n",
-            "select id, name, volume_id as volumeId, priority, deposit, resources, type_id as typeId",
+            "select id, name, volume_id as volumeId, priority, deposit, resources, type_id as typeId,",
             "world, x1, y1, z1, x2, y2, z2",
             "from struct");
     }
@@ -91,11 +91,11 @@ public class StructureQueryBuilderImpl {
 
     private String selectStructBlock() {
         return String.join("\n",
-                "select b.id, s.id as structId, b.type, v.block_data as blockData,",
+                "select b.id, s.id as structId, b.type_id as typeId, v.block_data as blockData,",
                 "b.broken, b.hp_trigger as triggerDestruction,",
                 "v.x+s.x1 as x, v.y+s.y1 as y, v.z+s.z1 as z",
                 "from struct_block b",
-                "join volume_block v ON b.volume_block_id=v.id",
+                "join volume_block v ON b.volume_block_id = v.id",
                 "join struct s ON b.struct_id = s.id");
     }
 }

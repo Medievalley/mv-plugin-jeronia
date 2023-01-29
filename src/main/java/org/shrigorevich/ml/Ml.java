@@ -14,6 +14,7 @@ import org.shrigorevich.ml.admin.NpcAdminService;
 import org.shrigorevich.ml.admin.NpcAdminServiceImpl;
 import org.shrigorevich.ml.admin.StructAdminService;
 import org.shrigorevich.ml.admin.StructAdminServiceImpl;
+import org.shrigorevich.ml.admin.handlers.AdminInteractHandler;
 import org.shrigorevich.ml.commands.NpcExecutor;
 import org.shrigorevich.ml.commands.ScoreBoardExecutor;
 import org.shrigorevich.ml.commands.StructureExecutor;
@@ -128,6 +129,8 @@ public final class Ml extends JavaPlugin implements AdventurePlugin {
         pm.registerEvents(new DangerHandler(taskService, npcService), this);
         pm.registerEvents(new EntityDeathHandler(npcService, projectService, taskService, structService), this);
         pm.registerEvents(new BuildProjectHandler(projectService, scoreboardService, npcService, taskService, structService), this);
+        pm.registerEvents(new SetupStateHandler(structService, projectService, npcService, mobService, scoreboardService), this);
+        pm.registerEvents(new AdminInteractHandler(structAdminService, structService, npcService, npcAdminService, userService), this);
     }
 
     private void setupExecutors() {

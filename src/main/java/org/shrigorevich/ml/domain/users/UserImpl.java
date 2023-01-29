@@ -4,12 +4,12 @@ import org.shrigorevich.ml.domain.users.contracts.User;
 
 public class UserImpl implements User {
 
-    private final int id;
+    private final String id;
     private final String name;
     private final UserRole role;
     private int lives;
 
-    public UserImpl(int id, String name, UserRole role, int lives) {
+    public UserImpl(String id, String name, UserRole role, int lives) {
         this.id = id;
         this.name = name;
         this.role = role;
@@ -17,7 +17,7 @@ public class UserImpl implements User {
     }
 
     @Override
-    public int getId() {
+    public String getId() {
         return id;
     }
 

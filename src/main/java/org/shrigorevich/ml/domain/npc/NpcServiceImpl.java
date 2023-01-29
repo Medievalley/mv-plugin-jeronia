@@ -12,11 +12,8 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
 import org.shrigorevich.ml.common.BaseService;
-import org.shrigorevich.ml.common.CoordinatesImpl;
-import org.shrigorevich.ml.domain.callbacks.MsgCallback;
 import org.shrigorevich.ml.domain.npc.contracts.*;
 import org.shrigorevich.ml.domain.npc.models.StructNpcModel;
-import org.shrigorevich.ml.domain.npc.models.StructNpcModelImpl;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -39,13 +36,13 @@ public class NpcServiceImpl extends BaseService implements NpcService {
     public void commitNpc(DraftNpc npc) throws Exception {
         try {
             int id = context.save(npc);
-            load(id);
+            setup(id);
         } catch (Exception ex) {
             throw new Exception(String.format("Error while committing npc: %s", npc.toString()));
         }
     }
 
-    public void load() {
+    public void setup() throws Exception {
         try {
             List<StructNpcModel> models = context.get();
             for (StructNpcModel m : models) {
@@ -57,10 +54,11 @@ public class NpcServiceImpl extends BaseService implements NpcService {
             }
         } catch (Exception ex) {
             getLogger().error(ex.getMessage());
+            throw new Exception("Error while setup npc service");
         }
     }
 
-    public void load(int id) {
+    public void setup(int id) {
         try {
             Optional<StructNpcModel> npc = context.get(id);
             npc.ifPresent(this::spawn);
@@ -96,7 +94,11 @@ public class NpcServiceImpl extends BaseService implements NpcService {
             }
         }
         npcList.clear();
-        load();
+        try {
+            setup();
+        } catch (Exception ex) {
+            getLogger().error(ex.getMessage());
+        }
     }
 
     @Override
@@ -109,7 +111,7 @@ public class NpcServiceImpl extends BaseService implements NpcService {
                     e.remove();
                 }
                 npcList.remove(npc.getEntityId());
-                load(npc.getId());
+                setup(npc.getId());
             }
 
             if (structNpcList.size() == 0) {

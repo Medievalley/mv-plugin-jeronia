@@ -1,7 +1,7 @@
 package org.shrigorevich.ml.domain.users.models;
 
 public interface UserModel {
-    int getId();
+    String getId();
     String getName();
     String getIp();
     boolean isVerified();

@@ -102,7 +102,7 @@ public class EntityDeathHandler implements Listener {
                     System.out.println("Current project updated");
                 }
             }
-            case HARVESTER, default -> {
+            default -> {
             }
         }
         clearNpcData(npc);

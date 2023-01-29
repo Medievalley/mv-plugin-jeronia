@@ -76,7 +76,7 @@ CREATE TABLE IF NOT EXISTS struct_block (
     id SERIAL PRIMARY KEY,
     struct_id INTEGER references struct (id) ON DELETE CASCADE ON UPDATE CASCADE,
     volume_block_id INTEGER references volume_block (id) ON DELETE CASCADE ON UPDATE CASCADE,
-    type_id INTEGER references struct_block_type (id) ON DELETE SET NULL ON UPDATE CASCADE,
+    type_id INTEGER references struct_block_type (id) ON DELETE SET NULL ON UPDATE CASCADE DEFAULT 1,
     hp_trigger BOOLEAN DEFAULT true,
     broken BOOLEAN DEFAULT false NOT NULL
 );
@@ -105,8 +105,9 @@ VALUES (2, 'Moder', 'Game server moderator'),
 VALUES (3, 'Player', 'Default player');
 
 INSERT INTO struct_type (id, name, description) VALUES
-(1, 'private', 'Private territory that each user can own'),
-(2, 'lore', 'Lore structure that normally cannot be destroyed'),
+(1, 'main', 'Main lore structure'),
+(2, 'agronomic', 'Food structure'),
+(4, 'private', 'player`s private structure'),
 (3, 'abode', 'Structure - adobe of monsters');
 
 INSERT INTO npc_role (id, name, description) VALUES
@@ -117,6 +118,7 @@ INSERT INTO npc_role (id, name, description) VALUES
 INSERT INTO struct_block_type (id, name, description) VALUES
 (1, 'default', 'block without special behavior'),
 (2, 'abode spawn', 'Block where monsters spawn in the abode');
+
 -- MOCK SCRIPT
  with rows as (
      insert into users(

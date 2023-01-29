@@ -51,7 +51,7 @@ public class CustomSpawn implements Listener {
 
                 switch (npc.get().getRole()) {
                     case HARVESTER -> assignToStruct(npc.get(), entity);
-                    case WARDEN, BUILDER,
+                    case WARDEN, BUILDER -> {}
                     default -> {
                     }
                 }

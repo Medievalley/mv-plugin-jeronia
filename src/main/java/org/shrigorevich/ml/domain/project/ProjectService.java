@@ -11,6 +11,8 @@ public interface ProjectService extends Service {
     void addProject(BuildProject project);
     void finalizeProject(int structId);
     int getResources();
-    int getStorageId();
-    void setup();
+    int getDeposit();
+    void updateResources(int amount);
+    void updateDeposit(int amount);
+    void setup() throws Exception;
 }

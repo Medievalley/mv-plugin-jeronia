@@ -203,7 +203,6 @@ public class StructureServiceImpl extends BaseService implements StructureServic
                 case MAIN -> {
                     return new MainStructure(s, blocks);
                 }
-                case PRIVATE, MOB_ABODE,
                 default -> throw new IllegalArgumentException(
                     String.format("Structure type: %d is not supported", s.getTypeId()));
             }
@@ -245,7 +244,7 @@ public class StructureServiceImpl extends BaseService implements StructureServic
     }
 
     @Override
-    public void load() throws Exception {
+    public void setup() throws Exception {
         try {
             List<StructModel> structs = context.getStructures();
             HashMap<Integer, List<StructBlock>> blocksPerStruct = new HashMap<>();
@@ -268,6 +267,7 @@ public class StructureServiceImpl extends BaseService implements StructureServic
             }
 
         } catch (Exception ex) {
+            getLogger().error(ex.getMessage());
             throw new Exception("Error while loading structures");
         }
     }
