@@ -12,6 +12,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 import org.shrigorevich.ml.admin.NpcAdminService;
 import org.shrigorevich.ml.admin.StructAdminService;
 import org.shrigorevich.ml.domain.ai.goals.HoldGoal;
@@ -115,7 +116,6 @@ public class AdminInteractHandler implements Listener {
         Block b = event.getClickedBlock();
         Block highest = b.getWorld().getHighestBlockAt(b.getLocation(), HeightMap.MOTION_BLOCKING_NO_LEAVES);
         event.getPlayer().sendMessage(String.format("Highest block: %d %d %d", highest.getX(), highest.getY(), highest.getZ()));
-
 //        if (b.getBlockData() instanceof Ageable) {
 //            event.getPlayer().sendMessage(String.format("Age: %s", ((Ageable) b.getBlockData()).getAge()));
 //        }

@@ -7,6 +7,7 @@ import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
+import org.bukkit.event.Event;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -135,7 +136,7 @@ public final class Ml extends JavaPlugin implements MlPlugin {
         pm.registerEvents(new BuildProjectHandler(projectService, scoreboardService, npcService, taskService, structService), this);
         pm.registerEvents(new SetupStateHandler(structService, projectService, npcService, mobService, scoreboardService), this);
         pm.registerEvents(new AdminInteractHandler(structAdminService, structService, npcService, npcAdminService, userService), this);
-        pm.registerEvents(new EnemySpawnHandler(config, this), this);
+        pm.registerEvents(new SpawnTimersHandler(config, this), this);
     }
 
     private void setupExecutors() {
@@ -179,7 +180,12 @@ public final class Ml extends JavaPlugin implements MlPlugin {
         }
     }
 
+    @Override
     public BukkitScheduler getScheduler() {
-        return this.getScheduler();
+        return getServer().getScheduler();
+    }
+    @Override
+    public void callEvent(Event event) {
+        getServer().getPluginManager().callEvent(event);
     }
 }

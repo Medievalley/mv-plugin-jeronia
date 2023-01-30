@@ -11,7 +11,7 @@ import org.shrigorevich.ml.config.MlConfiguration;
 import org.shrigorevich.ml.domain.mob.events.*;
 
 
-public class EnemySpawnHandler implements Listener {
+public class SpawnTimersHandler implements Listener {
 
     private BukkitTask regularSpawnTask;
     private BukkitTask waveSpawnTask;
@@ -19,7 +19,7 @@ public class EnemySpawnHandler implements Listener {
     private final MlConfiguration config;
     private final MlPlugin plugin;
 
-    public EnemySpawnHandler(MlConfiguration config, MlPlugin plugin) {
+    public SpawnTimersHandler(MlConfiguration config, MlPlugin plugin) {
         this.logger = LogManager.getLogger("EnemySpawnHandler");
         this.config = config;
         this.plugin = plugin;
@@ -29,8 +29,8 @@ public class EnemySpawnHandler implements Listener {
     public void OnRunRegularTimer(RunRegularSpawnTimerEvent event) {
         if (regularSpawnTask != null) {
             regularSpawnTask = plugin.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
-
-            }, 5, 5); //TODO: get from config
+                plugin.callEvent(new SpawnRegularMobsEvent());
+            }, 30, config.getRegSpawnInterval() * 20L); //info: 20 ticks = 1s
         } else {
             logger.info("Regular spawn task does not exist");
         }

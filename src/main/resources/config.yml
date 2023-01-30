@@ -7,9 +7,9 @@ database:
   poolSize: 8
 
 mob_spawn:
-  regular_spawn_interval: 1 # min
+  regular_spawn_interval: 45 # sec
   #not loaded
-  wave_spawn_interval: 15 # min
+  wave_spawn_interval: 600 # sec
 
 #not loaded
 enemy_power:

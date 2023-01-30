@@ -17,14 +17,16 @@ public class ConfigurationImpl implements MlConfiguration {
 
     public void reload() {
         this.database = new DatabaseConfImpl(Objects.requireNonNull(
-                plugin.getConfig().getConfigurationSection("database")).getValues(false));
+            plugin.getConfig().getConfigurationSection("database")).getValues(false));
         this.mobSpawn = new MobSpawn(Objects.requireNonNull(
-                plugin.getConfig().getConfigurationSection("mob_spawn")).getValues(false));
-
+            plugin.getConfig().getConfigurationSection("mob_spawn")).getValues(false));
     }
 
     public void updateRegSpawnInterval(int value) {
-        mobSpawn.regSpawnInterval = value;
+        mobSpawn.setRegSpawnInterval(value);
+    }
+    public int getRegSpawnInterval() {
+        return mobSpawn.getRegSpawnInterval();
     }
 
     public Plugin getPlugin() {

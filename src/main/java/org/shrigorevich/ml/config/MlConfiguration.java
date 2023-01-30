@@ -6,5 +6,6 @@ public interface MlConfiguration {
 
     void updateRegSpawnInterval(int value);
     DatabaseConf getDb();
+    int getRegSpawnInterval();
     Plugin getPlugin();
 }
