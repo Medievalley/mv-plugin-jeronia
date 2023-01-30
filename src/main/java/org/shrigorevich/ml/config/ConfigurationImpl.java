@@ -7,6 +7,7 @@ import java.util.Objects;
 public class ConfigurationImpl implements MlConfiguration {
     private final Plugin plugin;
 
+    private EnemyPowerConf enemyPowerConf;
     private DatabaseConf database;
     private MobSpawn mobSpawn;
 
@@ -16,6 +17,8 @@ public class ConfigurationImpl implements MlConfiguration {
     }
 
     public void reload() {
+        this.enemyPowerConf = new EnemyPowerConfImpl(Objects.requireNonNull(
+                plugin.getConfig().getConfigurationSection("enemy_power")).getValues(false));
         this.database = new DatabaseConfImpl(Objects.requireNonNull(
             plugin.getConfig().getConfigurationSection("database")).getValues(false));
         this.mobSpawn = new MobSpawn(Objects.requireNonNull(
@@ -27,6 +30,11 @@ public class ConfigurationImpl implements MlConfiguration {
     }
     public int getRegSpawnInterval() {
         return mobSpawn.getRegSpawnInterval();
+    }
+
+    @Override
+    public double getPlayerFactor() {
+        return enemyPowerConf.getPlayersFactor();
     }
 
     public Plugin getPlugin() {

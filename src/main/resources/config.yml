@@ -13,6 +13,6 @@ mob_spawn:
 
 #not loaded
 enemy_power:
-  regular_number_players_factor: 1.0 # PlayersCountMultiplier for Number of single spawned mobs
+  players_factor: 2.0 # PlayersCountMultiplier for spawned mobs power
   days_factor: 1.0 # DaysCountMultiplier
 

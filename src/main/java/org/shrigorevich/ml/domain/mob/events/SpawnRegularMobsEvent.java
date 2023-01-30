@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class SpawnRegularMobsEvent extends Event {
 
-    private boolean powerOverridden;
+    private boolean powerDefined;
     private int power;
     private static final HandlerList HANDLERS = new HandlerList();
 
@@ -14,7 +14,7 @@ public class SpawnRegularMobsEvent extends Event {
 
     public SpawnRegularMobsEvent(int power) {
         this.power = power;
-        this.powerOverridden = true;
+        this.powerDefined = true;
     }
 
     @Override
@@ -26,8 +26,8 @@ public class SpawnRegularMobsEvent extends Event {
         return HANDLERS;
     }
 
-    public boolean isPowerOverridden() {
-        return powerOverridden;
+    public boolean isPowerDefined() {
+        return powerDefined;
     }
 
     public int getPower() {

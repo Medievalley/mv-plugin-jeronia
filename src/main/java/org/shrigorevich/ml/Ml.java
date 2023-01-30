@@ -137,6 +137,7 @@ public final class Ml extends JavaPlugin implements MlPlugin {
         pm.registerEvents(new SetupStateHandler(structService, projectService, npcService, mobService, scoreboardService), this);
         pm.registerEvents(new AdminInteractHandler(structAdminService, structService, npcService, npcAdminService, userService), this);
         pm.registerEvents(new SpawnTimersHandler(config, this), this);
+        pm.registerEvents(new SpawnEnemyHandler(structService, mobService, config, this), this);
     }
 
     private void setupExecutors() {
