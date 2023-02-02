@@ -7,6 +7,7 @@ database:
   poolSize: 8
 
 mob_spawn:
+  max_qty: 70
   regular_spawn_interval: 45 # sec
   #not loaded
   wave_spawn_interval: 600 # sec

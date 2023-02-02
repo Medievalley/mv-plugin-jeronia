@@ -25,22 +25,34 @@ public class ConfigurationImpl implements MlConfiguration {
             plugin.getConfig().getConfigurationSection("mob_spawn")).getValues(false));
     }
 
+    //MOB SPAWN START
+    @Override
     public void updateRegSpawnInterval(int value) {
         mobSpawn.setRegSpawnInterval(value);
     }
+    @Override
     public int getRegSpawnInterval() {
         return mobSpawn.getRegSpawnInterval();
     }
-
     @Override
-    public double getPlayerFactor() {
+    public int getMaxMobQty() {
+        return mobSpawn.getMaxMobQty();
+    }
+    //MOB SPAWN END
+
+    //ENEMY POWER START
+    @Override
+    public double getRegSpawnPlayersFactor() {
         return enemyPowerConf.getPlayersFactor();
     }
+    //ENEMY POWER END
 
+    @Override
     public Plugin getPlugin() {
         return plugin;
     }
 
+    @Override
     public DatabaseConf getDb() {
         return database;
     }

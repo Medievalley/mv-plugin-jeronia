@@ -6,16 +6,9 @@ import org.jetbrains.annotations.NotNull;
 
 public class SpawnRegularMobsEvent extends Event {
 
-    private boolean powerDefined;
-    private int power;
     private static final HandlerList HANDLERS = new HandlerList();
 
     public SpawnRegularMobsEvent() {}
-
-    public SpawnRegularMobsEvent(int power) {
-        this.power = power;
-        this.powerDefined = true;
-    }
 
     @Override
     public @NotNull HandlerList getHandlers() {
@@ -24,13 +17,5 @@ public class SpawnRegularMobsEvent extends Event {
 
     public static HandlerList getHandlerList() {
         return HANDLERS;
-    }
-
-    public boolean isPowerDefined() {
-        return powerDefined;
-    }
-
-    public int getPower() {
-        return power;
     }
 }

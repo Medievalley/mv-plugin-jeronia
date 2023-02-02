@@ -1,5 +1,6 @@
 package org.shrigorevich.ml.listeners;
 
+import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.shrigorevich.ml.MlPlugin;
@@ -8,6 +9,9 @@ import org.shrigorevich.ml.domain.mob.MobService;
 import org.shrigorevich.ml.domain.mob.events.SpawnRegularMobsEvent;
 import org.shrigorevich.ml.domain.mob.events.SpawnWaveEvent;
 import org.shrigorevich.ml.domain.structure.StructureService;
+
+import java.util.Comparator;
+import java.util.List;
 
 public class SpawnEnemyHandler implements Listener {
     private final StructureService structSvc;
@@ -24,11 +28,12 @@ public class SpawnEnemyHandler implements Listener {
 
     @EventHandler
     public void OnRegularSpawn(SpawnRegularMobsEvent event) {
-        if (event.isPowerDefined()) {
-            int power = event.getPower();
-        } else {
-            int power = getPower();
-        }
+        int availableQty = config.getMaxMobQty() - mobSvc.getCurrentQuantity();
+        int powerToSpawn = getPower() - mobSvc.getCurrentPower();
+        List<EntityType> mobTypes = mobSvc.getMobTypesForRegSpawn();
+        int quantityToSpawn = powerToSpawn / getMinMobPower();
+
+
     }
 
     @EventHandler
@@ -36,7 +41,11 @@ public class SpawnEnemyHandler implements Listener {
 
     }
 
+    private int getMinMobPower() {
+        return mobSvc.getMobTypesForRegSpawn().stream().min(Comparator.comparingInt(mobSvc::getMobPower))
+            .map(mobSvc::getMobPower).orElse(1); //TODO: hardcoded
+    }
     private int getPower() {
-        return (int) Math.floor(plugin.getServer().getOnlinePlayers().size() * config.getPlayerFactor()); //TODO: use players factor;
+        return (int) Math.floor(plugin.getServer().getOnlinePlayers().size() * config.getRegSpawnPlayersFactor()); //TODO: use players factor;
     }
 }

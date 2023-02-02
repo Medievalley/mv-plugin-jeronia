@@ -6,6 +6,7 @@ import net.kyori.adventure.text.Component;
 import org.apache.logging.log4j.LogManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -14,23 +15,24 @@ import org.shrigorevich.ml.common.BaseService;
 import org.shrigorevich.ml.domain.mob.models.SkullModel;
 import org.shrigorevich.ml.domain.mob.models.SkullModelImpl;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
+
+import static org.bukkit.entity.EntityType.*;
 
 public class MobServiceImpl extends BaseService implements MobService {
 
     private final Map<EntityType, SkullModel> skulls;
+    private final Map<UUID, Entity> mobs;
+    private final List<EntityType> mobTypesForRegSpawn;
     private final PlayerProfile profile;
 
     public MobServiceImpl(Plugin plugin) {
         super(plugin, LogManager.getLogger());
         this.skulls = new HashMap<>();
+        this.mobs = new HashMap<>();
+        this.mobTypesForRegSpawn = new ArrayList<>(List.of(ZOMBIE, SKELETON, SPIDER));
         this.profile = Bukkit.getServer().createProfile(UUID.randomUUID());
     }
-
-
 
     @Override
     public ItemStack getSkull(EntityType type) {
@@ -52,13 +54,56 @@ public class MobServiceImpl extends BaseService implements MobService {
         SkullModelImpl skeletonSkull = new SkullModelImpl();
         skeletonSkull.setName("Skeleton");
         skeletonSkull.setSkin("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWQ0NmViNjQyZGMzYTRkZmJiNWFkNTI5N2VkYWUyOTk2ZWE0Y2ZmZjkyYWMyZWI1NmRmYWU5ZWUxZDU4ZTQwOCJ9fX0=");
-        skeletonSkull.setType(EntityType.SKELETON.toString());
-        skulls.put(EntityType.SKELETON, skeletonSkull);
+        skeletonSkull.setType(SKELETON.toString());
+        skulls.put(SKELETON, skeletonSkull);
 
         SkullModelImpl zombieSkull = new SkullModelImpl();
         zombieSkull.setName("Zombie");
         zombieSkull.setSkin("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmVmYzQ2YzdhZWE0NjAwZGRhY2MwNmEzNGY4ZWYxN2VhNWM4MTFiNWRiNTRlNjk4NWUzYWU5MjZmOWRlODE0NyJ9fX0=");
-        zombieSkull.setType(EntityType.ZOMBIE.toString());
-        skulls.put(EntityType.ZOMBIE, zombieSkull);
+        zombieSkull.setType(ZOMBIE.toString());
+        skulls.put(ZOMBIE, zombieSkull);
+    }
+
+    @Override
+    public void addMob(Entity entity) {
+        mobs.put(entity.getUniqueId(), entity);
+    }
+
+    @Override
+    public void remove(Entity entity) {
+        mobs.remove(entity.getUniqueId());
+    }
+
+    @Override
+    public int getCurrentPower() {
+        int power = 0;
+        for (Entity e : mobs.values()) power += getMobPower(e.getType());
+        return power;
+    }
+
+    @Override
+    public List<EntityType> getMobTypesForRegSpawn() {
+        return mobTypesForRegSpawn;
+    }
+
+    //TODO: get from config
+    @Override
+    public int getMobPower(EntityType type) {
+        switch (type) {
+            case ZOMBIE, SPIDER, SKELETON -> {
+                return 1;
+            }
+            case CREEPER -> {
+                return 2;
+            }
+            default -> {
+                return 0;
+            }
+        }
+    }
+
+    @Override
+    public int getCurrentQuantity() {
+        return mobs.size();
     }
 }

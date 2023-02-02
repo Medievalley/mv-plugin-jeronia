@@ -7,6 +7,7 @@ public interface MlConfiguration {
     void updateRegSpawnInterval(int value);
     DatabaseConf getDb();
     int getRegSpawnInterval();
-    double getPlayerFactor();
+    double getRegSpawnPlayersFactor();
+    int getMaxMobQty();
     Plugin getPlugin();
 }
