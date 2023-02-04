@@ -31,9 +31,9 @@ public class SpawnEnemyHandler implements Listener {
         int availableQty = config.getMaxMobQty() - mobSvc.getCurrentQuantity();
         int powerToSpawn = getPower() - mobSvc.getCurrentPower();
         List<EntityType> mobTypes = mobSvc.getMobTypesForRegSpawn();
-        int quantityToSpawn = powerToSpawn / getMinMobPower();
-
-
+        int powerPerType = powerToSpawn / mobTypes.size();
+        //TODO: create array with spawned mobs. Spawn while qty available
+//        int quantityToSpawn = powerToSpawn / getMinMobPower();
     }
 
     @EventHandler
