@@ -1,4 +1,4 @@
-package org.shrigorevich.ml.listeners;
+package org.shrigorevich.ml.handlers;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -10,12 +10,9 @@ import org.shrigorevich.ml.config.MlConfiguration;
 import org.shrigorevich.ml.domain.mob.MobService;
 import org.shrigorevich.ml.domain.mob.events.SpawnRegularMobsEvent;
 import org.shrigorevich.ml.domain.mob.events.SpawnWaveEvent;
-import org.shrigorevich.ml.domain.structure.StructureService;
+import org.shrigorevich.ml.domain.structure.*;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class SpawnEnemyHandler implements Listener {
     private final StructureService structSvc;
@@ -42,6 +39,11 @@ public class SpawnEnemyHandler implements Listener {
             qtyToSpawnPerType.put(t, Math.min(powerPerType / mobSvc.getMobPower(t), qtyPerType));
             logger.debug(String.format("Type: %s. Qty: %d", t.toString(), qtyToSpawnPerType.get(t)));
         }
+        Queue<StructBlock> spawns = new LinkedList<>();
+        for (Structure s : structSvc.getStructs(StructureType.REGULAR_ABODE)) {
+            spawns.addAll(((AbodeStructure)s).getSpawnBlocks());
+        }
+
     }
 
     @EventHandler

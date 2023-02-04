@@ -1,4 +1,4 @@
-package org.shrigorevich.ml.listeners;
+package org.shrigorevich.ml.handlers;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;

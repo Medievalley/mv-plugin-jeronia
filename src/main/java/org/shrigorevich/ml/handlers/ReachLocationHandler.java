@@ -1,4 +1,4 @@
-package org.shrigorevich.ml.listeners;
+package org.shrigorevich.ml.handlers;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;

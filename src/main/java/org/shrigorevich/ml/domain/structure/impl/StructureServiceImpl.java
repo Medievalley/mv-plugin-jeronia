@@ -37,6 +37,11 @@ public class StructureServiceImpl extends BaseService implements StructureServic
     }
 
     @Override
+    public List<Structure> getStructs(StructureType type) {
+        return structures.values().stream().filter(s -> s.getType() == StructureType.REGULAR_ABODE).toList();
+    }
+
+    @Override
     public List<Structure> getDamagedStructs() {
         return structures.values().stream().filter(s -> s instanceof TownInfra ti && ti.getBrokenBlocks().size() > 0).toList();
     }

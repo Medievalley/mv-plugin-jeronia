@@ -1,4 +1,4 @@
-package org.shrigorevich.ml.listeners;
+package org.shrigorevich.ml.handlers;
 
 import net.kyori.adventure.text.Component;
 import org.apache.logging.log4j.LogManager;

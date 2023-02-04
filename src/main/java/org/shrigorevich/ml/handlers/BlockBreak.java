@@ -1,4 +1,4 @@
-package org.shrigorevich.ml.listeners;
+package org.shrigorevich.ml.handlers;
 import com.destroystokyo.paper.event.block.BlockDestroyEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
@@ -33,6 +33,7 @@ public class BlockBreak implements Listener {
         processDestroyedBlocksAsync(event.blockList());
     }
 
+    //TODO: need to overload
     private void processDestroyedBlocksAsync(List<Block> blocks) {
         List<StructBlock> brokenBlocks = new ArrayList<>();
         for (Block block : blocks) {

@@ -46,7 +46,7 @@ import org.shrigorevich.ml.domain.users.UserContextImpl;
 import org.shrigorevich.ml.domain.users.UserServiceImpl;
 import org.shrigorevich.ml.domain.project.ProjectService;
 import org.shrigorevich.ml.domain.project.ProjectServiceImpl;
-import org.shrigorevich.ml.listeners.*;
+import org.shrigorevich.ml.handlers.*;
 
 import javax.sql.DataSource;
 import java.util.Objects;

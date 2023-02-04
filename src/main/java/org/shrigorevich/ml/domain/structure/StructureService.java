@@ -12,6 +12,7 @@ public interface StructureService extends Service {
 
     void setup() throws Exception;
     Optional<Structure> getStruct(int id);
+    List<Structure> getStructs(StructureType type);
     List<Structure> getDamagedStructs();
     Optional<Structure> getByLocation(Location location);
     void setBlocksBroken(List<StructBlock> blocks);
