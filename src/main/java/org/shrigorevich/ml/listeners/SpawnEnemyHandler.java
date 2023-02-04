@@ -1,5 +1,7 @@
 package org.shrigorevich.ml.listeners;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -11,29 +13,35 @@ import org.shrigorevich.ml.domain.mob.events.SpawnWaveEvent;
 import org.shrigorevich.ml.domain.structure.StructureService;
 
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SpawnEnemyHandler implements Listener {
     private final StructureService structSvc;
     private final MobService mobSvc;
     private final MlConfiguration config;
     private final MlPlugin plugin;
+    private final Logger logger;
 
     public SpawnEnemyHandler(StructureService structSvc, MobService mobSvc, MlConfiguration config, MlPlugin plugin) {
         this.config = config;
         this.plugin = plugin;
         this.structSvc = structSvc;
         this.mobSvc = mobSvc;
+        this.logger = LogManager.getLogger("SpawnEnemyHandler");
     }
 
     @EventHandler
     public void OnRegularSpawn(SpawnRegularMobsEvent event) {
-        int availableQty = config.getMaxMobQty() - mobSvc.getCurrentQuantity();
-        int powerToSpawn = getPower() - mobSvc.getCurrentPower();
-        List<EntityType> mobTypes = mobSvc.getMobTypesForRegSpawn();
-        int powerPerType = powerToSpawn / mobTypes.size();
-        //TODO: create array with spawned mobs. Spawn while qty available
-//        int quantityToSpawn = powerToSpawn / getMinMobPower();
+        int qtyPerType = (config.getMaxMobQty() - mobSvc.getCurrentQuantity()) / mobSvc.getMobTypesForRegSpawn().size();
+        int powerPerType = (getPower() - mobSvc.getCurrentPower()) / mobSvc.getMobTypesForRegSpawn().size();
+
+        Map<EntityType, Integer> qtyToSpawnPerType = new HashMap<>();
+        for (EntityType t : mobSvc.getMobTypesForRegSpawn()) {
+            qtyToSpawnPerType.put(t, Math.min(powerPerType / mobSvc.getMobPower(t), qtyPerType));
+            logger.debug(String.format("Type: %s. Qty: %d", t.toString(), qtyToSpawnPerType.get(t)));
+        }
     }
 
     @EventHandler
