@@ -22,7 +22,7 @@ import static org.bukkit.entity.EntityType.*;
 public class MobServiceImpl extends BaseService implements MobService {
 
     private final Map<EntityType, SkullModel> skulls;
-    private final Map<UUID, Entity> mobs;
+    private final Map<UUID, CustomMob> mobs;
     private final List<EntityType> mobTypesForRegSpawn;
     private final PlayerProfile profile;
 
@@ -65,8 +65,8 @@ public class MobServiceImpl extends BaseService implements MobService {
     }
 
     @Override
-    public void addMob(Entity entity) {
-        mobs.put(entity.getUniqueId(), entity);
+    public void addMob(Entity entity, int power) {
+        mobs.put(entity.getUniqueId(), new CustomMobImpl(entity, power));
     }
 
     @Override
@@ -77,29 +77,13 @@ public class MobServiceImpl extends BaseService implements MobService {
     @Override
     public int getCurrentPower() {
         int power = 0;
-        for (Entity e : mobs.values()) power += getMobPower(e.getType());
+        for (CustomMob m : mobs.values()) power += m.getPower();
         return power;
     }
 
     @Override
     public List<EntityType> getMobTypesForRegSpawn() {
         return mobTypesForRegSpawn;
-    }
-
-    //TODO: get from config
-    @Override
-    public int getMobPower(EntityType type) {
-        switch (type) {
-            case ZOMBIE, SPIDER, SKELETON -> {
-                return 1;
-            }
-            case CREEPER -> {
-                return 2;
-            }
-            default -> {
-                return 0;
-            }
-        }
     }
 
     @Override

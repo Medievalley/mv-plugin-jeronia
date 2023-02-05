@@ -2,9 +2,12 @@ package org.shrigorevich.ml.handlers;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.bukkit.entity.EntityType;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.shrigorevich.ml.MlPlugin;
 import org.shrigorevich.ml.config.MlConfiguration;
 import org.shrigorevich.ml.domain.mob.MobService;
@@ -20,6 +23,8 @@ public class SpawnEnemyHandler implements Listener {
     private final MlConfiguration config;
     private final MlPlugin plugin;
     private final Logger logger;
+    private final Queue<StructBlock> regSpawns;
+    private final World world;
 
     public SpawnEnemyHandler(StructureService structSvc, MobService mobSvc, MlConfiguration config, MlPlugin plugin) {
         this.config = config;
@@ -27,23 +32,32 @@ public class SpawnEnemyHandler implements Listener {
         this.structSvc = structSvc;
         this.mobSvc = mobSvc;
         this.logger = LogManager.getLogger("SpawnEnemyHandler");
+        this.regSpawns = new LinkedList<>();
+
+        for (Structure s : structSvc.getStructs(StructureType.REGULAR_ABODE)) {
+            regSpawns.addAll(((AbodeStructure)s).getSpawnBlocks());
+        }
+        this.world = plugin.getServer().getWorld("world"); //TODO: Hardcoded world
     }
 
     @EventHandler
     public void OnRegularSpawn(SpawnRegularMobsEvent event) {
-        int qtyPerType = (config.getMaxMobQty() - mobSvc.getCurrentQuantity()) / mobSvc.getMobTypesForRegSpawn().size();
-        int powerPerType = (getPower() - mobSvc.getCurrentPower()) / mobSvc.getMobTypesForRegSpawn().size();
 
-        Map<EntityType, Integer> qtyToSpawnPerType = new HashMap<>();
-        for (EntityType t : mobSvc.getMobTypesForRegSpawn()) {
-            qtyToSpawnPerType.put(t, Math.min(powerPerType / mobSvc.getMobPower(t), qtyPerType));
-            logger.debug(String.format("Type: %s. Qty: %d", t.toString(), qtyToSpawnPerType.get(t)));
-        }
-        Queue<StructBlock> spawns = new LinkedList<>();
-        for (Structure s : structSvc.getStructs(StructureType.REGULAR_ABODE)) {
-            spawns.addAll(((AbodeStructure)s).getSpawnBlocks());
-        }
+        List<EntityType> mobTypes = mobSvc.getMobTypesForRegSpawn();
+        int allowedQtyPerType = (config.getMaxMobQty() - mobSvc.getCurrentQuantity()) / mobTypes.size() + 1;
+        int powerPerType = (getPower() - mobSvc.getCurrentPower()) / mobTypes.size();
 
+        if (config.getMaxMobQty() <= 0 || allowedQtyPerType <= 0 || powerPerType <= 0) return;
+
+        for (EntityType t : mobTypes) {
+            int qty = powerPerType / getDefaultMobPower(t);
+            int extraQty = qty - allowedQtyPerType;
+            if (extraQty > 0) {
+                spawnEntities(t, allowedQtyPerType - extraQty, 0);
+                spawnEntities(t, extraQty, getDefaultMobPower(t) * 2);
+            }
+            logger.debug(String.format("Type: %s. Qty: %d", t.toString(), qty));
+        }
     }
 
     @EventHandler
@@ -51,11 +65,61 @@ public class SpawnEnemyHandler implements Listener {
 
     }
 
-    private int getMinMobPower() {
-        return mobSvc.getMobTypesForRegSpawn().stream().min(Comparator.comparingInt(mobSvc::getMobPower))
-            .map(mobSvc::getMobPower).orElse(1); //TODO: hardcoded
-    }
     private int getPower() {
         return (int) Math.floor(plugin.getServer().getOnlinePlayers().size() * config.getRegSpawnPlayersFactor()); //TODO: use players factor;
+    }
+
+    private void spawnEntities(EntityType type, int qty, int extraPower) {
+
+        for (int i = 0; i < qty; i++) {
+            StructBlock b = regSpawns.poll();
+            if (b != null) {
+                world.spawnEntity(
+                    new Location(world, b.getX(), b.getY(), b.getZ()),
+                    EntityType.VILLAGER, CreatureSpawnEvent.SpawnReason.CUSTOM,
+                    (e) -> {
+                        if (extraPower > 0) boostEntity(e, extraPower);
+                    }
+                );
+            }
+        }
+    }
+
+    private void boostEntity(Entity entity, int power) {
+        switch (entity.getType()) {
+            case ZOMBIE -> boostZombie((Zombie) entity, power);
+            case SKELETON -> boostSkeleton((Skeleton) entity, power);
+            case SPIDER -> boostSpider((Spider) entity, power);
+            default -> {
+                ((Mob) entity).setHealth(((Mob) entity).getHealth() * 2);
+            }
+        }
+    }
+
+    private void boostZombie(Zombie zombie, int power) {
+
+    }
+
+    private void boostSkeleton(Skeleton skeleton, int power) {
+
+    }
+
+    private void boostSpider(Spider spider, int power) {
+
+    }
+
+    //TODO: get from config
+    public int getDefaultMobPower(EntityType type) {
+        switch (type) {
+            case ZOMBIE, SPIDER, SKELETON -> {
+                return 1;
+            }
+            case CREEPER -> {
+                return 2;
+            }
+            default -> {
+                return 0;
+            }
+        }
     }
 }

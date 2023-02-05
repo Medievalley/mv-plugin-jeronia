@@ -10,10 +10,8 @@ public interface MobService {
 
     ItemStack getSkull(EntityType type);
     void setup();
-
-    void addMob(Entity entity);
+    void addMob(Entity entity, int power);
     void remove(Entity entity);
-    int getMobPower(EntityType type);
     int getCurrentQuantity();
     int getCurrentPower();
     List<EntityType> getMobTypesForRegSpawn();
