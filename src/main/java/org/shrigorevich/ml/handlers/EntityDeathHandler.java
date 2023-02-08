@@ -26,6 +26,7 @@ import org.shrigorevich.ml.domain.structure.FoodStructure;
 import org.shrigorevich.ml.domain.structure.StructBlock;
 import org.shrigorevich.ml.domain.structure.StructureService;
 import org.shrigorevich.ml.domain.project.ProjectService;
+import org.shrigorevich.ml.domain.users.contracts.UserService;
 
 import java.util.*;
 
@@ -35,13 +36,15 @@ public class EntityDeathHandler implements Listener {
     private final ProjectService projectService;
     private final TaskService taskService;
     private final StructureService structService;
+    private final UserService userService;
     private final Logger logger;
 
-    public EntityDeathHandler(NpcService npcService, ProjectService projectService, TaskService taskService, StructureService structService) {
+    public EntityDeathHandler(NpcService npcService, ProjectService projectService, TaskService taskService, StructureService structService, UserService userService) {
         this.npcService = npcService;
         this.projectService = projectService;
         this.taskService = taskService;
         this.structService = structService;
+        this.userService = userService;
         this.logger = LogManager.getLogger("EntityDeathHandler");
     }
 
@@ -49,10 +52,25 @@ public class EntityDeathHandler implements Listener {
     public void OnEntityDeath(EntityDeathEvent event) {
         LivingEntity entity = event.getEntity();
         if (entity.getEntitySpawnReason() == CreatureSpawnEvent.SpawnReason.CUSTOM) {
-            if (entity.getType() == EntityType.VILLAGER) {
+            if(entity.getType() == EntityType.VILLAGER){
                 npcService.getById(entity.getUniqueId()).ifPresent(this::processNpcDeath);
+            } else {
+                updateKillStatistic(entity);
             }
-        } else if (getReward(entity.getType()) > 0){
+        }
+
+        giveReward(entity);
+    }
+
+    private void updateKillStatistic(LivingEntity entity){
+        if(entity.getKiller() != null){
+            userService.updateKillStatistics(entity.getKiller().getName(), entity.getType());
+        }
+    }
+
+    private void giveReward(LivingEntity entity)
+    {
+        if (getReward(entity.getType()) > 0) {
             ItemStack item = new ItemStack(Material.NETHER_STAR, getReward(entity.getType()));
             ItemMeta meta = item.getItemMeta();
             meta.displayName(Component.text("Jeron"));

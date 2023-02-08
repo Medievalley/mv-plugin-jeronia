@@ -1,5 +1,6 @@
 package org.shrigorevich.ml.domain.users.contracts;
 
+import org.bukkit.entity.EntityType;
 import org.shrigorevich.ml.common.Service;
 import org.shrigorevich.ml.domain.callbacks.IAccessCheckCallback;
 
@@ -12,5 +13,5 @@ public interface UserService extends Service {
 
     void addInOnlineList(User user);
     void removeFromOnlineList(String name);
-
+    void updateKillStatistics(String userName, EntityType entityType);
 }

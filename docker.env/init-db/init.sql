@@ -97,12 +97,20 @@ CREATE table IF NOT EXISTS struct_npc (
     alive BOOLEAN DEFAULT true NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS kill_stats (
+	id serial PRIMARY KEY,
+	user_id VARCHAR(150) references users (id) ON DELETE CASCADE ON UPDATE CASCADE,
+	entity_type VARCHAR (30) NULL,
+    kills integer NOT NUll DEFAULT 1,
+    UNIQUE (user_id, entity_type)
+);
+
 --CREATE UNIQUE INDEX vol_block_idx ON volume_block (volume_id, x, y, z);
 
 INSERT INTO role (id, name, description)
 VALUES (1, 'Admin', 'Most privileged role'),
-VALUES (2, 'Moder', 'Game server moderator'),
-VALUES (3, 'Player', 'Default player');
+(2, 'Moder', 'Game server moderator'),
+(3, 'Player', 'Default player');
 
 INSERT INTO struct_type (id, name, description) VALUES
 (1, 'main', 'Main lore structure'),
