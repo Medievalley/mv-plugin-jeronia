@@ -9,4 +9,10 @@ public class UserQueryBuilder {
                 String.format("WHERE u.login = '%s'", name));
     }
 
+    public String updateKillStatistics(String userId, String entityType){
+        return String.format("INSERT INTO kill_stats (user_id, entity_type) VALUES ('%s', '%s')\n" +
+                "ON CONFLICT (user_id, entity_type) DO\n" +
+                "UPDATE SET kills = kill_stats.kills + 1;", userId, entityType);
+    }
+
 }

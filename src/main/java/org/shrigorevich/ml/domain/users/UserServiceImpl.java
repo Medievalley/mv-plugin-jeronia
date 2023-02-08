@@ -1,6 +1,7 @@
 package org.shrigorevich.ml.domain.users;
 
 import org.apache.logging.log4j.LogManager;
+import org.bukkit.entity.EntityType;
 import org.bukkit.plugin.Plugin;
 import org.shrigorevich.ml.common.BaseService;
 import org.shrigorevich.ml.domain.callbacks.IAccessCheckCallback;
@@ -81,5 +82,17 @@ public class UserServiceImpl extends BaseService implements UserService {
 
     private boolean isUserValid(UserModel user) {
         return UserRole.valueOf(user.getRoleId()) != null;
+    }
+
+    public void updateKillStatistics(String userName, EntityType entityType){
+        try {
+            Optional<User> user = getFromOnlineList(userName);
+            if(user.isPresent())
+            {
+                userContext.updateKillStatistics(user.get().getId(), entityType.toString());
+            }
+        } catch (Exception e) {
+            getLogger().error(e.getMessage());
+        }
     }
 }

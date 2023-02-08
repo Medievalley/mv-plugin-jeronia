@@ -12,7 +12,6 @@ import org.shrigorevich.ml.domain.users.models.UserModelImpl;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Optional;
-import java.util.logging.Logger;
 
 public class UserContextImpl extends BaseContext implements UserContext {
 
@@ -36,6 +35,17 @@ public class UserContextImpl extends BaseContext implements UserContext {
         } catch (SQLException ex) {
             getLogger().error(ex.toString());
             throw new Exception(String.format("Error while getting user with name: %s", name));
+        }
+    }
+
+    public void updateKillStatistics(String userId, String entityType) throws Exception {
+        try {
+            QueryRunner run = new QueryRunner(getDataSource());
+            run.update(queryBuilder.updateKillStatistics(userId, entityType));
+        } catch (SQLException ex){
+            getLogger().error(ex.getMessage());
+            throw new Exception(String.format("Error while updating kill statistics with userId: %s and entityType: %s",
+                    userId, entityType));
         }
     }
 }
