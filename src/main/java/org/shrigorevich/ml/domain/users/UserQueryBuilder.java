@@ -15,4 +15,10 @@ public class UserQueryBuilder {
                 "UPDATE SET kills = kill_stats.kills + 1;", userId, entityType);
     }
 
+    public String updateDeathStatistics(String userId, String deathReason) {
+        return String.format("INSERT INTO death_stats (user_id, reason) VALUES ('%s', '%s')\n" +
+                "ON CONFLICT (user_id, reason) DO\n" +
+                "UPDATE SET deaths = death_stats.deaths + 1;", userId, deathReason);
+    }
+
 }

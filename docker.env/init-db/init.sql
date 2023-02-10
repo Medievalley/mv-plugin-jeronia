@@ -105,6 +105,14 @@ CREATE TABLE IF NOT EXISTS kill_stats (
     UNIQUE (user_id, entity_type)
 );
 
+CREATE TABLE IF NOT EXISTS death_stats (
+	id serial PRIMARY KEY,
+	user_id VARCHAR(150) references users (id) ON DELETE CASCADE ON UPDATE CASCADE,
+	reason VARCHAR (150) NULL,
+    deaths integer NOT NUll DEFAULT 1,
+    UNIQUE (user_id, reason)
+);
+
 --CREATE UNIQUE INDEX vol_block_idx ON volume_block (volume_id, x, y, z);
 
 INSERT INTO role (id, name, description)

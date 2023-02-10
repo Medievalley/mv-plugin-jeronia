@@ -95,4 +95,16 @@ public class UserServiceImpl extends BaseService implements UserService {
             getLogger().error(e.getMessage());
         }
     }
+
+    public void updateDeathStatistics(String userName, String deathReason) {
+        try {
+            Optional<User> user = getFromOnlineList(userName);
+            if(user.isPresent())
+            {
+                userContext.updateDeathStatistics(user.get().getId(), deathReason);
+            }
+        } catch (Exception e) {
+            getLogger().error(e.getMessage());
+        }
+    }
 }
