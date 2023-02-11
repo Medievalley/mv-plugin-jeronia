@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -97,7 +98,7 @@ public class SpawnEnemyHandler implements Listener {
     }
 
     private void boostZombie(Zombie zombie, int power) {
-
+//        zombie.getAttribute(Attribute.ZOMBIE_SPAWN_REINFORCEMENTS)
     }
 
     private void boostSkeleton(Skeleton skeleton, int power) {

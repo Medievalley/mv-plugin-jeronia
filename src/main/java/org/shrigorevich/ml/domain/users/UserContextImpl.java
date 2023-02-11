@@ -48,4 +48,16 @@ public class UserContextImpl extends BaseContext implements UserContext {
                     userId, entityType));
         }
     }
+
+    public void updateDeathStatistics(String userId, String deathReason) throws Exception {
+        try {
+            QueryRunner run = new QueryRunner(getDataSource());
+            run.update(queryBuilder.updateDeathStatistics(userId, deathReason));
+        } catch (SQLException ex){
+            getLogger().error(ex.toString());
+            throw new Exception(String.format("Error while updating death statistics with userId: %s and reason: %s",
+                    userId, deathReason));
+        }
+    }
+
 }

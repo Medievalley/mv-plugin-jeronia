@@ -14,4 +14,5 @@ public interface UserService extends Service {
     void addInOnlineList(User user);
     void removeFromOnlineList(String name);
     void updateKillStatistics(String userName, EntityType entityType);
+    void updateDeathStatistics(String userName, String deathReason);
 }
