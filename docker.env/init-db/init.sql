@@ -100,7 +100,7 @@ CREATE table IF NOT EXISTS struct_npc (
 CREATE TABLE IF NOT EXISTS kill_stats (
 	id serial PRIMARY KEY,
 	user_id VARCHAR(150) references users (id) ON DELETE CASCADE ON UPDATE CASCADE,
-	entity_type VARCHAR (30) NULL,
+	entity_type VARCHAR (30) NOT NULL,
     kills integer NOT NUll DEFAULT 1,
     UNIQUE (user_id, entity_type)
 );
@@ -108,7 +108,7 @@ CREATE TABLE IF NOT EXISTS kill_stats (
 CREATE TABLE IF NOT EXISTS death_stats (
 	id serial PRIMARY KEY,
 	user_id VARCHAR(150) references users (id) ON DELETE CASCADE ON UPDATE CASCADE,
-	reason VARCHAR (150) NULL,
+	reason VARCHAR (150) NOT NULL,
     deaths integer NOT NUll DEFAULT 1,
     UNIQUE (user_id, reason)
 );

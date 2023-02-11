@@ -85,26 +85,22 @@ public class UserServiceImpl extends BaseService implements UserService {
     }
 
     public void updateKillStatistics(String userName, EntityType entityType){
-        try {
-            Optional<User> user = getFromOnlineList(userName);
-            if(user.isPresent())
-            {
-                userContext.updateKillStatistics(user.get().getId(), entityType.toString());
+        getFromOnlineList(userName).ifPresentOrElse(user -> {
+            try {
+                userContext.updateKillStatistics(user.getId(), entityType.toString());
+            } catch (Exception e) {
+                getLogger().error(e.getMessage());
             }
-        } catch (Exception e) {
-            getLogger().error(e.getMessage());
-        }
+        }, () -> getLogger().error(String.format("User named %s is not in the online list", userName)));
     }
 
     public void updateDeathStatistics(String userName, String deathReason) {
-        try {
-            Optional<User> user = getFromOnlineList(userName);
-            if(user.isPresent())
-            {
-                userContext.updateDeathStatistics(user.get().getId(), deathReason);
+        getFromOnlineList(userName).ifPresentOrElse(user -> {
+            try {
+                userContext.updateDeathStatistics(user.getId(), deathReason);
+            } catch (Exception e) {
+                getLogger().error(e.getMessage());
             }
-        } catch (Exception e) {
-            getLogger().error(e.getMessage());
-        }
+        }, () -> getLogger().error(String.format("User named %s is not in the online list", userName)));
     }
 }
