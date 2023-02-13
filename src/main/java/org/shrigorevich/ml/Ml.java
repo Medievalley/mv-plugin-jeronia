@@ -17,10 +17,7 @@ import org.shrigorevich.ml.admin.NpcAdminServiceImpl;
 import org.shrigorevich.ml.admin.StructAdminService;
 import org.shrigorevich.ml.admin.StructAdminServiceImpl;
 import org.shrigorevich.ml.admin.handlers.AdminInteractHandler;
-import org.shrigorevich.ml.commands.ConfigExecutor;
-import org.shrigorevich.ml.commands.NpcExecutor;
-import org.shrigorevich.ml.commands.ScoreBoardExecutor;
-import org.shrigorevich.ml.commands.StructureExecutor;
+import org.shrigorevich.ml.commands.*;
 import org.shrigorevich.ml.config.ConfigurationImpl;
 import org.shrigorevich.ml.common.DataSourceCreator;
 import org.shrigorevich.ml.config.MlConfiguration;
@@ -122,7 +119,7 @@ public final class Ml extends JavaPlugin implements MlPlugin {
 
     private void setupListeners() {
         PluginManager pm = getServer().getPluginManager();
-        pm.registerEvents(new Auth(userService), this);
+        pm.registerEvents(new AuthHandler(userService), this);
         pm.registerEvents(new BlockBreak(structService), this);
         pm.registerEvents(new CustomSpawn(taskService, npcService, structService), this);
         pm.registerEvents(new EntityInventoryHandler(npcService, projectService), this);
@@ -150,6 +147,8 @@ public final class Ml extends JavaPlugin implements MlPlugin {
             .setExecutor(new ScoreBoardExecutor(scoreboardService));
         Objects.requireNonNull(getCommand("config"))
             .setExecutor(new ConfigExecutor(config));
+        Objects.requireNonNull(getCommand("mob"))
+            .setExecutor(new MobExecutor(taskService, mobService));
     }
 
     //TODO: move to separate class

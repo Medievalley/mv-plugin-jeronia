@@ -19,4 +19,7 @@ commands:
   config:
     description: "Edit config"
     usage: "/<command> [section] [property] [value]"
+  mob:
+    description: "Mob tests"
+    usage: "/<command> [create] [EntityType]"
 

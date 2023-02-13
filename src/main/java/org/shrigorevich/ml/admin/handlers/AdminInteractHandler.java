@@ -4,6 +4,8 @@ import com.destroystokyo.paper.entity.ai.Goal;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.*;
+import org.bukkit.attribute.Attributable;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -12,7 +14,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.ItemStack;
 import org.shrigorevich.ml.admin.NpcAdminService;
 import org.shrigorevich.ml.admin.StructAdminService;
 import org.shrigorevich.ml.domain.ai.goals.HoldGoal;
@@ -55,7 +56,7 @@ public class AdminInteractHandler implements Listener {
         Action action = event.getAction();
         Player p = event.getPlayer();
 
-        Optional<User> user = userService.getFromOnlineList(p.getName());
+        Optional<User> user = userService.getOnline(p.getName());
         if (user.isEmpty() || user.get().getRole() != UserRole.ADMIN ) return;
 
         if (action.equals(Action.RIGHT_CLICK_BLOCK)) {
@@ -109,7 +110,24 @@ public class AdminInteractHandler implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void playerInteract(PlayerInteractEntityEvent event) {
+        Player p = event.getPlayer();
 
+        Optional<User> user = userService.getOnline(p.getName());
+        if (user.isEmpty() || user.get().getRole() != UserRole.ADMIN ) return;
+
+        if (p.getEquipment().getItemInMainHand().getType() == Material.DIAMOND_SWORD) {
+            if (event.getRightClicked() instanceof Attributable atr) {
+                if (atr.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE) != null)
+                    logger.info("Attack damage: " + atr.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).getBaseValue());
+                if (atr.getAttribute(Attribute.GENERIC_ATTACK_SPEED) != null)
+                    logger.info("Attack speed: " + atr.getAttribute(Attribute.GENERIC_ATTACK_SPEED).getBaseValue());
+                if (atr.getAttribute(Attribute.GENERIC_MAX_HEALTH) != null)
+                    logger.info("Max health: " + atr.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue());
+                if (atr.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED) != null)
+                    logger.info("Walk speed" + atr.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).getBaseValue());
+                logger.info("Health" + ((Mob)event.getRightClicked()).getHealth());
+            }
+        }
     }
 
     private void showBlockType(PlayerInteractEvent event) {

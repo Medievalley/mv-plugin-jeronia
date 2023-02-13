@@ -25,58 +25,53 @@ public class UserServiceImpl extends BaseService implements UserService {
     }
 
     @Override
-    public void accessCheck(String userName, String ip, IAccessCheckCallback cb) {
+    public Optional<UserModel> getUser(String userName) throws Exception {
+        return userContext.getByName(userName);
+    }
+
+    @Override
+    public void accessCheck(UserModel model, String ip, IAccessCheckCallback cb) {
         //TODO: Localize
         String nameMsg = "Player with the same name is already on the server!",
-                regMsg = "You are not registered!",
                 ipMsg = "You are logged in with a new IP address. To activate it, log in again on our website :)",
                 livesNumberMsg = "Your character has no lives left:)",
                 confirmedMsg = "You have not verified your email",
-                userNotValidMsg = "User not valid. Please contact support",
-                dataAccessErrorMsg = "Server error. Please try again or contact support";
+                userNotValidMsg = "User not valid. Please contact support";
 
-        try {
-            userContext.getByName(userName).ifPresentOrElse(user -> {
-                if(!user.getIp().equals(ip)) {
-                    cb.onСheck(false, ipMsg);
-                }
-                else if(!user.isVerified()) {
-                    cb.onСheck(false, confirmedMsg);
-                }
-                else if (user.getLives() <= 0){
-                    cb.onСheck(false, livesNumberMsg);
-                }
-                else if (getFromOnlineList(userName).isPresent()) {
-                    cb.onСheck(false, nameMsg);
-                }
-                else if (!isUserValid(user)){
-                    cb.onСheck(false, userNotValidMsg);
-                } else {
-                    addInOnlineList(
-                        new UserImpl(user.getId(), user.getName(), UserRole.valueOf(user.getRoleId()), user.getLives()));
-                }
-            }, () -> cb.onСheck(false, regMsg));
-
-
-        } catch (Exception ex) {
-            getLogger().error(ex.getMessage());
-            cb.onСheck(false, dataAccessErrorMsg);
+        if(!model.getIp().equals(ip)) {
+            cb.onСheck(false, ipMsg);
+        }
+        else if(!model.isVerified()) {
+            cb.onСheck(false, confirmedMsg);
+        }
+        else if (model.getLives() <= 0){
+            cb.onСheck(false, livesNumberMsg);
+        }
+        else if (getOnline(model.getName()).isPresent()) {
+            cb.onСheck(false, nameMsg);
+        }
+        else if (!isUserValid(model)){
+            cb.onСheck(false, userNotValidMsg);
+        } else {
+            cb.onСheck(true, "Allowed");
         }
     }
 
     @Override
-    public Optional<User> getFromOnlineList(String name) {
+    public Optional<User> getOnline(String name) {
         User user = onlineList.get(name);
         return user != null ? Optional.of(user) : Optional.empty();
     }
 
     @Override
-    public void addInOnlineList(User user) {
-        onlineList.put(user.getName(), user);
+    public void online(UserModel model) {
+
+        onlineList.put(model.getName(),
+            new UserImpl(model.getId(), model.getName(), UserRole.valueOf(model.getRoleId()), model.getLives()));
     }
 
     @Override
-    public void removeFromOnlineList(String name) {
+    public void offline(String name) {
         onlineList.remove(name);
     }
 
@@ -85,7 +80,7 @@ public class UserServiceImpl extends BaseService implements UserService {
     }
 
     public void updateKillStatistics(String userName, EntityType entityType){
-        getFromOnlineList(userName).ifPresentOrElse(user -> {
+        getOnline(userName).ifPresentOrElse(user -> {
             try {
                 userContext.updateKillStatistics(user.getId(), entityType.toString());
             } catch (Exception e) {
@@ -95,7 +90,7 @@ public class UserServiceImpl extends BaseService implements UserService {
     }
 
     public void updateDeathStatistics(String userName, String deathReason) {
-        getFromOnlineList(userName).ifPresentOrElse(user -> {
+        getOnline(userName).ifPresentOrElse(user -> {
             try {
                 userContext.updateDeathStatistics(user.getId(), deathReason);
             } catch (Exception e) {

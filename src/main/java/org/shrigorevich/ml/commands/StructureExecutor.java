@@ -45,7 +45,7 @@ public class StructureExecutor implements CommandExecutor {
         if(args.length > 0) {
             if(sender instanceof Player player){
                 try {
-                    Optional<User> user = userService.getFromOnlineList(player.getName());
+                    Optional<User> user = userService.getOnline(player.getName());
                     if (user.isPresent() && user.get().getRole().accessLevel() < UserRole.MODER.accessLevel())
                         throw new Exception("You do not have permission for this operation");
 

@@ -4,7 +4,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.attribute.Attributable;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -55,9 +57,11 @@ public class SpawnEnemyHandler implements Listener {
             int extraQty = qty - allowedQtyPerType;
             if (extraQty > 0) {
                 spawnEntities(t, allowedQtyPerType - extraQty, 0);
-                spawnEntities(t, extraQty, getDefaultMobPower(t) * 2);
+                spawnEntities(t, extraQty, getDefaultMobPower(t));
+            } else {
+                spawnEntities(t, qty, 0);
             }
-            logger.debug(String.format("Type: %s. Qty: %d", t.toString(), qty));
+            logger.debug(String.format("Type: %s. Qty: %d", t, qty));
         }
     }
 
@@ -77,7 +81,7 @@ public class SpawnEnemyHandler implements Listener {
             if (b != null) {
                 world.spawnEntity(
                     new Location(world, b.getX(), b.getY(), b.getZ()),
-                    EntityType.VILLAGER, CreatureSpawnEvent.SpawnReason.CUSTOM,
+                    type, CreatureSpawnEvent.SpawnReason.CUSTOM,
                     (e) -> {
                         if (extraPower > 0) boostEntity(e, extraPower);
                     }
@@ -87,26 +91,11 @@ public class SpawnEnemyHandler implements Listener {
     }
 
     private void boostEntity(Entity entity, int power) {
-        switch (entity.getType()) {
-            case ZOMBIE -> boostZombie((Zombie) entity, power);
-            case SKELETON -> boostSkeleton((Skeleton) entity, power);
-            case SPIDER -> boostSpider((Spider) entity, power);
-            default -> {
-                ((Mob) entity).setHealth(((Mob) entity).getHealth() * 2);
-            }
+        if (entity instanceof Attributable attributable) {
+            attributable.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).setBaseValue(2.0D);
+        } else {
+            logger.error(String.format("Cannot upgrade attributes of entity: %s", entity.getType().toString()));
         }
-    }
-
-    private void boostZombie(Zombie zombie, int power) {
-//        zombie.getAttribute(Attribute.ZOMBIE_SPAWN_REINFORCEMENTS)
-    }
-
-    private void boostSkeleton(Skeleton skeleton, int power) {
-
-    }
-
-    private void boostSpider(Spider spider, int power) {
-
     }
 
     //TODO: get from config

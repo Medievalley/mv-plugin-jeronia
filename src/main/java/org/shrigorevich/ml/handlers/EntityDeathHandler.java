@@ -70,7 +70,7 @@ public class EntityDeathHandler implements Listener {
 
     private void giveReward(LivingEntity entity)
     {
-        if (getReward(entity.getType()) > 0) {
+        if (getReward(entity.getType()) > 0 && entity.getKiller() != null) {
             ItemStack item = new ItemStack(Material.NETHER_STAR, getReward(entity.getType()));
             ItemMeta meta = item.getItemMeta();
             meta.displayName(Component.text("Jeron"));
