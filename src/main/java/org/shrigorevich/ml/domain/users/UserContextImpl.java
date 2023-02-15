@@ -60,4 +60,15 @@ public class UserContextImpl extends BaseContext implements UserContext {
         }
     }
 
+    public  void decrementUserLives(String userId) throws Exception {
+        try {
+            QueryRunner run = new QueryRunner(getDataSource());
+            run.update(queryBuilder.decrementUserLives(userId));
+        } catch (SQLException ex) {
+            getLogger().error(ex.toString());
+            throw new Exception(String.format("Error while decrementing user lives with userId: %s",
+                    userId));
+        }
+    }
+
 }

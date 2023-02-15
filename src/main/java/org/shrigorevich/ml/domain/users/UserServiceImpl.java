@@ -98,4 +98,15 @@ public class UserServiceImpl extends BaseService implements UserService {
             }
         }, () -> getLogger().error(String.format("User named %s is not in the online list", userName)));
     }
+
+    public void decrementUserLives(String userName) {
+        getOnline(userName).ifPresentOrElse(user -> {
+            try {
+                userContext.decrementUserLives(user.getId());
+                user.removeLive();
+            } catch (Exception e) {
+                getLogger().error(e.getMessage());
+            }
+        }, () -> getLogger().error(String.format("User named %s is not in the online list", userName)));
+    }
 }
