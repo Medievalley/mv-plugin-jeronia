@@ -8,6 +8,7 @@ import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.apache.logging.log4j.LogManager;
 import org.shrigorevich.ml.common.BaseContext;
 import org.shrigorevich.ml.common.Coordinates;
+import org.shrigorevich.ml.domain.structure.BlockType;
 import org.shrigorevich.ml.domain.structure.StructBlock;
 import org.shrigorevich.ml.domain.structure.StructureContext;
 import org.shrigorevich.ml.domain.structure.models.StructBlockModelImpl;
@@ -171,6 +172,17 @@ public class StructContextImpl extends BaseContext implements StructureContext {
         } catch (SQLException ex) {
             getLogger().error(ex.toString());
             throw new Exception("Error while saving struct blocks");
+        }
+    }
+
+    @Override
+    public void changeStructBlockType(int blockId, BlockType newType) throws Exception {
+        try {
+            QueryRunner run = new QueryRunner(getDataSource());
+            run.update(structQueryBuilder.changeBlockType(blockId, newType.getTypeId()));
+        } catch (SQLException ex) {
+            getLogger().error(ex.toString());
+            throw new Exception(String.format("Error while changing block [id=%d] type to %d)", blockId, newType.getTypeId()));
         }
     }
 

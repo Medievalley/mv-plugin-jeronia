@@ -5,6 +5,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
+import java.util.Map;
 
 public interface MobService {
 
@@ -14,6 +15,5 @@ public interface MobService {
     void remove(Entity entity);
     int getCurrentQuantity();
     int getCurrentPower();
-    List<EntityType> getMobTypesForRegSpawn();
-
+    Map<EntityType, PresetUnit> getPressurePreset();
 }

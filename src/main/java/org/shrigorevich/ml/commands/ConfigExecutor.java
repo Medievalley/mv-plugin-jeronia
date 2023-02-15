@@ -41,14 +41,15 @@ public class ConfigExecutor implements CommandExecutor {
 
     private void UpdateConfig(String section, String property, String value) throws Exception {
         switch (section.toLowerCase()) {
-            case "mobspawn" -> updateMobSpawnSection(property, value);
+            case "mob_spawn" -> updateMobSpawnSection(property, value);
             default -> throw new Exception("Section does not exist");
         }
     }
 
     private void updateMobSpawnSection(String property, String value) throws Exception {
-        switch (property.toLowerCase()) {
-            case "regspawninterval", "rsi" -> config.updateRegSpawnInterval(Integer.parseInt(value));
+        switch (property) {
+            case "pressure_interval" -> config.setPressureInterval(Integer.parseInt(value));
+            case "pressure_players_factor" -> config.setPressurePlayersFactor(Double.parseDouble(value));
             default -> throw new Exception("Property does not exist");
         }
     }

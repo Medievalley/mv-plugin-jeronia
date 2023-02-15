@@ -38,22 +38,12 @@ public class StructureServiceImpl extends BaseService implements StructureServic
 
     @Override
     public List<Structure> getStructs(StructureType type) {
-        return structures.values().stream().filter(s -> s.getType() == StructureType.REGULAR_ABODE).toList();
+        return structures.values().stream().filter(s -> s.getType() == StructureType.PRESSURE).toList();
     }
 
     @Override
     public List<Structure> getDamagedStructs() {
         return structures.values().stream().filter(s -> s instanceof TownInfra ti && ti.getBrokenBlocks().size() > 0).toList();
-    }
-
-    @Override
-    public Optional<Structure> getByLocation(Location l) {
-        String key = getBlockKey(l);
-        if (structBlocks.containsKey(key) &&
-            structures.containsKey(structBlocks.get(key).getStructId())) {
-            return Optional.of(structures.get(structBlocks.get(key).getStructId()));
-        }
-        return Optional.empty();
     }
 
     @Override
@@ -208,6 +198,9 @@ public class StructureServiceImpl extends BaseService implements StructureServic
                 case MAIN -> {
                     return new MainStructure(s, blocks);
                 }
+                case ABODE -> {
+                    return new AbodeStructImpl(s, blocks);
+                }
                 default -> throw new IllegalArgumentException(
                     String.format("Structure type: %d is not supported", s.getTypeId()));
             }
@@ -226,6 +219,19 @@ public class StructureServiceImpl extends BaseService implements StructureServic
     @Override
     public Optional<StructBlock> getStructBlock(Location l) {
         return getStructBlock(l.getBlockX(), l.getBlockY(), l.getBlockZ());
+    }
+
+    @Override
+    public void registerAbodeSpawn(StructBlock block) {
+        try {
+            if (structures.containsKey(block.getStructId())) {
+                context.changeStructBlockType(block.getId(), BlockType.ABODE_SPAWN);
+                ((ExStructBlock) block).setType(BlockType.ABODE_SPAWN);
+                ((ExAbodeStructure) structures.get(block.getStructId())).addSpawnBlock(block);
+            }
+        } catch (Exception ex) {
+            getLogger().error(ex.getMessage());
+        }
     }
 
     @Override

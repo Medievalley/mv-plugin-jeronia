@@ -4,8 +4,12 @@ public enum StructureType {
     MAIN(1, "main"),
     AGRONOMIC(2, "agronomic"),
     PRIVATE(3, "private"),
-    WAVE_ABODE(4, "wave_abode"),
-    REGULAR_ABODE(5, "regular_abode");
+    ABODE(4, "abode"),
+    PRESSURE(5, "pressure"),
+    FARM_GUILD(6, "farm_guild"),
+    CRAFT_GUILD(7, "craft_guild"),
+    DEFENCE_GUILD(8, "defence_guild"),
+    WIZARD_GUILD(9, "WIZARD_GUILD");
 
     private final int typeId;
     private final String name;

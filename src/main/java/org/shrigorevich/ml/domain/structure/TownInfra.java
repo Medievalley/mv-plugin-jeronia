@@ -1,12 +1,7 @@
 package org.shrigorevich.ml.domain.structure;
 
-import java.util.List;
-
-public interface TownInfra extends Structure {
+public interface TownInfra extends VolumeStruct {
 
     String getName();
     int getPriority();
-    int getVolumeId();
-    List<StructBlock> getStructBlocks();
-    List<StructBlock> getBrokenBlocks();
 }

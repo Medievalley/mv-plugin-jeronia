@@ -30,7 +30,9 @@ public class AuthHandler implements Listener {
         try {
             userService.getUser(event.getName()).ifPresentOrElse(user -> {
                 userService.accessCheck(user, ip, (isAllowed, msg) -> {
-                    if(!isAllowed) {
+                    if(isAllowed) {
+                        userService.online(user);
+                    } else {
                         event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Component.text(msg));
                     }
                 });

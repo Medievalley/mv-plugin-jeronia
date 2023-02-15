@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import org.shrigorevich.ml.admin.NpcAdminService;
 import org.shrigorevich.ml.domain.ai.contracts.TaskService;
 import org.shrigorevich.ml.domain.mob.MobService;
+import org.shrigorevich.ml.domain.mob.events.SpawnPressureMobsEvent;
 import org.shrigorevich.ml.domain.npc.NpcRole;
 import org.shrigorevich.ml.domain.npc.NpcService;
 
@@ -34,25 +35,24 @@ public class MobExecutor implements CommandExecutor {
             if(sender instanceof Player player){
                 try {
                     switch (args[0].toLowerCase()) {
-                        case "c", "create" -> {
-                            player.getWorld().spawnEntity(
-                                player.getLocation(),
-                                EntityType.valueOf(args[1]),
-                                CreatureSpawnEvent.SpawnReason.CUSTOM, (e) -> {
-                                    if (e instanceof Attributable atr) {
-                                        atr.registerAttribute(Attribute.GENERIC_ATTACK_SPEED);
-                                        if (atr.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE) != null)
-                                            atr.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).setBaseValue(atr.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).getBaseValue() * 2);
-                                        if (atr.getAttribute(Attribute.GENERIC_ATTACK_SPEED) != null)
-                                            atr.getAttribute(Attribute.GENERIC_ATTACK_SPEED).setBaseValue(Integer.parseInt(args[2]));
-                                        if (atr.getAttribute(Attribute.GENERIC_MAX_HEALTH) != null)
-                                            atr.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(atr.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() * 2);
-                                        if (atr.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED) != null)
-                                            atr.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(atr.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).getBaseValue() * 2);
-                                    }
+                        case "c", "create" -> player.getWorld().spawnEntity(
+                            player.getLocation(),
+                            EntityType.valueOf(args[1]),
+                            CreatureSpawnEvent.SpawnReason.CUSTOM, (e) -> {
+                                if (e instanceof Attributable atr) {
+                                    atr.registerAttribute(Attribute.GENERIC_ATTACK_SPEED);
+                                    if (atr.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE) != null)
+                                        atr.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).setBaseValue(atr.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).getBaseValue() * 2);
+                                    if (atr.getAttribute(Attribute.GENERIC_ATTACK_SPEED) != null)
+                                        atr.getAttribute(Attribute.GENERIC_ATTACK_SPEED).setBaseValue(Integer.parseInt(args[2]));
+                                    if (atr.getAttribute(Attribute.GENERIC_MAX_HEALTH) != null)
+                                        atr.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(atr.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() * 2);
+                                    if (atr.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED) != null)
+                                        atr.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(atr.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).getBaseValue() * 2);
                                 }
-                            );
-                        }
+                            }
+                        );
+                        case "pressure" -> Bukkit.getPluginManager().callEvent(new SpawnPressureMobsEvent());
                         default ->
                             player.sendMessage(ChatColor.YELLOW + String.format("Command '%s' not found", args[0]));
                     }

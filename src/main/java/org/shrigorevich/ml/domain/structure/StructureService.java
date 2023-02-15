@@ -14,7 +14,6 @@ public interface StructureService extends Service {
     Optional<Structure> getStruct(int id);
     List<Structure> getStructs(StructureType type);
     List<Structure> getDamagedStructs();
-    Optional<Structure> getByLocation(Location location);
     void setBlocksBroken(List<StructBlock> blocks);
     void exportVolume(Structure structure, String volumeName, MsgCallback cb);
     void create(String name, StructureType type, Location l1, Location l2, MsgCallback cb);
@@ -27,6 +26,7 @@ public interface StructureService extends Service {
     void restore(int structId);
     Optional<StructBlock> getStructBlock(int x, int y, int z);
     Optional<StructBlock> getStructBlock(Location l);
+    void registerAbodeSpawn(StructBlock block);
     @Deprecated
     int getBrokenBlocksCount(int structId) throws Exception;
     @Deprecated

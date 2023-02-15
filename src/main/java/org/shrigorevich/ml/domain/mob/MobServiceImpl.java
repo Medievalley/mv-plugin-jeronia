@@ -82,8 +82,11 @@ public class MobServiceImpl extends BaseService implements MobService {
     }
 
     @Override
-    public List<EntityType> getMobTypesForRegSpawn() {
-        return mobTypesForRegSpawn;
+    public Map<EntityType, PresetUnit> getPressurePreset() {
+        Map<EntityType, PresetUnit> preset = new EnumMap<>(EntityType.class);
+        preset.put(SKELETON, new PresetUnitImpl(0.5, 0.5));
+        preset.put(ZOMBIE, new PresetUnitImpl(0.5, 0.5));
+        return preset;
     }
 
     @Override

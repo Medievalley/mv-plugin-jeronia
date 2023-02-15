@@ -23,6 +23,7 @@ public interface StructureContext extends Context {
      */
     void attachVolume(int structId, int volumeId) throws Exception;
     void saveStructBlocks(List<StructBlockModel> blocks) throws Exception;
+    void changeStructBlockType(int blockId, BlockType newType) throws Exception;
     @Deprecated
     Optional<StructBlockModel> getStructBlock(int x, int y, int z, int volumeId, int structId);
 

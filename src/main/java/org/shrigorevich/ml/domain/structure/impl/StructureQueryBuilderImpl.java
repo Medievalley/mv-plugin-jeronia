@@ -98,6 +98,10 @@ public class StructureQueryBuilderImpl {
                 "join volume_block v ON b.volume_block_id = v.id",
                 "join struct s ON b.struct_id = s.id");
     }
+
+    public String changeBlockType(int blockId, int typeId) {
+        return String.format("UPDATE struct_block SET typeId=%d WHERE id=%d", typeId, blockId);
+    }
 }
 
 //with rows as (

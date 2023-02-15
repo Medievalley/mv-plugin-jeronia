@@ -1,12 +1,10 @@
-package org.shrigorevich.ml.handlers;
+package org.shrigorevich.ml.domain.mob.handlers;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.attribute.Attributable;
-import org.bukkit.attribute.Attribute;
-import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -14,7 +12,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.shrigorevich.ml.MlPlugin;
 import org.shrigorevich.ml.config.MlConfiguration;
 import org.shrigorevich.ml.domain.mob.MobService;
-import org.shrigorevich.ml.domain.mob.events.SpawnRegularMobsEvent;
+import org.shrigorevich.ml.domain.mob.events.SpawnPressureMobsEvent;
 import org.shrigorevich.ml.domain.mob.events.SpawnWaveEvent;
 import org.shrigorevich.ml.domain.structure.*;
 
@@ -30,6 +28,7 @@ public class SpawnEnemyHandler implements Listener {
     private final World world;
 
     public SpawnEnemyHandler(StructureService structSvc, MobService mobSvc, MlConfiguration config, MlPlugin plugin) {
+
         this.config = config;
         this.plugin = plugin;
         this.structSvc = structSvc;
@@ -37,31 +36,25 @@ public class SpawnEnemyHandler implements Listener {
         this.logger = LogManager.getLogger("SpawnEnemyHandler");
         this.regSpawns = new LinkedList<>();
 
-        for (Structure s : structSvc.getStructs(StructureType.REGULAR_ABODE)) {
+        for (Structure s : this.structSvc.getStructs(StructureType.PRESSURE)) {
             regSpawns.addAll(((AbodeStructure)s).getSpawnBlocks());
         }
         this.world = plugin.getServer().getWorld("world"); //TODO: Hardcoded world
     }
 
     @EventHandler
-    public void OnRegularSpawn(SpawnRegularMobsEvent event) {
+    public void OnPressureSpawn(SpawnPressureMobsEvent event) {
+        for (EntityType t : mobSvc.getPressurePreset().keySet()) {
+            if (getAvailableQty(t) <= 0) return;
 
-        List<EntityType> mobTypes = mobSvc.getMobTypesForRegSpawn();
-        int allowedQtyPerType = (config.getMaxMobQty() - mobSvc.getCurrentQuantity()) / mobTypes.size() + 1;
-        int powerPerType = (getPower() - mobSvc.getCurrentPower()) / mobTypes.size();
+            int qty = getPowerToSpawn(t) / getDefaultMobPower(t);
+            double powerFactor = (double) qty / getAvailableQty(t);
 
-        if (config.getMaxMobQty() <= 0 || allowedQtyPerType <= 0 || powerPerType <= 0) return;
-
-        for (EntityType t : mobTypes) {
-            int qty = powerPerType / getDefaultMobPower(t);
-            int extraQty = qty - allowedQtyPerType;
-            if (extraQty > 0) {
-                spawnEntities(t, allowedQtyPerType - extraQty, 0);
-                spawnEntities(t, extraQty, getDefaultMobPower(t));
-            } else {
+            if (powerFactor <= 0) {
                 spawnEntities(t, qty, 0);
+            } else {
+                spawnEntities(t, getAvailableQty(t), powerFactor);
             }
-            logger.debug(String.format("Type: %s. Qty: %d", t, qty));
         }
     }
 
@@ -70,12 +63,22 @@ public class SpawnEnemyHandler implements Listener {
 
     }
 
-    private int getPower() {
-        return (int) Math.floor(plugin.getServer().getOnlinePlayers().size() * config.getRegSpawnPlayersFactor()); //TODO: use players factor;
+    private int getPowerToSpawn() {
+        return (int) Math.floor(plugin.getServer().getOnlinePlayers().size() * config.getPressurePlayersFactor());
     }
 
-    private void spawnEntities(EntityType type, int qty, int extraPower) {
+    private int getPowerToSpawn(EntityType type) {
+        return (int) Math.ceil(
+            (getPowerToSpawn() - mobSvc.getCurrentPower()) * mobSvc.getPressurePreset().get(type).getPowerPercent());
+    }
 
+    private int getAvailableQty(EntityType type) {
+        return (int) Math.ceil(
+            (config.getMaxMobQty() - mobSvc.getCurrentQuantity()) * mobSvc.getPressurePreset().get(type).getQtyPercent());
+    }
+
+
+    private void spawnEntities(EntityType type, int qty, double powerFactor) {
         for (int i = 0; i < qty; i++) {
             StructBlock b = regSpawns.poll();
             if (b != null) {
@@ -83,18 +86,30 @@ public class SpawnEnemyHandler implements Listener {
                     new Location(world, b.getX(), b.getY(), b.getZ()),
                     type, CreatureSpawnEvent.SpawnReason.CUSTOM,
                     (e) -> {
-                        if (extraPower > 0) boostEntity(e, extraPower);
+                        if (powerFactor > 0) boostEntity(e, powerFactor);
                     }
                 );
             }
         }
     }
 
-    private void boostEntity(Entity entity, int power) {
-        if (entity instanceof Attributable attributable) {
-            attributable.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).setBaseValue(2.0D);
+    private void boostEntity(Entity entity, double powerFactor) {
+        if (entity instanceof Attributable attr) {
+            try {
+                if (AttrHelper.hasDamageAttr(attr)) {
+                    AttrHelper.boostDamage(attr, powerFactor);
+                }
+                if (AttrHelper.hasHealthAttr(attr)) {
+                    AttrHelper.boostMaxHealth(attr, powerFactor);
+                }
+                if (AttrHelper.hasSpeedAttr(attr)) {
+                    AttrHelper.boostSpeed(attr, powerFactor);
+                }
+            } catch (NullPointerException ex) {
+                logger.error(String.format("Entity %s does not have attribute", entity.getType()));
+            }
         } else {
-            logger.error(String.format("Cannot upgrade attributes of entity: %s", entity.getType().toString()));
+            logger.error(String.format("Cannot upgrade attributes of entity: %s", entity.getType()));
         }
     }
 

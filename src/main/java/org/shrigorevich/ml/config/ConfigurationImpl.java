@@ -6,8 +6,6 @@ import java.util.Objects;
 
 public class ConfigurationImpl implements MlConfiguration {
     private final Plugin plugin;
-
-    private EnemyPowerConf enemyPowerConf;
     private DatabaseConf database;
     private MobSpawn mobSpawn;
 
@@ -17,8 +15,6 @@ public class ConfigurationImpl implements MlConfiguration {
     }
 
     public void reload() {
-        this.enemyPowerConf = new EnemyPowerConfImpl(Objects.requireNonNull(
-                plugin.getConfig().getConfigurationSection("enemy_power")).getValues(false));
         this.database = new DatabaseConfImpl(Objects.requireNonNull(
             plugin.getConfig().getConfigurationSection("database")).getValues(false));
         this.mobSpawn = new MobSpawn(Objects.requireNonNull(
@@ -27,25 +23,31 @@ public class ConfigurationImpl implements MlConfiguration {
 
     //MOB SPAWN START
     @Override
-    public void updateRegSpawnInterval(int value) {
-        mobSpawn.setRegSpawnInterval(value);
+    public void setPressureInterval(int value) {
+        mobSpawn.setPressureInterval(value);
     }
     @Override
-    public int getRegSpawnInterval() {
-        return mobSpawn.getRegSpawnInterval();
+    public int getPressureInterval() {
+        return mobSpawn.getPressureInterval();
     }
     @Override
     public int getMaxMobQty() {
         return mobSpawn.getMaxMobQty();
     }
-    //MOB SPAWN END
-
-    //ENEMY POWER START
     @Override
-    public double getRegSpawnPlayersFactor() {
-        return enemyPowerConf.getPlayersFactor();
+    public void setMaxMobQty(int maxMobQty) {
+        mobSpawn.setMaxMobQty(maxMobQty);
     }
-    //ENEMY POWER END
+    @Override
+    public double getPressurePlayersFactor() {
+        return mobSpawn.getPressurePlayersFactor();
+    }
+
+    @Override
+    public void setPressurePlayersFactor(double value) {
+        this.mobSpawn.setPressurePlayersFactor(value);
+    }
+    //MOB SPAWN END
 
     @Override
     public Plugin getPlugin() {

@@ -30,14 +30,14 @@ public class PlantGrow implements Listener {
         Block b = event.getBlock();
         Location l = b.getLocation();
 
-        structureService.getByLocation(b.getLocation()).ifPresent((struct) -> {
-            if (isFullyGrown(b) && struct.getType() == StructureType.AGRONOMIC) {
-                FoodStructure foodStructure = (FoodStructure) struct;
-                Optional<Villager> e = foodStructure.getLaborer();
-                e.ifPresent(entity -> structureService.getPlugin()
-                        .getServer().getPluginManager().callEvent(new StructPlantGrownEvent(entity, b)));
-            }
-        });
+//        structureService.getByLocation(b.getLocation()).ifPresent((struct) -> {
+//            if (isFullyGrown(b) && struct.getType() == StructureType.AGRONOMIC) {
+//                FoodStructure foodStructure = (FoodStructure) struct;
+//                Optional<Villager> e = foodStructure.getLaborer();
+//                e.ifPresent(entity -> structureService.getPlugin()
+//                        .getServer().getPluginManager().callEvent(new StructPlantGrownEvent(entity, b)));
+//            }
+//        });
 
     }
 

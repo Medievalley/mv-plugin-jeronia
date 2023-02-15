@@ -29,8 +29,8 @@ public class SpawnTimersHandler implements Listener {
     public void OnRunRegularTimer(RunRegularSpawnTimerEvent event) {
         if (regularSpawnTask != null) {
             regularSpawnTask = plugin.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
-                plugin.callEvent(new SpawnRegularMobsEvent());
-            }, 30, config.getRegSpawnInterval() * 20L); //info: 20 ticks = 1s
+                plugin.callEvent(new SpawnPressureMobsEvent());
+            }, 30, config.getPressureInterval() * 20L); //info: 20 ticks = 1s
         } else {
             logger.info("Regular spawn task does not exist");
         }

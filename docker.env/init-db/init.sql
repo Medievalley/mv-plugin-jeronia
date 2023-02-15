@@ -123,8 +123,14 @@ VALUES (1, 'Admin', 'Most privileged role'),
 INSERT INTO struct_type (id, name, description) VALUES
 (1, 'main', 'Main lore structure'),
 (2, 'agronomic', 'Food structure'),
-(4, 'private', 'player`s private structure'),
-(3, 'abode', 'Structure - adobe of monsters');
+(3, 'private', 'player`s private structure'),
+(4, 'wave abode', 'Structure - adobe of monsters'),
+(5, 'pressure abode', 'Structure - adobe of monsters'),
+(6, 'farmers guild', 'farmers guild'),
+(7, 'craft guild', 'craft guild'),
+(8, 'defence guild', 'defence guild'),
+(9, 'wizard guild', 'wizard guild');
+
 
 INSERT INTO npc_role (id, name, description) VALUES
 (1, 'harvester', 'A villager who harvests'),

@@ -7,13 +7,8 @@ database:
   poolSize: 8
 
 mob_spawn:
-  max_qty: 70
-  regular_spawn_interval: 45 # sec
-  #not loaded
-  wave_spawn_interval: 600 # sec
-
-#not loaded
-enemy_power:
-  players_factor: 2.0 # PlayersCountMultiplier for spawned mobs power
-  days_factor: 1.0 # DaysCountMultiplier
-
+  max_mob_qty: 70
+  pressure_interval: 45 # sec
+  wave_interval: 600 # sec
+  pressure_players_factor: 2.0 # PlayersCountMultiplier for spawned mobs power
+  wave_players_factor: 2.0

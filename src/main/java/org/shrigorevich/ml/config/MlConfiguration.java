@@ -4,10 +4,12 @@ import org.bukkit.plugin.Plugin;
 
 public interface MlConfiguration {
 
-    void updateRegSpawnInterval(int value);
-    DatabaseConf getDb();
-    int getRegSpawnInterval();
-    double getRegSpawnPlayersFactor();
+    int getPressureInterval();
+    void setPressureInterval(int value);
+    double getPressurePlayersFactor();
+    void setPressurePlayersFactor(double value);
     int getMaxMobQty();
+    void setMaxMobQty(int maxMobQty);
+    DatabaseConf getDb();
     Plugin getPlugin();
 }

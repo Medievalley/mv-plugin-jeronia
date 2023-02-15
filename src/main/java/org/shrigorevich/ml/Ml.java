@@ -25,6 +25,7 @@ import org.shrigorevich.ml.domain.ai.contracts.TaskService;
 import org.shrigorevich.ml.domain.ai.TaskServiceImpl;
 import org.shrigorevich.ml.domain.mob.MobService;
 import org.shrigorevich.ml.domain.mob.MobServiceImpl;
+import org.shrigorevich.ml.domain.mob.handlers.SpawnEnemyHandler;
 import org.shrigorevich.ml.domain.npc.NpcContext;
 import org.shrigorevich.ml.domain.npc.impl.NpcContextImpl;
 import org.shrigorevich.ml.domain.npc.NpcService;
