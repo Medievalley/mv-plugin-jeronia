@@ -16,6 +16,7 @@ import org.shrigorevich.ml.domain.structure.events.StructPlantGrownEvent;
 
 import java.util.Optional;
 
+@Deprecated
 public class PlantGrow implements Listener {
 
     private final StructureService structureService;

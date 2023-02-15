@@ -12,11 +12,12 @@ public interface StructureService extends Service {
 
     void setup() throws Exception;
     Optional<Structure> getStruct(int id);
+    Optional<Structure> getStruct(Location l);
     List<Structure> getStructs(StructureType type);
     List<Structure> getDamagedStructs();
     void setBlocksBroken(List<StructBlock> blocks);
     void exportVolume(Structure structure, String volumeName, MsgCallback cb);
-    void create(String name, StructureType type, Location l1, Location l2, MsgCallback cb);
+    void create(DraftStruct struct, MsgCallback cb);
     void restoreBlock(StructBlock block) throws Exception;
 
      /**

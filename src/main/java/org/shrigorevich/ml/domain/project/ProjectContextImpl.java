@@ -22,7 +22,7 @@ public class ProjectContextImpl extends BaseContext implements ProjectContext {
         try {
             QueryRunner run = new QueryRunner(getDataSource());
             ResultSetHandler<StorageModel> h = new BeanHandler<>(StorageModelImpl.class);
-            StorageModel storage = run.query(String.format("SELECT id, resources, deposit from struct WHERE type_id=%d", StructureType.MAIN.getTypeId()), h);
+            StorageModel storage = run.query(String.format("SELECT id, resources, deposit from struct WHERE type_id=%d", StructureType.MAIN.getId()), h);
             return storage == null ? Optional.empty() : Optional.of(storage);
         } catch (SQLException ex) {
             getLogger().error(ex.getMessage());

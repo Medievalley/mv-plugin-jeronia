@@ -17,9 +17,9 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.shrigorevich.ml.admin.NpcAdminService;
 import org.shrigorevich.ml.admin.StructAdminService;
+import org.shrigorevich.ml.common.Utils;
 import org.shrigorevich.ml.domain.ai.goals.HoldGoal;
 import org.shrigorevich.ml.domain.npc.NpcService;
-import org.shrigorevich.ml.domain.npc.impl.SafeLocImpl;
 import org.shrigorevich.ml.domain.structure.StructureService;
 import org.shrigorevich.ml.domain.structure.StructureType;
 import org.shrigorevich.ml.domain.users.UserRole;
@@ -64,7 +64,7 @@ public class AdminInteractHandler implements Listener {
                 switch (event.getMaterial()) {
                     case BONE -> draftNpc(event);
                     case FEATHER -> selectStructByLocation(event);
-                    case STICK -> setStructCorner(event);
+                    case STICK -> draftStructLocation(event);
                     case COAL -> showBlockType(event);
                     case DIAMOND_AXE -> regSafeLocation(event.getClickedBlock().getLocation());
                     case GOLDEN_SWORD -> {
@@ -161,27 +161,28 @@ public class AdminInteractHandler implements Listener {
     private void selectStructByLocation(PlayerInteractEvent event) {
         Player p = event.getPlayer();
         if (event.getClickedBlock() != null) {
-//            structService.getByLocation(event.getClickedBlock().getLocation()).ifPresentOrElse(struct -> {
-//                structAdminService.setSelectedStruct(p.getName(), struct);
-//                p.sendMessage(String.format(
-//                    "Id: %d\n SizeX: %d\n SizeY: %d\n SizeZ: %d\n",
-//                    struct.getId(),
-//                    struct.getX2() - struct.getX1() + 1,
-//                    struct.getY2() - struct.getY1() + 1,
-//                    struct.getZ2() - struct.getZ1() + 1));
-//            }, () -> p.sendMessage("This location is not part of any structure"));
+            structService.getStruct(event.getClickedBlock().getLocation()).ifPresentOrElse(struct -> {
+                structAdminService.setSelectedStruct(p.getName(), struct);
+                p.sendMessage(String.format(
+                    "Id: %d\n SizeX: %d\n SizeY: %d\n SizeZ: %d\n",
+                    struct.getId(),
+                    struct.getX2() - struct.getX1() + 1,
+                    struct.getY2() - struct.getY1() + 1,
+                    struct.getZ2() - struct.getZ1() + 1));
+            }, () -> p.sendMessage("This location is not part of any structure"));
         };
     }
-    private void setStructCorner(PlayerInteractEvent event) {
+    private void draftStructLocation(PlayerInteractEvent event) {
         Player p = event.getPlayer();
-        structAdminService.setCorner(p.getName(), event.getClickedBlock().getLocation());
-        structAdminService.getStructCorners(p.getName()).ifPresent(locs -> {
-            p.sendMessage("Corners:");
-            for(Location l : locs) {
-                p.sendMessage(String.format("%d, %d, %d", l.getBlockX(), l.getBlockY(), l.getBlockZ()));
-            }
+        structAdminService.draftLocation(p.getName(), event.getClickedBlock().getLocation());
+        structAdminService.getDraftStruct(p.getName()).ifPresent(struct -> {
+            if (struct.getFirstLoc() != null)
+                Utils.logLocation(p, struct.getFirstLoc(), "Loc1");
+            if (struct.getSecondLoc() != null)
+                Utils.logLocation(p, struct.getSecondLoc(), "Loc2");
         });
     }
+
     private void regSafeLocation(Location l) {
         if (l != null) {
 //            structService.getByLocation(l).ifPresent(struct -> {

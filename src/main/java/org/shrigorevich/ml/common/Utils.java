@@ -2,6 +2,7 @@ package org.shrigorevich.ml.common;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 
 public class Utils {
 
@@ -24,5 +25,9 @@ public class Utils {
             default:
                 return false;
         }
+    }
+
+    public static void logLocation(Player player, Location l, String key) {
+        player.sendMessage(String.format("%s: %d, %d, %d", key, l.getBlockX(), l.getBlockY(), l.getBlockZ()));
     }
 }

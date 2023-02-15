@@ -37,6 +37,14 @@ public class StructureServiceImpl extends BaseService implements StructureServic
     }
 
     @Override
+    public Optional<Structure> getStruct(Location l) {
+        if (getStructBlock(l).isPresent()) {
+            return getStruct(getStructBlock(l).get().getStructId());
+        }
+        return Optional.empty();
+    }
+
+    @Override
     public List<Structure> getStructs(StructureType type) {
         return structures.values().stream().filter(s -> s.getType() == StructureType.PRESSURE).toList();
     }
@@ -59,10 +67,14 @@ public class StructureServiceImpl extends BaseService implements StructureServic
     }
 
     @Override
-    public void create(String name, StructureType type, Location l1, Location l2, MsgCallback cb) {
+    public void create(DraftStruct struct, MsgCallback cb) {
         try {
             int structId = context.save(
-                    name, type.getTypeId(), l1.getWorld().getName(), getMinCoords(l1, l2), getMaxCoords(l1, l2));
+                struct.name(), struct.type().getId(),
+                struct.getFirstLoc().getWorld().getName(),
+                getMinCoords(struct.getFirstLoc(), struct.getSecondLoc()),
+                getMaxCoords(struct.getFirstLoc(), struct.getSecondLoc())
+            );
 
             if (structId != 0) {
                 Optional<StructModel> model = context.getById(structId);

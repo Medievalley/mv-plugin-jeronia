@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.shrigorevich.ml.admin.StructAdminService;
+import org.shrigorevich.ml.common.Utils;
 import org.shrigorevich.ml.domain.project.ProjectService;
 import org.shrigorevich.ml.domain.structure.StructureType;
 import org.shrigorevich.ml.domain.structure.TownInfra;
@@ -89,16 +90,22 @@ public class StructureExecutor implements CommandExecutor {
     }
 
     private void create(Player player, String name, String type) {
-        structAdminService.getStructCorners(player.getName()).ifPresentOrElse(locs -> {
-            if(locs.size() != 2)
-                throw new IllegalArgumentException(
-                    String.format("Specify the coordinates of two structure corners. Now defined: %d", locs.size()));
-
-            structService.create(
-                name, StructureType.getByName(type),
-                locs.get(0), locs.get(1), player::sendMessage
-            );
-        }, () -> player.sendMessage("First specify struct corners"));
+        try {
+            structAdminService.draftName(player.getName(), name);
+            structAdminService.draftType(player.getName(), StructureType.valueOf(type));
+            structAdminService.getDraftStruct(player.getName()).ifPresent(struct -> {
+                if (structAdminService.isStructValid(struct)) {
+                    structService.create(struct, player::sendMessage);
+                } else {
+                    player.sendMessage("Name: " + struct.name());
+                    player.sendMessage("Type: " + struct.type());
+                    player.sendMessage("Loc1: " + (struct.getFirstLoc() != null));
+                    player.sendMessage("Loc2: " + (struct.getFirstLoc() != null));
+                }
+            });
+        } catch (IllegalArgumentException ex) {
+            logger.error(ex.getMessage());
+        }
     }
 
     private void exportVolume(Player player, String volumeName) {
