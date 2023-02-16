@@ -53,7 +53,7 @@ public class StructureExecutor implements CommandExecutor {
                     switch (args[0].toLowerCase()) {
                         case "restore", "r" -> restore(args[1]);
                         case "c", "create" -> create(player, args[1], args[2]);
-                        case "sv", "save_volume" -> exportVolume(player, args[1]);
+                        case "sv", "save_volume" -> exportVolume(player, Integer.parseInt(args[1]), args[2]);
                         case "av", "apply_volume" -> applyVolume(args[1], args[2]);
                         default ->
                             player.sendMessage(ChatColor.YELLOW + String.format("Command '%s' not found", args[0]));
@@ -108,9 +108,9 @@ public class StructureExecutor implements CommandExecutor {
         }
     }
 
-    private void exportVolume(Player player, String volumeName) {
-        structAdminService.getSelectedStruct(player.getName())
-            .ifPresentOrElse(struct -> structService.exportVolume(struct, volumeName, player::sendMessage),
-                () -> player.sendMessage("First choose a structure"));
+    private void exportVolume(Player player, int structId, String volumeName) {
+            structService.getStruct(structId)
+                    .ifPresentOrElse(struct -> structService.exportVolume(struct, volumeName, player::sendMessage),
+                () -> player.sendMessage(String.format("Struct with id %d not found", structId)));
     }
 }

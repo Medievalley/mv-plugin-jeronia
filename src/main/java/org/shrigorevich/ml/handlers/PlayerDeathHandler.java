@@ -28,7 +28,12 @@ public class PlayerDeathHandler implements Listener {
     }
 
     private void updateDeathStatistics(Player player) {
-        userService.updateDeathStatistics(player.getName(), Objects.requireNonNull(player.getLastDamageCause()).getCause().name());
+        try {
+            userService.updateDeathStatistics(player.getName(), Objects.requireNonNull(player.getLastDamageCause()).getCause().name());
+        }
+        catch (Exception e) {
+            logger.error(e.getMessage());
+        }
     }
 
     private void decrementUserLives(Player player) {

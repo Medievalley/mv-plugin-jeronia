@@ -63,7 +63,7 @@ public class AdminInteractHandler implements Listener {
             if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
                 switch (event.getMaterial()) {
                     case BONE -> draftNpc(event);
-                    case FEATHER -> selectStructByLocation(event);
+                    case FEATHER -> showStructInfo(event);
                     case STICK -> draftStructLocation(event);
                     case COAL -> showBlockType(event);
                     case DIAMOND_AXE -> regSafeLocation(event.getClickedBlock().getLocation());
@@ -158,18 +158,15 @@ public class AdminInteractHandler implements Listener {
         }
     }
 
-    private void selectStructByLocation(PlayerInteractEvent event) {
+    private void showStructInfo(PlayerInteractEvent event) {
         Player p = event.getPlayer();
         if (event.getClickedBlock() != null) {
-            structService.getStruct(event.getClickedBlock().getLocation()).ifPresentOrElse(struct -> {
-                structAdminService.setSelectedStruct(p.getName(), struct);
-                p.sendMessage(String.format(
-                    "Id: %d\n SizeX: %d\n SizeY: %d\n SizeZ: %d\n",
-                    struct.getId(),
-                    struct.getX2() - struct.getX1() + 1,
-                    struct.getY2() - struct.getY1() + 1,
-                    struct.getZ2() - struct.getZ1() + 1));
-            }, () -> p.sendMessage("This location is not part of any structure"));
+            structService.getStruct(event.getClickedBlock().getLocation()).ifPresentOrElse(struct -> p.sendMessage(String.format(
+                "Id: %d\n SizeX: %d\n SizeY: %d\n SizeZ: %d\n",
+                struct.getId(),
+                struct.getX2() - struct.getX1() + 1,
+                struct.getY2() - struct.getY1() + 1,
+                struct.getZ2() - struct.getZ1() + 1)), () -> p.sendMessage("This location is not part of any structure"));
         };
     }
     private void draftStructLocation(PlayerInteractEvent event) {

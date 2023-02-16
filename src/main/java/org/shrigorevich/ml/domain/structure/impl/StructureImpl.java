@@ -7,6 +7,7 @@ import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.shrigorevich.ml.common.Coordinates;
 import org.shrigorevich.ml.domain.structure.Structure;
 import org.shrigorevich.ml.domain.structure.StructureType;
 import org.shrigorevich.ml.domain.structure.models.StructModel;
@@ -161,25 +162,6 @@ public abstract class StructureImpl implements Structure {
         return this.z2;
     }
 
-    /**
-     * Get the Blocks at the eight corners of the Cuboid.
-     *
-     * @return array of Block objects representing the Cuboid corners
-     */
-    public Block[] corners() {
-        Block[] res = new Block[8];
-        World w = this.getWorld();
-        res[0] = w.getBlockAt(this.x1, this.y1, this.z1);
-        res[1] = w.getBlockAt(this.x1, this.y1, this.z2);
-        res[2] = w.getBlockAt(this.x1, this.y2, this.z1);
-        res[3] = w.getBlockAt(this.x1, this.y2, this.z2);
-        res[4] = w.getBlockAt(this.x2, this.y1, this.z1);
-        res[5] = w.getBlockAt(this.x2, this.y1, this.z2);
-        res[6] = w.getBlockAt(this.x2, this.y2, this.z1);
-        res[7] = w.getBlockAt(this.x2, this.y2, this.z2);
-        return res;
-    }
-
     public boolean contains(int x, int y, int z) {
         return x >= this.x1 && x <= this.x2 && y >= this.y1 && y <= this.y2 && z >= this.z1 && z <= this.z2;
     }
@@ -189,6 +171,17 @@ public abstract class StructureImpl implements Structure {
     public boolean contains(Location l) {
         if (!this.world.equals(l.getWorld().getName())) return false;
         return this.contains(l.getBlockX(), l.getBlockY(), l.getBlockZ());
+    }
+
+    @Override
+    public boolean intersects(Coordinates lowest, Coordinates highest) {
+        return isDimensionIntersects(this.x1, this.x2, lowest.x(), highest.x()) ||
+                isDimensionIntersects(this.y1, this.y2, lowest.y(), highest.y()) ||
+                isDimensionIntersects(this.z1, this.z2, lowest.y(), highest.z());
+    }
+
+    private boolean isDimensionIntersects(int aMin, int aMax, int bMin, int bMax) {
+        return aMin <= bMax && aMax >= bMin;
     }
 
     /**
@@ -216,7 +209,7 @@ public abstract class StructureImpl implements Structure {
         return new CuboidIterator(this.getWorld(), this.x1, this.y1, this.z1, this.x2, this.y2, this.z2);
     }
 
-    public class CuboidIterator implements Iterator<Block> {
+    public static class CuboidIterator implements Iterator<Block> {
         private World w;
         private int baseX, baseY, baseZ;
         private int x, y, z;

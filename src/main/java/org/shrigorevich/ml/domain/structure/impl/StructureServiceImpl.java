@@ -38,10 +38,7 @@ public class StructureServiceImpl extends BaseService implements StructureServic
 
     @Override
     public Optional<Structure> getStruct(Location l) {
-        if (getStructBlock(l).isPresent()) {
-            return getStruct(getStructBlock(l).get().getStructId());
-        }
-        return Optional.empty();
+        return structures.values().stream().filter(s -> s.contains(l)).findFirst();
     }
 
     @Override
@@ -69,6 +66,15 @@ public class StructureServiceImpl extends BaseService implements StructureServic
     @Override
     public void create(DraftStruct struct, MsgCallback cb) {
         try {
+
+            if (isIntersects(
+                getMinCoords(struct.getFirstLoc(), struct.getSecondLoc()),
+                getMaxCoords(struct.getFirstLoc(), struct.getSecondLoc())
+            )) {
+                cb.result("The structure intersects with the existing one");
+                return;
+            }
+
             int structId = context.save(
                 struct.name(), struct.type().getId(),
                 struct.getFirstLoc().getWorld().getName(),
@@ -210,7 +216,7 @@ public class StructureServiceImpl extends BaseService implements StructureServic
                 case MAIN -> {
                     return new MainStructure(s, blocks);
                 }
-                case ABODE -> {
+                case ABODE, PRESSURE -> {
                     return new AbodeStructImpl(s, blocks);
                 }
                 default -> throw new IllegalArgumentException(
@@ -280,7 +286,6 @@ public class StructureServiceImpl extends BaseService implements StructureServic
                 } else {
                     blocksPerStruct.put(b.getStructId(), List.of(newBlock)); //todo: verify it is correct
                 }
-                //TODO: need to implement non collision logic
                 this.structBlocks.put(getBlockKey(b), newBlock);
             }
 
@@ -309,6 +314,10 @@ public class StructureServiceImpl extends BaseService implements StructureServic
             Math.max(l1.getBlockY(), l2.getBlockY()),
             Math.max(l1.getBlockZ(), l2.getBlockZ())
         );
+    }
+
+    private boolean isIntersects(Coordinates lowest, Coordinates highest) {
+        return structures.values().stream().anyMatch(s -> s.intersects(lowest, highest));
     }
 
     private boolean isSizeEqual(Structure struct, VolumeModel volume) {

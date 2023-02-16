@@ -2,7 +2,7 @@ package org.shrigorevich.ml.domain.structure;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.shrigorevich.ml.domain.structure.StructureType;
+import org.shrigorevich.ml.common.Coordinates;
 
 import java.util.List;
 
@@ -22,4 +22,5 @@ public interface Structure{
     int getSizeZ();
     List<Block> getBlocks();
     boolean contains(Location l);
+    boolean intersects(Coordinates lowest, Coordinates highest);
 }

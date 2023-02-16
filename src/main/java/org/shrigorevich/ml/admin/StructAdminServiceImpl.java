@@ -43,17 +43,6 @@ public class StructAdminServiceImpl extends BaseService implements StructAdminSe
     }
 
     @Override
-    public void setSelectedStruct(String key, Structure struct) {
-        selectedStruct.put(key, struct);
-    }
-
-    @Override
-    public Optional<Structure> getSelectedStruct(String key) {
-        Structure s = selectedStruct.get(key);
-        return s == null ? Optional.empty() : Optional.of(s);
-    }
-
-    @Override
     public boolean isStructValid(DraftStruct struct) {
         return struct.isLocated() && struct.type() != null;
     }
