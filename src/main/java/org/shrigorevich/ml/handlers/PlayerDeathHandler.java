@@ -24,16 +24,14 @@ public class PlayerDeathHandler implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     private void OnPlayerDeath(PlayerDeathEvent event) {
         updateDeathStatistics(event.getPlayer());
-        logger.info(event.getPlayer().getLastDamageCause().getEntityType().name());
+        decrementUserLives(event.getPlayer());
     }
 
     private void updateDeathStatistics(Player player) {
-        try {
+        userService.updateDeathStatistics(player.getName(), Objects.requireNonNull(player.getLastDamageCause()).getCause().name());
+    }
 
-            userService.updateDeathStatistics(player.getName(), Objects.requireNonNull(player.getLastDamageCause()).getCause().name());
-        }
-        catch (Exception e) {
-            logger.error(e.getMessage());
-        }
+    private void decrementUserLives(Player player) {
+        userService.decrementUserLives(player.getName());
     }
 }

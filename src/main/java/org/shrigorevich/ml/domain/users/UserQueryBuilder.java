@@ -21,4 +21,7 @@ public class UserQueryBuilder {
                 "UPDATE SET deaths = death_stats.deaths + 1;", userId, deathReason);
     }
 
+    public String decrementUserLives(String userId) {
+        return String.format("UPDATE player_data SET lives = player_data.lives - 1 WHERE user_id = '%s'", userId);
+    }
 }

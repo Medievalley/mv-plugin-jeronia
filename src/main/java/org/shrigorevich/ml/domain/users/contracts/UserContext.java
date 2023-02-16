@@ -9,4 +9,5 @@ public interface UserContext {
 
     void updateKillStatistics(String userId, String entityType) throws Exception;
     void updateDeathStatistics(String userId, String deathReason) throws Exception;
+    void decrementUserLives(String userId) throws Exception;
 }

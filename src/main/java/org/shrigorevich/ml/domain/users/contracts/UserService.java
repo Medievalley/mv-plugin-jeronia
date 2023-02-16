@@ -15,4 +15,5 @@ public interface UserService extends Service {
     void offline(String name);
     void updateKillStatistics(String userName, EntityType entityType);
     void updateDeathStatistics(String userName, String deathReason);
+    void decrementUserLives(String userName);
 }
