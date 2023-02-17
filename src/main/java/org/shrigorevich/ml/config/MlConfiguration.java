@@ -11,5 +11,6 @@ public interface MlConfiguration {
     int getMaxMobQty();
     void setMaxMobQty(int maxMobQty);
     DatabaseConf getDb();
-    Plugin getPlugin();
+    void reload();
+    void save();
 }

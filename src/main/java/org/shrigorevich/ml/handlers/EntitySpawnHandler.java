@@ -8,10 +8,10 @@ import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.plugin.Plugin;
 import org.shrigorevich.ml.domain.npc.events.CustomSpawnEvent;
 
-public class EntitySpawn implements Listener {
+public class EntitySpawnHandler implements Listener {
 
     private final Plugin plugin;
-    public EntitySpawn(Plugin plugin) {
+    public EntitySpawnHandler(Plugin plugin) {
         this.plugin = plugin;
     }
 

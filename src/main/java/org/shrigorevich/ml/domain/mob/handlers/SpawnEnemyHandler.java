@@ -35,22 +35,26 @@ public class SpawnEnemyHandler implements Listener {
         this.mobSvc = mobSvc;
         this.logger = LogManager.getLogger("SpawnEnemyHandler");
         this.regSpawns = new LinkedList<>();
-
-        for (Structure s : this.structSvc.getStructs(StructureType.PRESSURE)) {
-            regSpawns.addAll(((AbodeStructure)s).getSpawnBlocks());
-        }
         this.world = plugin.getServer().getWorld("world"); //TODO: Hardcoded world
     }
 
     @EventHandler
     public void OnPressureSpawn(SpawnPressureMobsEvent event) {
+        double pf = config.getPressurePlayersFactor();
+        int pi =config.getPressureInterval();
+        int q = config.getMaxMobQty();
+        for (Structure s : this.structSvc.getStructs(StructureType.PRESSURE)) {
+            this.regSpawns.addAll(((AbodeStructure)s).getSpawnBlocks());
+        }
         for (EntityType t : mobSvc.getPressurePreset().keySet()) {
             if (getAvailableQty(t) <= 0) return;
-
+            int availableQty = getAvailableQty(t);
+            int powerToSpawn = getPowerToSpawn(t);
+            int defMobPower = getDefaultMobPower(t);
             int qty = getPowerToSpawn(t) / getDefaultMobPower(t);
             double powerFactor = (double) qty / getAvailableQty(t);
 
-            if (powerFactor <= 0) {
+            if (powerFactor <= 1) {
                 spawnEntities(t, qty, 0);
             } else {
                 spawnEntities(t, getAvailableQty(t), powerFactor);
@@ -83,12 +87,13 @@ public class SpawnEnemyHandler implements Listener {
             StructBlock b = regSpawns.poll();
             if (b != null) {
                 world.spawnEntity(
-                    new Location(world, b.getX(), b.getY(), b.getZ()),
+                    new Location(world, b.getX()+1, b.getY()+1, b.getZ()+1),
                     type, CreatureSpawnEvent.SpawnReason.CUSTOM,
                     (e) -> {
                         if (powerFactor > 0) boostEntity(e, powerFactor);
                     }
                 );
+                regSpawns.add(b);
             }
         }
     }

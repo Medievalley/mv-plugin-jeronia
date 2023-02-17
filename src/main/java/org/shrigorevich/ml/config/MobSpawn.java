@@ -8,12 +8,11 @@ class MobSpawn {
     private int maxMobQty;
     private double pressurePlayersFactor;
 
-
     public MobSpawn(Map<String, Object> map) {
-        this.pressureInterval = (int) map.getOrDefault("pressure_interval", 1);
-        this.waveInterval = (int) map.getOrDefault("wave_interval", 15);
-        this.maxMobQty = (int) map.getOrDefault("max_mob_qty", 50);
-        this.pressurePlayersFactor = (double) map.getOrDefault("pressure_players_factor", 2.0);
+        this.pressureInterval = (int) map.getOrDefault("pressure_interval", 0);
+        this.waveInterval = (int) map.getOrDefault("wave_interval", 0);
+        this.maxMobQty = (int) map.getOrDefault("max_mob_qty", 0);
+        this.pressurePlayersFactor = (double) map.getOrDefault("pressure_players_factor", 0);
     }
 
     public int getPressureInterval() {

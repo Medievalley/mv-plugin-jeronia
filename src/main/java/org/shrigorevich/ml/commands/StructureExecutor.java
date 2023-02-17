@@ -14,6 +14,7 @@ import org.shrigorevich.ml.common.Utils;
 import org.shrigorevich.ml.domain.project.ProjectService;
 import org.shrigorevich.ml.domain.structure.StructureType;
 import org.shrigorevich.ml.domain.structure.TownInfra;
+import org.shrigorevich.ml.domain.structure.VolumeStruct;
 import org.shrigorevich.ml.domain.users.UserRole;
 import org.shrigorevich.ml.domain.users.contracts.User;
 import org.shrigorevich.ml.domain.structure.StructureService;
@@ -54,7 +55,7 @@ public class StructureExecutor implements CommandExecutor {
                         case "restore", "r" -> restore(args[1]);
                         case "c", "create" -> create(player, args[1], args[2]);
                         case "sv", "save_volume" -> exportVolume(player, Integer.parseInt(args[1]), args[2]);
-                        case "av", "apply_volume" -> applyVolume(args[1], args[2]);
+                        case "av", "apply_volume" -> applyVolume(player, args[1], args[2]);
                         default ->
                             player.sendMessage(ChatColor.YELLOW + String.format("Command '%s' not found", args[0]));
                     }
@@ -69,12 +70,17 @@ public class StructureExecutor implements CommandExecutor {
         return true;
     }
 
-    private void applyVolume(String structId, String volumeId) {
+    private void applyVolume(Player player, String structId, String volumeId) {
         structService.getStruct(Integer.parseInt(structId)).ifPresent(s -> {
-            if(s instanceof TownInfra ti) {
-                projectService.finalizeProject(ti.getId());
-                structService.applyVolume(ti, Integer.parseInt(volumeId));
-
+            try {
+                if(s instanceof VolumeStruct vs) {
+                    projectService.finalizeProject(vs.getId());
+                    structService.applyVolume(vs, Integer.parseInt(volumeId));
+                } else {
+                    player.sendMessage(ChatColor.RED + "Not suitable structure");
+                }
+            } catch (Exception ex) {
+                player.sendMessage(ChatColor.RED + ex.getMessage());
             }
         });
     }

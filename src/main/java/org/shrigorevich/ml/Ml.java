@@ -73,8 +73,6 @@ public final class Ml extends JavaPlugin implements MlPlugin {
     @Override
     public void onLoad() {
         saveDefaultConfig();
-        getConfig().options().copyDefaults(true);
-        saveConfig();
 
         this.config = new ConfigurationImpl(this);
         DataSource dataSource = DataSourceCreator.createDataSource(config);
@@ -122,9 +120,9 @@ public final class Ml extends JavaPlugin implements MlPlugin {
         PluginManager pm = getServer().getPluginManager();
         pm.registerEvents(new AuthHandler(userService), this);
         pm.registerEvents(new BlockBreak(structService), this);
-        pm.registerEvents(new CustomSpawn(taskService, npcService, structService), this);
+        pm.registerEvents(new CustomSpawn(taskService, npcService, structService, mobService), this);
         pm.registerEvents(new EntityInventoryHandler(npcService, projectService), this);
-        pm.registerEvents(new EntitySpawn(this), this);
+        pm.registerEvents(new EntitySpawnHandler(this), this);
         pm.registerEvents(new HarvestHandler(taskService, npcService, structService), this);
         pm.registerEvents(new PlantGrow(structService), this);
         pm.registerEvents(new PlayerInteract(structService, npcService, taskService), this);

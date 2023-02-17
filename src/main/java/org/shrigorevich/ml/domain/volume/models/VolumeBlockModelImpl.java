@@ -10,7 +10,7 @@ public class VolumeBlockModelImpl implements VolumeBlockModel {
     public VolumeBlockModelImpl() {}
     public VolumeBlockModelImpl(
             int x, int y, int z,
-            String blockData, String material
+            String material, String blockData
     ) {
         this.x = x;
         this.y = y;

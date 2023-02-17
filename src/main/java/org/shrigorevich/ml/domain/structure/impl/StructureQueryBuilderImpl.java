@@ -100,7 +100,7 @@ public class StructureQueryBuilderImpl {
     }
 
     public String changeBlockType(int blockId, int typeId) {
-        return String.format("UPDATE struct_block SET typeId=%d WHERE id=%d", typeId, blockId);
+        return String.format("UPDATE struct_block SET type_id=%d WHERE id=%d", typeId, blockId);
     }
 }
 

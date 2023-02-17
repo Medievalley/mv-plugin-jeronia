@@ -8,6 +8,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.shrigorevich.ml.config.ConfPath;
 import org.shrigorevich.ml.config.MlConfiguration;
 
 
@@ -26,7 +27,7 @@ public class ConfigExecutor implements CommandExecutor {
         if(args.length > 0){
             if(sender instanceof Player player){
                 try {
-                    UpdateConfig(args[1], args[2], args[3]);
+                    UpdateConfig(player, args[0], args[1]);
                 }
                 catch (Exception ex) {
                     logger.error(ex.getMessage());
@@ -39,19 +40,17 @@ public class ConfigExecutor implements CommandExecutor {
         return true;
     }
 
-    private void UpdateConfig(String section, String property, String value) throws Exception {
-        switch (section.toLowerCase()) {
-            case "mob_spawn" -> updateMobSpawnSection(property, value);
-            default -> throw new Exception("Section does not exist");
-        }
-    }
+    private void UpdateConfig(Player player, String path, String value) {
 
-    private void updateMobSpawnSection(String property, String value) throws Exception {
-        switch (property) {
-            case "pressure_interval" -> config.setPressureInterval(Integer.parseInt(value));
-            case "pressure_players_factor" -> config.setPressurePlayersFactor(Double.parseDouble(value));
-            default -> throw new Exception("Property does not exist");
+        switch (ConfPath.getByPath(path)) {
+            case MOB_SPAWN_MAX_MOB_QTY -> config.setMaxMobQty(Integer.parseInt(value));
+            case MOB_SPAWN_PRESSURE_PF -> config.setPressurePlayersFactor(Double.parseDouble(value));
+            case MOB_SPAWN_PRESSURE_INTERVAL -> config.setPressureInterval(Integer.parseInt(value));
+            default -> {
+                player.sendMessage(ChatColor.RED + String.format("The path you specified does not exist. Path: %s", path));
+                return;
+            }
         }
+        config.save();
     }
-
 }

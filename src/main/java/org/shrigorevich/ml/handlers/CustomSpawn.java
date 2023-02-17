@@ -13,6 +13,7 @@ import org.bukkit.event.Listener;
 import org.shrigorevich.ml.domain.ai.contracts.TaskService;
 import org.shrigorevich.ml.domain.ai.tasks.HarvestTask;
 import org.shrigorevich.ml.domain.ai.tasks.HoldSpawnTask;
+import org.shrigorevich.ml.domain.mob.MobService;
 import org.shrigorevich.ml.domain.npc.NpcRole;
 import org.shrigorevich.ml.domain.npc.NpcService;
 import org.shrigorevich.ml.domain.npc.StructNpc;
@@ -30,30 +31,39 @@ public class CustomSpawn implements Listener {
     private final TaskService taskService;
     private final NpcService npcService;
     private final StructureService structService;
+    private final MobService mobService;
     private final Logger logger;
 
-    public CustomSpawn(TaskService taskService, NpcService npcService, StructureService structureService) {
+    public CustomSpawn(TaskService taskService, NpcService npcService, StructureService structureService, MobService mobService) {
         this.taskService = taskService;
         this.npcService = npcService;
         this.structService = structureService;
+        this.mobService = mobService;
         this.logger = LogManager.getLogger("CustomSpawn");
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void OnCustomSpawn(CustomSpawnEvent event) {
-        if (event.getEntity() instanceof Villager entity) {
-            Optional<StructNpc> npc = npcService.getById(entity.getUniqueId());
-            if (npc.isPresent()) {
-                taskService.setDefaultAI(entity);
-                setTask(npc.get(), entity);
-                logger.debug(String.format("Custom spawned: %d, %s, %s%n",
-                        npc.get().getId(), npc.get().isAlive(), npc.get().getRole()));
+        if (event.getEntity() instanceof Villager villager) {
+            processVillager(villager);
+        } else if (event.getEntity() instanceof Mob mob) {
 
-                switch (npc.get().getRole()) {
-                    case HARVESTER -> assignToStruct(npc.get(), entity);
-                    case WARDEN, BUILDER -> {}
-                    default -> {
-                    }
+        }
+
+    }
+
+    private void processVillager(Villager villager) {
+        Optional<StructNpc> npc = npcService.getById(villager.getUniqueId());
+        if (npc.isPresent()) {
+            taskService.setDefaultAI(villager);
+            setTask(npc.get(), villager);
+            logger.debug(String.format("Custom spawned: %d, %s, %s%n",
+                    npc.get().getId(), npc.get().isAlive(), npc.get().getRole()));
+
+            switch (npc.get().getRole()) {
+                case HARVESTER -> assignToStruct(npc.get(), villager);
+                case WARDEN, BUILDER -> {}
+                default -> {
                 }
             }
         }

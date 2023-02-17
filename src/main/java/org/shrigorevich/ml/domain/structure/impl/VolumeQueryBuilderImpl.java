@@ -10,10 +10,10 @@ class VolumeQueryBuilderImpl {
     }
 
     String createVolumeBlockBatch() {
-        return "INSERT INTO volume_block (volume_id, type, block_data, x, y, z) VALUES (?, ?, ?, ?, ?, ?)";
+        return "INSERT INTO volume_block (volume_id, material, block_data, x, y, z) VALUES (?, ?, ?, ?, ?, ?)";
     }
 
     String getBlocks(int volumeId) {
-        return String.format("SELECT id, type, block_data as blockdata, x, y, z FROM volume_block where volume_id=%d;", volumeId);
+        return String.format("SELECT id, material, block_data as blockdata, x, y, z FROM volume_block where volume_id=%d;", volumeId);
     }
 }

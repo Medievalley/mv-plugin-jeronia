@@ -18,6 +18,7 @@ import org.shrigorevich.ml.domain.volume.models.VolumeBlockModelImpl;
 import org.shrigorevich.ml.domain.volume.models.VolumeModel;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class StructureServiceImpl extends BaseService implements StructureService {
     private final StructureContext context;
@@ -43,7 +44,8 @@ public class StructureServiceImpl extends BaseService implements StructureServic
 
     @Override
     public List<Structure> getStructs(StructureType type) {
-        return structures.values().stream().filter(s -> s.getType() == StructureType.PRESSURE).toList();
+        return structures.values().stream().filter(s -> s.getType() == StructureType.PRESSURE)
+            .collect(Collectors.toList());
     }
 
     @Override
@@ -66,7 +68,6 @@ public class StructureServiceImpl extends BaseService implements StructureServic
     @Override
     public void create(DraftStruct struct, MsgCallback cb) {
         try {
-
             if (isIntersects(
                 getMinCoords(struct.getFirstLoc(), struct.getSecondLoc()),
                 getMaxCoords(struct.getFirstLoc(), struct.getSecondLoc())
@@ -146,18 +147,20 @@ public class StructureServiceImpl extends BaseService implements StructureServic
             context.restoreStruct(structId);
             List<StructBlockModel> blocks = context.getStructBlocks(structId);
             context.getById(structId).ifPresent(model -> {
-                List<StructBlock> structBlocks = new ArrayList<>();
+                List<StructBlock> blocksForStruct = new ArrayList<>();
                 for (StructBlockModel b : blocks) {
-                    structBlocks.add(new StructBlockImpl(b));
+                    ExStructBlock exBlock = new StructBlockImpl(b);
+                    this.structBlocks.put(getBlockKey(b), exBlock);
+                    blocksForStruct.add(exBlock);
                 }
 
-                Structure struct = createStructure(model, structBlocks);
+                Structure struct = createStructure(model, blocksForStruct);
                 if (structures.containsKey(structId)) {
                     structures.replace(structId, struct);
                 } else {
                     structures.put(structId, struct);
                 }
-                for (StructBlockModel sb :  blocks) {
+                for (StructBlock sb :  blocksForStruct) {
                     struct.getWorld()
                         .getBlockAt(sb.getX(), sb.getY(), sb.getZ())
                         .setBlockData(Bukkit.createBlockData(sb.getBlockData()));
@@ -169,7 +172,7 @@ public class StructureServiceImpl extends BaseService implements StructureServic
     }
 
     @Override
-    public void applyVolume(@NotNull TownInfra struct, int volumeId) throws IllegalArgumentException {
+    public void applyVolume(@NotNull VolumeStruct struct, int volumeId) throws IllegalArgumentException {
         try {
             Optional<VolumeModel> volume = context.getVolumeById(volumeId);
             if (volume.isEmpty()) throw new IllegalArgumentException(String.format("Volume %d not found", volumeId));
@@ -284,7 +287,7 @@ public class StructureServiceImpl extends BaseService implements StructureServic
                 if (blocksPerStruct.containsKey(b.getStructId())) {
                     blocksPerStruct.get(b.getStructId()).add(newBlock);
                 } else {
-                    blocksPerStruct.put(b.getStructId(), List.of(newBlock)); //todo: verify it is correct
+                    blocksPerStruct.put(b.getStructId(), new ArrayList<>(List.of(newBlock)));
                 }
                 this.structBlocks.put(getBlockKey(b), newBlock);
             }

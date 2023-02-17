@@ -131,9 +131,9 @@ public class StructContextImpl extends BaseContext implements StructureContext {
     @Override
     public void attachVolume(int structId, int volumeId) throws Exception {
         try {
-            getLogger().info(String.format("Set volume: %d, %d%n", structId, volumeId));
             QueryRunner run = new QueryRunner(getDataSource());
             run.update(structQueryBuilder.setVolume(structId, volumeId));
+            getLogger().info(String.format("Set volume: %d, %d%n", structId, volumeId));
         } catch (SQLException ex) {
             getLogger().error(ex.toString());
             throw new Exception(String.format("Error while attaching volume: %d to struct: %d", volumeId, structId));

@@ -21,10 +21,19 @@ public class ConfigurationImpl implements MlConfiguration {
             plugin.getConfig().getConfigurationSection("mob_spawn")).getValues(false));
     }
 
+    @Override
+    public void save() {
+        plugin.saveConfig();
+    }
+
+    @Override
+    public DatabaseConf getDb() {
+        return database;
+    }
     //MOB SPAWN START
     @Override
-    public void setPressureInterval(int value) {
-        mobSpawn.setPressureInterval(value);
+    public double getPressurePlayersFactor() {
+        return mobSpawn.getPressurePlayersFactor();
     }
     @Override
     public int getPressureInterval() {
@@ -35,27 +44,20 @@ public class ConfigurationImpl implements MlConfiguration {
         return mobSpawn.getMaxMobQty();
     }
     @Override
-    public void setMaxMobQty(int maxMobQty) {
-        mobSpawn.setMaxMobQty(maxMobQty);
+    public void setPressureInterval(int value) {
+        plugin.getConfig().set(ConfPath.MOB_SPAWN_PRESSURE_INTERVAL.getPath(), value);
+        mobSpawn.setPressureInterval(value);
     }
     @Override
-    public double getPressurePlayersFactor() {
-        return mobSpawn.getPressurePlayersFactor();
+    public void setMaxMobQty(int value) {
+        plugin.getConfig().set(ConfPath.MOB_SPAWN_MAX_MOB_QTY.getPath(), value);
+        mobSpawn.setMaxMobQty(value);
     }
 
     @Override
     public void setPressurePlayersFactor(double value) {
+        plugin.getConfig().set(ConfPath.MOB_SPAWN_PRESSURE_PF.getPath(), value);
         this.mobSpawn.setPressurePlayersFactor(value);
     }
     //MOB SPAWN END
-
-    @Override
-    public Plugin getPlugin() {
-        return plugin;
-    }
-
-    @Override
-    public DatabaseConf getDb() {
-        return database;
-    }
 }

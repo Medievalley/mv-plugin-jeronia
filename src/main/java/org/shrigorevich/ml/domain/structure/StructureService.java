@@ -42,6 +42,6 @@ public interface StructureService extends Service {
      * 2. When struct and volume sizes do not match (x, y, z)
      *
      */
-    void applyVolume(@NotNull TownInfra struct, int volumeId) throws IllegalArgumentException;
+    void applyVolume(@NotNull VolumeStruct struct, int volumeId) throws IllegalArgumentException;
     void updateResources(int structId, int amount);
 }
