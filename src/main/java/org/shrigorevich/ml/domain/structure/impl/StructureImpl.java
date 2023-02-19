@@ -175,9 +175,9 @@ public abstract class StructureImpl implements Structure {
 
     @Override
     public boolean intersects(Coordinates lowest, Coordinates highest) {
-        return isDimensionIntersects(this.x1, this.x2, lowest.x(), highest.x()) ||
-                isDimensionIntersects(this.y1, this.y2, lowest.y(), highest.y()) ||
-                isDimensionIntersects(this.z1, this.z2, lowest.y(), highest.z());
+        return isDimensionIntersects(this.x1, this.x2, lowest.x(), highest.x()) &&
+                isDimensionIntersects(this.y1, this.y2, lowest.y(), highest.y()) &&
+                isDimensionIntersects(this.z1, this.z2, lowest.z(), highest.z());
     }
 
     private boolean isDimensionIntersects(int aMin, int aMax, int bMin, int bMax) {

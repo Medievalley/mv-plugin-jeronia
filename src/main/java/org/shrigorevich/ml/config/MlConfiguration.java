@@ -1,7 +1,5 @@
 package org.shrigorevich.ml.config;
 
-import org.bukkit.plugin.Plugin;
-
 public interface MlConfiguration {
 
     int getPressureInterval();

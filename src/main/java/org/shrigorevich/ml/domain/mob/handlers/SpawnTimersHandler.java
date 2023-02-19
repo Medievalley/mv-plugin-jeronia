@@ -1,4 +1,4 @@
-package org.shrigorevich.ml.handlers;
+package org.shrigorevich.ml.domain.mob.handlers;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
