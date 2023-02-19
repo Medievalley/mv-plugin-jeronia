@@ -25,7 +25,7 @@ import org.shrigorevich.ml.domain.ai.contracts.TaskService;
 import org.shrigorevich.ml.domain.ai.TaskServiceImpl;
 import org.shrigorevich.ml.domain.mob.MobService;
 import org.shrigorevich.ml.domain.mob.MobServiceImpl;
-import org.shrigorevich.ml.domain.mob.handlers.SpawnEnemyHandler;
+import org.shrigorevich.ml.domain.mob.handlers.*;
 import org.shrigorevich.ml.domain.npc.NpcContext;
 import org.shrigorevich.ml.domain.npc.impl.NpcContextImpl;
 import org.shrigorevich.ml.domain.npc.NpcService;
@@ -123,8 +123,6 @@ public final class Ml extends JavaPlugin implements MlPlugin {
         pm.registerEvents(new CustomSpawn(taskService, npcService, structService, mobService), this);
         pm.registerEvents(new EntityInventoryHandler(npcService, projectService), this);
         pm.registerEvents(new EntitySpawnHandler(this), this);
-        pm.registerEvents(new HarvestHandler(taskService, npcService, structService), this);
-        pm.registerEvents(new PlantGrow(structService), this);
         pm.registerEvents(new PlayerInteract(structService, npcService, taskService), this);
         pm.registerEvents(new ReachLocationHandler(this), this);
         pm.registerEvents(new DangerHandler(taskService, npcService), this);

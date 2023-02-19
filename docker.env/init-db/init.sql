@@ -133,7 +133,6 @@ INSERT INTO struct_type (id, name, description) VALUES
 
 
 INSERT INTO npc_role (id, name, description) VALUES
-(1, 'harvester', 'A villager who harvests'),
 (2, 'warden', 'The main person in the village'),
 (3, 'builder', 'A villager who builds and repairs structures');
 
