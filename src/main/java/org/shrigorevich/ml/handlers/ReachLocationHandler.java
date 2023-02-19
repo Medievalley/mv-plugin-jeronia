@@ -20,29 +20,18 @@ public class ReachLocationHandler implements Listener {
         PluginManager pm = plugin.getServer().getPluginManager();
 
         switch (event.getTask().getType()) {
-            case HARVEST:
-                pm.callEvent(new HarvestStartedEvent(event.getEntity(), event.getTarget(), event.getTask()));
-                break;
-            case BUILD:
-                pm.callEvent(new BuildStartedEvent(event.getEntity(), event.getTarget(), (BuildTask) event.getTask()));
-                break;
-            case HOLD_SPAWN:
-            default:
-                break;
+            case BUILD ->
+                    pm.callEvent(new BuildStartedEvent(event.getEntity(), event.getTarget(), (BuildTask) event.getTask()));
+            case HOLD_SPAWN -> {
+
+            }
+            default -> {
+            }
         }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void OnUnableToReachLocation(UnableToReachLocationEvent event) {
-        PluginManager pm = plugin.getServer().getPluginManager();
 
-        switch (event.getTask().getType()) {
-            case HARVEST:
-                pm.callEvent(new UnableToHarvestEvent(event.getEntity(), event.getTarget(), event.getTask()));
-                break;
-            case HOLD_SPAWN:
-            default:
-                break;
-        }
     }
 }
