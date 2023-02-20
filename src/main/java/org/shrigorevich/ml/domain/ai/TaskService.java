@@ -1,4 +1,4 @@
-package org.shrigorevich.ml.domain.ai.contracts;
+package org.shrigorevich.ml.domain.ai;
 
 import org.bukkit.entity.Entity;
 import org.shrigorevich.ml.common.Service;
@@ -8,8 +8,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface TaskService extends Service {
-    void add(Task task);
-    Optional<Task> get(UUID entityId);
+    void add(PriorityTask task);
+    Optional<PriorityTask> get(UUID entityId);
     void finalize(UUID entityId);
     void block(UUID entityId);
     void clear(UUID entityId);
@@ -17,5 +17,5 @@ public interface TaskService extends Service {
     boolean shouldChangeTask(UUID entityId);
     void checkBlockedTasks(UUID entityId);
     void setDefaultAI(Entity entity);
-    List<Task> getEntityTasks(UUID entityId);
+    List<PriorityTask> getEntityTasks(UUID entityId);
 }

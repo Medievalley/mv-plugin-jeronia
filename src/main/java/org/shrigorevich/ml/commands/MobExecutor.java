@@ -11,12 +11,9 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.jetbrains.annotations.NotNull;
-import org.shrigorevich.ml.admin.NpcAdminService;
-import org.shrigorevich.ml.domain.ai.contracts.TaskService;
+import org.shrigorevich.ml.domain.ai.TaskService;
 import org.shrigorevich.ml.domain.mob.MobService;
 import org.shrigorevich.ml.domain.mob.events.SpawnPressureMobsEvent;
-import org.shrigorevich.ml.domain.npc.NpcRole;
-import org.shrigorevich.ml.domain.npc.NpcService;
 
 public class MobExecutor implements CommandExecutor {
 

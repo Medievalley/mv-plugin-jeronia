@@ -1,4 +1,4 @@
-package org.shrigorevich.ml.domain.ai.contracts;
+package org.shrigorevich.ml.domain.ai;
 
 import org.bukkit.Location;
 

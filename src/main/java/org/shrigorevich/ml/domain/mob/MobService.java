@@ -11,7 +11,7 @@ public interface MobService {
 
     ItemStack getSkull(EntityType type);
     void setup();
-    void addMob(Entity entity, int power);
+    void addMob(Entity entity, double power);
     void remove(Entity entity);
     int getCurrentQuantity();
     int getCurrentPower();

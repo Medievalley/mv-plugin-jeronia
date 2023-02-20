@@ -7,17 +7,15 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Villager;
 import org.bukkit.plugin.Plugin;
 import org.shrigorevich.ml.common.BaseService;
-import org.shrigorevich.ml.domain.ai.contracts.Task;
-import org.shrigorevich.ml.domain.ai.contracts.TaskService;
 import org.shrigorevich.ml.domain.ai.goals.DefaultGoal;
 
 import java.util.*;
 
 public class TaskServiceImpl extends BaseService implements TaskService {
 
-    private final Map<UUID, PriorityQueue<Task>> tasksQueues;
-    private final Map<UUID, Task> currentTasks;
-    private final Map<UUID, List<Task>> blockedTasks;
+    private final Map<UUID, PriorityQueue<PriorityTask>> tasksQueues;
+    private final Map<UUID, PriorityTask> currentTasks;
+    private final Map<UUID, List<PriorityTask>> blockedTasks;
 
     public TaskServiceImpl(Plugin plugin) {
         super(plugin, LogManager.getLogger("TaskServiceImpl"));
@@ -27,27 +25,27 @@ public class TaskServiceImpl extends BaseService implements TaskService {
     }
 
     @Override
-    public void add(Task task) {
+    public void add(PriorityTask task) {
         UUID entityId = task.getEntity().getUniqueId();
         if (tasksQueues.containsKey(entityId)) {
-            PriorityQueue<Task> queue = tasksQueues.get(entityId);
+            PriorityQueue<PriorityTask> queue = tasksQueues.get(entityId);
             queue.add(task);
         } else {
-            PriorityQueue<Task> queue = new PriorityQueue<>();
+            PriorityQueue<PriorityTask> queue = new PriorityQueue<>();
             queue.add(task);
             tasksQueues.put(entityId, queue);
         }
     }
 
     @Override
-    public Optional<Task> get(UUID entityId) {
-        Task task = currentTasks.get(entityId);
+    public Optional<PriorityTask> get(UUID entityId) {
+        PriorityTask task = currentTasks.get(entityId);
         return task == null ? Optional.empty() : Optional.of(task);
     }
 
     @Override
     public void finalize(UUID entityId) {
-        Task task = currentTasks.remove(entityId);
+        PriorityTask task = currentTasks.remove(entityId);
         if (task != null) {
             task.end();
         }
@@ -55,14 +53,14 @@ public class TaskServiceImpl extends BaseService implements TaskService {
 
     @Override
     public void block(UUID entityId) {
-        Task task = currentTasks.remove(entityId);
+        PriorityTask task = currentTasks.remove(entityId);
         if (task != null) {
             task.end();
             task.setBlocked(true);
             if (blockedTasks.containsKey(entityId)) {
                 blockedTasks.get(entityId).add(task);
             } else {
-                List<Task> list = new ArrayList<>();
+                List<PriorityTask> list = new ArrayList<>();
                 list.add(task);
                 blockedTasks.put(entityId, list);
             }
@@ -78,9 +76,9 @@ public class TaskServiceImpl extends BaseService implements TaskService {
     @Override
     public void startTopPriority(UUID entityId) {
         postpone(entityId);
-        PriorityQueue<Task> queue = tasksQueues.get(entityId);
+        PriorityQueue<PriorityTask> queue = tasksQueues.get(entityId);
         if (queue != null && !queue.isEmpty()) {
-            Task task = queue.poll();
+            PriorityTask task = queue.poll();
             currentTasks.put(entityId, task);
             task.start();
         }
@@ -88,13 +86,12 @@ public class TaskServiceImpl extends BaseService implements TaskService {
 
     @Override
     public boolean shouldChangeTask(UUID entityId) {
-        PriorityQueue<Task> queue = tasksQueues.get(entityId);
+        PriorityQueue<PriorityTask> queue = tasksQueues.get(entityId);
         if (queue != null) {
-            Task cur = currentTasks.get(entityId);
-            Task top = queue.peek();
+            PriorityTask cur = currentTasks.get(entityId);
+            PriorityTask top = queue.peek();
             if (cur == null && top != null) {
                 return true;
-
             } else if (cur != null && top != null ) {
                 return cur.getPriority().getValue() < top.getPriority().getValue();
             } else {
@@ -107,8 +104,8 @@ public class TaskServiceImpl extends BaseService implements TaskService {
 
     public void checkBlockedTasks(UUID entityId) {
         if (blockedTasks.containsKey(entityId)) {
-            List<Task> updatedList = new ArrayList<>();
-            for (Task task : blockedTasks.get(entityId)) {
+            List<PriorityTask> updatedList = new ArrayList<>();
+            for (PriorityTask task : blockedTasks.get(entityId)) {
                 if (!task.shouldBeBlocked()) {
                     task.setBlocked(false);
                     tasksQueues.get(entityId).add(task);
@@ -117,7 +114,6 @@ public class TaskServiceImpl extends BaseService implements TaskService {
                 }
             }
             blockedTasks.put(entityId, updatedList);
-//            System.out.println("Blocked tasks size: " + blockedTasks.get(entityId).size());
         }
     }
 
@@ -137,7 +133,7 @@ public class TaskServiceImpl extends BaseService implements TaskService {
     }
 
     @Override
-    public List<Task> getEntityTasks(UUID entityId) {
+    public List<PriorityTask> getEntityTasks(UUID entityId) {
         if (tasksQueues.containsKey(entityId)) {
             return tasksQueues.get(entityId).stream().toList();
         }
@@ -145,7 +141,7 @@ public class TaskServiceImpl extends BaseService implements TaskService {
     }
 
     private void postpone(UUID entityId) {
-        Task task = currentTasks.remove(entityId);
+        PriorityTask task = currentTasks.remove(entityId);
         if (task != null) {
             task.end();
             tasksQueues.get(entityId).add(task);

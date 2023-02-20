@@ -8,7 +8,7 @@ import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.shrigorevich.ml.domain.ai.contracts.TaskService;
+import org.shrigorevich.ml.domain.ai.TaskService;
 import org.shrigorevich.ml.domain.ai.tasks.HoldSpawnTask;
 import org.shrigorevich.ml.domain.mob.MobService;
 import org.shrigorevich.ml.domain.npc.NpcService;

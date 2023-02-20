@@ -5,8 +5,9 @@ import org.bukkit.entity.Mob;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.shrigorevich.ml.domain.ai.contracts.Task;
-import org.shrigorevich.ml.domain.ai.contracts.TaskService;
+import org.shrigorevich.ml.domain.ai.PriorityTask;
+import org.shrigorevich.ml.domain.ai.Task;
+import org.shrigorevich.ml.domain.ai.TaskService;
 import org.shrigorevich.ml.domain.ai.TaskType;
 import org.shrigorevich.ml.domain.ai.tasks.GoSafeTask;
 import org.shrigorevich.ml.domain.npc.NpcService;
@@ -28,7 +29,7 @@ public class DangerHandler implements Listener {
     public void NpcInDanger(NpcInDangerEvent event) {
         Mob entity = event.getEntity();
 
-        Optional<Task> task = taskService.get(entity.getUniqueId());
+        Optional<PriorityTask> task = taskService.get(entity.getUniqueId());
         if (task.isPresent() && task.get().getType() != TaskType.GO_SAFE) {
             npcService.bookSafeLoc(entity.getUniqueId()).ifPresent(safeLoc -> {
                 taskService.add(

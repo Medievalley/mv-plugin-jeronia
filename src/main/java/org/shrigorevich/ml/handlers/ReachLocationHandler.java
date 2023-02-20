@@ -5,7 +5,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
-import org.shrigorevich.ml.domain.ai.contracts.BuildTask;
+import org.shrigorevich.ml.domain.ai.BuildTask;
 import org.shrigorevich.ml.domain.npc.events.*;
 
 public class ReachLocationHandler implements Listener {

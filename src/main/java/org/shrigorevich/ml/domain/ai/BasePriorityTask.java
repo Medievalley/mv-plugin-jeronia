@@ -5,16 +5,15 @@ import com.destroystokyo.paper.entity.ai.MobGoals;
 import org.bukkit.entity.Mob;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
-import org.shrigorevich.ml.domain.ai.contracts.Task;
 
-public abstract class BaseTask implements Task {
+public abstract class BasePriorityTask implements PriorityTask {
     private final TaskPriority priority;
     private final Plugin plugin;
     private final Mob mob;
     private final TaskType type;
     private boolean blocked;
 
-    public BaseTask(Plugin plugin, TaskType type, TaskPriority priority, Mob mob) {
+    public BasePriorityTask(Plugin plugin, TaskType type, TaskPriority priority, Mob mob) {
         this.priority = priority;
         this.plugin = plugin;
         this.mob = mob;
@@ -32,7 +31,7 @@ public abstract class BaseTask implements Task {
     }
 
     @Override
-    public int compareTo(@NotNull Task task) {
+    public int compareTo(@NotNull PriorityTask task) {
         return task.getPriority().getValue() - this.priority.getValue();
     }
 

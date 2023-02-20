@@ -38,24 +38,25 @@ public class SpawnEnemyHandler implements Listener {
         this.world = plugin.getServer().getWorld("world"); //TODO: Hardcoded world
     }
 
+    //TODO: remove comments
     @EventHandler
     public void OnPressureSpawn(SpawnPressureMobsEvent event) {
-        double pf = config.getPressurePlayersFactor();
-        int pi =config.getPressureInterval();
-        int q = config.getMaxMobQty();
+//        double pf = config.getPressurePlayersFactor();
+//        int pi =config.getPressureInterval();
+//        int q = config.getMaxMobQty();
         for (Structure s : this.structSvc.getStructs(StructureType.PRESSURE)) {
             this.regSpawns.addAll(((AbodeStructure)s).getSpawnBlocks());
         }
         for (EntityType t : mobSvc.getPressurePreset().keySet()) {
             if (getAvailableQty(t) <= 0) return;
-            int availableQty = getAvailableQty(t);
-            int powerToSpawn = getPowerToSpawn(t);
-            int defMobPower = getDefaultMobPower(t);
+//            int availableQty = getAvailableQty(t);
+//            int powerToSpawn = getPowerToSpawn(t);
+//            int defMobPower = getDefaultMobPower(t);
             int qty = getPowerToSpawn(t) / getDefaultMobPower(t);
             double powerFactor = (double) qty / getAvailableQty(t);
 
             if (powerFactor <= 1) {
-                spawnEntities(t, qty, 0);
+                spawnEntities(t, qty, powerFactor);
             } else {
                 spawnEntities(t, getAvailableQty(t), powerFactor);
             }
@@ -90,7 +91,12 @@ public class SpawnEnemyHandler implements Listener {
                     new Location(world, b.getX()+1, b.getY()+1, b.getZ()+1),
                     type, CreatureSpawnEvent.SpawnReason.CUSTOM,
                     (e) -> {
-                        if (powerFactor > 0) boostEntity(e, powerFactor);
+                        if (powerFactor > 1) {
+                            boostEntity(e, powerFactor);
+                            mobSvc.addMob(e, getDefaultMobPower(type)  * powerFactor);
+                        } else {
+                            mobSvc.addMob(e, getDefaultMobPower(type));
+                        }
                     }
                 );
                 regSpawns.add(b);

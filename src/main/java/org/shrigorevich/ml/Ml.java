@@ -21,7 +21,7 @@ import org.shrigorevich.ml.commands.*;
 import org.shrigorevich.ml.config.ConfigurationImpl;
 import org.shrigorevich.ml.common.DataSourceCreator;
 import org.shrigorevich.ml.config.MlConfiguration;
-import org.shrigorevich.ml.domain.ai.contracts.TaskService;
+import org.shrigorevich.ml.domain.ai.TaskService;
 import org.shrigorevich.ml.domain.ai.TaskServiceImpl;
 import org.shrigorevich.ml.domain.mob.MobService;
 import org.shrigorevich.ml.domain.mob.MobServiceImpl;
@@ -146,6 +146,8 @@ public final class Ml extends JavaPlugin implements MlPlugin {
             .setExecutor(new ConfigExecutor(config));
         Objects.requireNonNull(getCommand("mob"))
             .setExecutor(new MobExecutor(taskService, mobService));
+        Objects.requireNonNull(getCommand("test"))
+            .setExecutor(new TestExecutor(config, this));
     }
 
     //TODO: move to separate class

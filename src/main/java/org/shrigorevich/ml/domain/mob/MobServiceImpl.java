@@ -65,7 +65,7 @@ public class MobServiceImpl extends BaseService implements MobService {
     }
 
     @Override
-    public void addMob(Entity entity, int power) {
+    public void addMob(Entity entity, double power) {
         mobs.put(entity.getUniqueId(), new CustomMobImpl(entity, power));
     }
 

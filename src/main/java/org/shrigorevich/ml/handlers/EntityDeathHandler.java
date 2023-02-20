@@ -15,10 +15,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.shrigorevich.ml.domain.ai.contracts.BuildTask;
-import org.shrigorevich.ml.domain.ai.contracts.Task;
-import org.shrigorevich.ml.domain.ai.contracts.TaskService;
-import org.shrigorevich.ml.domain.ai.TaskType;
+import org.shrigorevich.ml.domain.ai.*;
 import org.shrigorevich.ml.domain.npc.NpcService;
 import org.shrigorevich.ml.domain.npc.StructNpc;
 import org.shrigorevich.ml.domain.project.BuildProject;
@@ -103,7 +100,7 @@ public class EntityDeathHandler implements Listener {
             case BUILDER -> {
                 boolean isCurrentProject = false;
                 Optional<BuildProject> current = projectService.getCurrent();
-                List<Task> npcTasks = taskService.getEntityTasks(npc.getEntityId());
+                List<PriorityTask> npcTasks = taskService.getEntityTasks(npc.getEntityId());
                 for (Task task : npcTasks) {
                     if (task.getType() == TaskType.BUILD) {
                         StructBlock block = ((BuildTask) task).getBlock();
