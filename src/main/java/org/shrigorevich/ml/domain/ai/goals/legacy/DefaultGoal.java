@@ -1,4 +1,4 @@
-package org.shrigorevich.ml.domain.ai.goals;
+package org.shrigorevich.ml.domain.ai.goals.legacy;
 
 import com.destroystokyo.paper.entity.ai.Goal;
 import com.destroystokyo.paper.entity.ai.GoalKey;
@@ -10,6 +10,7 @@ import org.bukkit.entity.Mob;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Villager;
 import org.shrigorevich.ml.domain.ai.TaskService;
+import org.shrigorevich.ml.domain.ai.goals.ActionKey;
 import org.shrigorevich.ml.domain.npc.events.NpcInDangerEvent;
 
 import java.util.EnumSet;

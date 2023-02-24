@@ -7,7 +7,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Villager;
 import org.bukkit.plugin.Plugin;
 import org.shrigorevich.ml.common.BaseService;
-import org.shrigorevich.ml.domain.ai.goals.DefaultGoal;
+import org.shrigorevich.ml.domain.ai.goals.legacy.DefaultGoal;
 
 import java.util.*;
 

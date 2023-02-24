@@ -1,4 +1,4 @@
-package org.shrigorevich.ml.domain.ai.goals;
+package org.shrigorevich.ml.domain.ai.goals.legacy;
 
 import com.destroystokyo.paper.entity.ai.Goal;
 import com.destroystokyo.paper.entity.ai.GoalKey;
@@ -6,17 +6,17 @@ import com.destroystokyo.paper.entity.ai.GoalType;
 import org.bukkit.Location;
 import org.bukkit.entity.Mob;
 import org.bukkit.plugin.Plugin;
-import org.shrigorevich.ml.domain.ai.BuildTask;
+import org.shrigorevich.ml.domain.ai.Task;
+import org.shrigorevich.ml.domain.ai.goals.ActionKey;
 import org.shrigorevich.ml.domain.npc.events.LocationReachedEvent;
 
 import java.util.EnumSet;
 
-public class BuildGoal extends BaseGoal implements Goal<Mob> {
-    private final BuildTask task;
+public class HarvestGoal extends BaseGoal implements Goal<Mob> {
+    private final Task task;
 
-    public BuildGoal(Plugin plugin, BuildTask task, Mob mob, Location target) {
-        super(
-            mob, target,
+    public HarvestGoal(Plugin plugin, Task task, Mob mob, Location target) {
+        super(mob, target,
             new LocationReachedEvent(mob, target, task),
             plugin, ActionKey.REACH_LOCATION);
         this.task = task;
@@ -34,12 +34,13 @@ public class BuildGoal extends BaseGoal implements Goal<Mob> {
 
     @Override
     public void start() {
+//        System.out.printf("Harvest activated. Task: %s%n", task.getType());
         move(0.7D);
     }
 
     @Override
     public void stop() {
-//        System.out.println("Build stopped. Task: " + task.getType());
+//        System.out.printf("Harvest activated. Task: %s%n", task.getType());
         getMob().getPathfinder().stopPathfinding();
     }
 

@@ -8,7 +8,7 @@ import org.bukkit.entity.Mob;
 import org.bukkit.plugin.Plugin;
 import org.shrigorevich.ml.common.Utils;
 import org.shrigorevich.ml.domain.ai.*;
-import org.shrigorevich.ml.domain.ai.goals.ReachLocationGoal;
+import org.shrigorevich.ml.domain.ai.goals.legacy.ReachLocationGoal;
 
 public class HoldSpawnTask extends BasePriorityTask implements PriorityTask {
     private final Location target;

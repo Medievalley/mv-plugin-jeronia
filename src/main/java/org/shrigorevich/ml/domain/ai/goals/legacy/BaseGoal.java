@@ -1,4 +1,4 @@
-package org.shrigorevich.ml.domain.ai.goals;
+package org.shrigorevich.ml.domain.ai.goals.legacy;
 
 import com.destroystokyo.paper.entity.Pathfinder;
 import com.destroystokyo.paper.entity.ai.GoalKey;
@@ -12,6 +12,7 @@ import org.bukkit.entity.Mob;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.Plugin;
 import org.shrigorevich.ml.common.Utils;
+import org.shrigorevich.ml.domain.ai.goals.ActionKey;
 
 import java.util.List;
 
@@ -156,21 +157,11 @@ public abstract class BaseGoal {
     }
 
     protected boolean isDoor(Material type) {
-        switch (type) {
-            case SPRUCE_DOOR:
-            case OAK_DOOR:
-            case ACACIA_DOOR:
-            case DARK_OAK_DOOR:
-            case BIRCH_DOOR:
-            case CRIMSON_DOOR:
-            case IRON_DOOR:
-            case JUNGLE_DOOR:
-            case MANGROVE_DOOR:
-            case WARPED_DOOR:
-                return true;
-            default:
-                return false;
-        }
+        return switch (type) {
+            case SPRUCE_DOOR, OAK_DOOR, ACACIA_DOOR, DARK_OAK_DOOR, BIRCH_DOOR, CRIMSON_DOOR, IRON_DOOR,
+                    JUNGLE_DOOR, MANGROVE_DOOR, WARPED_DOOR -> true;
+            default -> false;
+        };
     }
 
     protected void defaultTick() {

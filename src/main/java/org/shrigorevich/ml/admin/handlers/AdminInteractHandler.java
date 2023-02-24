@@ -18,7 +18,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.shrigorevich.ml.admin.NpcAdminService;
 import org.shrigorevich.ml.admin.StructAdminService;
 import org.shrigorevich.ml.common.Utils;
-import org.shrigorevich.ml.domain.ai.goals.HoldGoal;
+import org.shrigorevich.ml.domain.ai.goals.legacy.HoldGoal;
 import org.shrigorevich.ml.domain.npc.NpcService;
 import org.shrigorevich.ml.domain.structure.StructureService;
 import org.shrigorevich.ml.domain.structure.StructureType;

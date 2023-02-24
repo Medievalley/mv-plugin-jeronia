@@ -1,4 +1,4 @@
-package org.shrigorevich.ml.domain.ai.goals;
+package org.shrigorevich.ml.domain.ai.goals.legacy;
 
 import com.destroystokyo.paper.entity.Pathfinder;
 import com.destroystokyo.paper.entity.ai.Goal;
@@ -8,6 +8,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Mob;
 import org.bukkit.plugin.Plugin;
 import org.shrigorevich.ml.common.Utils;
+import org.shrigorevich.ml.domain.ai.goals.ActionKey;
 
 import java.util.EnumSet;
 

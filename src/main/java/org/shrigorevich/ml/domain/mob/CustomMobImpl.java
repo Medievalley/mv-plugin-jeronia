@@ -9,7 +9,7 @@ import java.util.UUID;
 class CustomMobImpl implements CustomMob {
 
     private final Entity entity;
-    private double power;
+    private final double power;
     private Task task;
 
     public CustomMobImpl(Entity entity, double power) {

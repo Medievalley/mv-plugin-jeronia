@@ -1,4 +1,4 @@
-package org.shrigorevich.ml.domain.ai.goals;
+package org.shrigorevich.ml.domain.ai.goals.legacy;
 
 import com.destroystokyo.paper.entity.ai.Goal;
 import com.destroystokyo.paper.entity.ai.GoalKey;
@@ -6,18 +6,16 @@ import com.destroystokyo.paper.entity.ai.GoalType;
 import org.bukkit.Location;
 import org.bukkit.entity.Mob;
 import org.bukkit.plugin.Plugin;
-import org.shrigorevich.ml.domain.ai.Task;
-import org.shrigorevich.ml.domain.npc.events.LocationReachedEvent;
+import org.shrigorevich.ml.common.Utils;
+import org.shrigorevich.ml.domain.ai.goals.ActionKey;
 
 import java.util.EnumSet;
 
-public class ReachLocationGoal extends BaseGoal implements Goal<Mob> {
+public class HoldGoal extends BaseGoal implements Goal<Mob> {
+    private int cooldown = 0;
 
-    private final Task task;
-
-    public ReachLocationGoal(Plugin plugin, Task task, Mob mob, Location target) {
-        super(mob, target, new LocationReachedEvent(mob, target, task), plugin, ActionKey.REACH_LOCATION);
-        this.task = task;
+    public HoldGoal(Plugin plugin, Mob mob, Location target) {
+        super(mob, target, plugin, ActionKey.REACH_LOCATION);
     }
 
     @Override
@@ -32,19 +30,34 @@ public class ReachLocationGoal extends BaseGoal implements Goal<Mob> {
 
     @Override
     public void start() {
-//        printLocation(getTarget(), "REACH_LOCATION activated");
         move(0.7D);
     }
 
     @Override
     public void stop() {
-//        System.out.println("REACH_LOCATION stopped. Task: " + task.getType());
         getMob().getPathfinder().stopPathfinding();
     }
 
     @Override
     public void tick() {
-        defaultTick();
+        cooldown+=1;
+        updateStuckTicks();
+        defineCurrentLocation();
+        if (cooldown == 5) {
+            cooldown = 0;
+            move(0.7D);
+
+            if (!isAchieved() && Utils.distanceSquared(getMobLocation(), getTarget())) {
+                setAchieved(true);
+                System.out.println("Achieved");
+            }
+
+        }
+
+        if (getStuckTicks() == 20) {
+            resetStuckTicks();
+            processStuck();
+        }
     }
 
     @Override
@@ -56,4 +69,8 @@ public class ReachLocationGoal extends BaseGoal implements Goal<Mob> {
     public EnumSet<GoalType> getTypes() {
         return EnumSet.of(GoalType.MOVE);
     }
+
+
+
+
 }
