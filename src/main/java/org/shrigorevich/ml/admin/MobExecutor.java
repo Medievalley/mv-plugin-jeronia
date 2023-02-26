@@ -1,5 +1,6 @@
-package org.shrigorevich.ml.commands;
+package org.shrigorevich.ml.admin;
 
+import net.minecraft.world.entity.monster.Zombie;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.attribute.Attributable;
@@ -7,17 +8,12 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Zombie;
+import org.bukkit.entity.*;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.jetbrains.annotations.NotNull;
 import org.shrigorevich.ml.domain.ai.TaskService;
 import org.shrigorevich.ml.domain.mob.MobService;
 import org.shrigorevich.ml.domain.mob.events.SpawnPressureMobsEvent;
-
-import java.util.Objects;
 
 public class MobExecutor implements CommandExecutor {
 
@@ -37,11 +33,14 @@ public class MobExecutor implements CommandExecutor {
                 try {
                     switch (args[0].toLowerCase()) {
                         case "c", "create" -> player.getWorld().spawnEntity(
-                            player.getLocation(),
+                            player.getLocation().clone().add(5, 0, 0),
                                 EntityType.valueOf(args[1]),
                                 CreatureSpawnEvent.SpawnReason.CUSTOM, (e) -> {
-                                if (e instanceof Zombie zombie) {
-
+                                if (e instanceof Mob mob) {
+                                    mob.getPathfinder().setCanOpenDoors(true);
+                                    mob.getPathfinder().setCanPassDoors(true);
+                                    Bukkit.getServer().getMobGoals().removeAllGoals(mob);
+//                                    Zombie
                                 }
                             }
                         );

@@ -6,12 +6,12 @@ import net.kyori.adventure.text.Component;
 import org.apache.logging.log4j.LogManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
+import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.Plugin;
 import org.shrigorevich.ml.common.BaseService;
+import org.shrigorevich.ml.domain.mob.custom.*;
 import org.shrigorevich.ml.domain.mob.models.SkullModel;
 import org.shrigorevich.ml.domain.mob.models.SkullModelImpl;
 
@@ -22,7 +22,7 @@ import static org.bukkit.entity.EntityType.*;
 public class MobServiceImpl extends BaseService implements MobService {
 
     private final Map<EntityType, SkullModel> skulls;
-    private final Map<UUID, CustomMob> mobs;
+    private final Map<UUID, CustomMob<?>> mobs;
     private final List<EntityType> mobTypesForRegSpawn;
     private final PlayerProfile profile;
 
@@ -65,19 +65,19 @@ public class MobServiceImpl extends BaseService implements MobService {
     }
 
     @Override
-    public void addMob(Entity entity, double power) {
-        mobs.put(entity.getUniqueId(), new CustomMobImpl(entity, power));
+    public void addMob(Entity entity, MobType type, double power) {
+        mobs.put(entity.getUniqueId(), createMob(entity, type, power));
     }
 
     @Override
-    public void remove(Entity entity) {
-        mobs.remove(entity.getUniqueId());
+    public void remove(UUID entityId) {
+        mobs.remove(entityId);
     }
 
     @Override
     public int getCurrentPower() {
         int power = 0;
-        for (CustomMob m : mobs.values()) power += m.getPower();
+        for (CustomMob<?> m : mobs.values()) power += m.getPower();
         return power;
     }
 
@@ -92,5 +92,23 @@ public class MobServiceImpl extends BaseService implements MobService {
     @Override
     public int getCurrentQuantity() {
         return mobs.size();
+    }
+
+    private CustomMob<?> createMob(Entity entity, MobType type, double power) {
+        switch (type) {
+            case PRESSURE_ZOMBIE -> {
+                return new PressureZombie((Zombie) entity, power);
+            }
+            case PRESSURE_SKELETON -> {
+                return new PressureSkeleton((Skeleton) entity, power);
+            }
+            case PRESSURE_CREEPER -> {
+                return new PressureCreeper((Creeper) entity, power);
+            }
+            case PRESSURE_SPIDER -> {
+                return new PressureSpider((Spider) entity, power);
+            }
+            default -> throw new IllegalArgumentException(String.format("Mob type: %s not implemented", type));
+        }
     }
 }

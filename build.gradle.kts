@@ -7,7 +7,6 @@ plugins {
     id("com.github.johnrengelman.shadow") version "8.0.0"
 }
 
-
 repositories {
     mavenLocal()
     maven {
@@ -31,11 +30,6 @@ dependencies {
     implementation("commons-dbutils:commons-dbutils:1.7")
     implementation("org.apache.maven.plugins:maven-resources-plugin:3.3.0")
 }
-
-group = "org.shrigorevich"
-version = "1.0-SNAPSHOT"
-description = "Ml"
-java.sourceCompatibility = JavaVersion.VERSION_19
 
 publishing {
     publications.create<MavenPublication>("maven") {
@@ -63,3 +57,8 @@ tasks.register<Exec>("runServer") {
     setWorkingDir(layout.projectDirectory.dir("server"))
     setCommandLine("cmd", "/C", "start", "run.bat")
 }
+
+group = "org.shrigorevich"
+version = "1.0-SNAPSHOT"
+description = "Ml"
+java.sourceCompatibility = JavaVersion.VERSION_17

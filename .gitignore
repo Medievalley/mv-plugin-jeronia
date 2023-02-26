@@ -115,3 +115,7 @@ buildNumber.properties
 run/
 /docker.env/docker.env
 /server/
+/gradle/wrapper/
+/.gradle/
+/build/
+/Flows.drawio

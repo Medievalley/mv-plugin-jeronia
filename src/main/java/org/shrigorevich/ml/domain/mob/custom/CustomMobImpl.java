@@ -1,18 +1,19 @@
-package org.shrigorevich.ml.domain.mob;
+package org.shrigorevich.ml.domain.mob.custom;
 
-import org.bukkit.entity.Entity;
+import org.bukkit.entity.Mob;
 import org.shrigorevich.ml.domain.ai.Task;
+import org.shrigorevich.ml.domain.mob.CustomMob;
 
 import java.util.Optional;
 import java.util.UUID;
 
-class CustomMobImpl implements CustomMob {
+abstract class CustomMobImpl<T extends Mob> implements CustomMob<T> {
 
-    private final Entity entity;
+    private final T entity;
     private final double power;
     private Task task;
 
-    public CustomMobImpl(Entity entity, double power) {
+    public CustomMobImpl(T entity, double power) {
         this.entity = entity;
         this.power = power;
     }
@@ -25,6 +26,11 @@ class CustomMobImpl implements CustomMob {
     @Override
     public double getPower() {
         return power;
+    }
+
+    @Override
+    public T getEntity() {
+        return entity;
     }
 
     @Override
@@ -54,4 +60,6 @@ class CustomMobImpl implements CustomMob {
             task = null;
         }
     }
+
+    protected abstract void setAI();
 }

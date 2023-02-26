@@ -12,6 +12,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.shrigorevich.ml.MlPlugin;
 import org.shrigorevich.ml.config.MlConfiguration;
 import org.shrigorevich.ml.domain.mob.MobService;
+import org.shrigorevich.ml.domain.mob.custom.MobType;
 import org.shrigorevich.ml.domain.mob.events.SpawnPressureMobsEvent;
 import org.shrigorevich.ml.domain.mob.events.SpawnWaveEvent;
 import org.shrigorevich.ml.domain.structure.*;
@@ -93,9 +94,9 @@ public class SpawnEnemyHandler implements Listener {
                     (e) -> {
                         if (powerFactor > 1) {
                             boostEntity(e, powerFactor);
-                            mobSvc.addMob(e, getDefaultMobPower(type)  * powerFactor);
+                            mobSvc.addMob(e, getMobType(type), getDefaultMobPower(type)  * powerFactor);
                         } else {
-                            mobSvc.addMob(e, getDefaultMobPower(type));
+                            mobSvc.addMob(e, getMobType(type), getDefaultMobPower(type));
                         }
                     }
                 );
@@ -136,6 +137,25 @@ public class SpawnEnemyHandler implements Listener {
             default -> {
                 return 0;
             }
+        }
+    }
+
+    //TODO: get from DB
+    private MobType getMobType(EntityType entityType) {
+        switch (entityType) {
+            case ZOMBIE -> {
+                return MobType.PRESSURE_ZOMBIE;
+            }
+            case SKELETON -> {
+                return MobType.PRESSURE_SKELETON;
+            }
+            case CREEPER -> {
+                return MobType.PRESSURE_CREEPER;
+            }
+            case SPIDER -> {
+                return MobType.PRESSURE_SPIDER;
+            }
+            default -> throw new IllegalArgumentException(String.format("Entity type: %s has no mapping to a mob type", entityType));
         }
     }
 }
