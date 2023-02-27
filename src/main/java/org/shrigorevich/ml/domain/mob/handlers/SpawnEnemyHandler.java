@@ -97,6 +97,7 @@ public class SpawnEnemyHandler implements Listener {
                             mobSvc.addMob(e, getMobType(type), getDefaultMobPower(type)  * powerFactor);
                         } else {
                             mobSvc.addMob(e, getMobType(type), getDefaultMobPower(type));
+
                         }
                     }
                 );

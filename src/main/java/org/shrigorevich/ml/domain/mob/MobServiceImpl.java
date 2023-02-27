@@ -22,7 +22,7 @@ import static org.bukkit.entity.EntityType.*;
 public class MobServiceImpl extends BaseService implements MobService {
 
     private final Map<EntityType, SkullModel> skulls;
-    private final Map<UUID, CustomMob<?>> mobs;
+    private final Map<UUID, CustomMob> mobs;
     private final List<EntityType> mobTypesForRegSpawn;
     private final PlayerProfile profile;
 
@@ -77,7 +77,7 @@ public class MobServiceImpl extends BaseService implements MobService {
     @Override
     public int getCurrentPower() {
         int power = 0;
-        for (CustomMob<?> m : mobs.values()) power += m.getPower();
+        for (CustomMob m : mobs.values()) power += m.getPower();
         return power;
     }
 
@@ -94,19 +94,19 @@ public class MobServiceImpl extends BaseService implements MobService {
         return mobs.size();
     }
 
-    private CustomMob<?> createMob(Entity entity, MobType type, double power) {
+    private CustomMob createMob(Entity entity, MobType type, double power) {
         switch (type) {
             case PRESSURE_ZOMBIE -> {
-                return new PressureZombie((Zombie) entity, power);
+                return new PressureZombie(entity, power);
             }
             case PRESSURE_SKELETON -> {
-                return new PressureSkeleton((Skeleton) entity, power);
+                return new PressureSkeleton(entity, power);
             }
             case PRESSURE_CREEPER -> {
-                return new PressureCreeper((Creeper) entity, power);
+                return new PressureCreeper(entity, power);
             }
             case PRESSURE_SPIDER -> {
-                return new PressureSpider((Spider) entity, power);
+                return new PressureSpider(entity, power);
             }
             default -> throw new IllegalArgumentException(String.format("Mob type: %s not implemented", type));
         }

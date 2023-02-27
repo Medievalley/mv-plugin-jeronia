@@ -18,6 +18,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.shrigorevich.ml.admin.NpcAdminService;
 import org.shrigorevich.ml.admin.StructAdminService;
 import org.shrigorevich.ml.common.Utils;
+import org.shrigorevich.ml.domain.ai.goals.GoGoal;
 import org.shrigorevich.ml.domain.ai.goals.legacy.HoldGoal;
 import org.shrigorevich.ml.domain.npc.NpcService;
 import org.shrigorevich.ml.domain.structure.StructureService;
@@ -37,6 +38,7 @@ public class AdminInteractHandler implements Listener {
     private final UserService userService;
     private Villager villager;
     private final Logger logger;
+    private Mob customMob;
 
     public AdminInteractHandler(
             StructAdminService structAdminService,
@@ -67,24 +69,8 @@ public class AdminInteractHandler implements Listener {
                     case STICK -> draftStructLocation(event);
                     case COAL -> showBlockType(event);
                     case DIAMOND_AXE -> regSafeLocation(event.getClickedBlock().getLocation());
-                    case GOLDEN_SWORD -> {
-                        Location l1 = event.getClickedBlock().getLocation().add(0, 1, 0);
-                        villager = (Villager) p.getWorld().spawnEntity(p.getLocation(), EntityType.VILLAGER);
-                        Bukkit.getScheduler().scheduleSyncDelayedTask(npcService.getPlugin(), () -> {
-                            Goal<Mob> goal1 = new HoldGoal(npcService.getPlugin(), villager, l1);
-                            if (Bukkit.getMobGoals().hasGoal(villager, goal1.getKey())) {
-                                Bukkit.getMobGoals().removeGoal(villager, goal1.getKey());
-                            }
-                            Bukkit.getMobGoals().addGoal(villager, 3, goal1);
-                        }, 60);
-                    }
                     case GOLDEN_PICKAXE -> {
-                        Location l2 = event.getClickedBlock().getLocation().add(0, 1, 0);
-                        Goal<Mob> goal2 = new HoldGoal(npcService.getPlugin(), villager, l2);
-                        if (Bukkit.getMobGoals().hasGoal(villager, goal2.getKey())) {
-                            Bukkit.getMobGoals().removeGoal(villager, goal2.getKey());
-                        }
-                        Bukkit.getMobGoals().addGoal(villager, 3, goal2);
+                        setMobAI(event.getClickedBlock().getLocation().add(0, 1, 0));
                     }
                     default -> {
                     }
@@ -112,18 +98,30 @@ public class AdminInteractHandler implements Listener {
             if (user.isEmpty() || user.get().getRole() != UserRole.ADMIN ) return;
 
             if (p.getEquipment().getItemInMainHand().getType() == Material.DIAMOND_SWORD) {
-                if (event.getRightClicked() instanceof Attributable atr) {
-                    if (atr.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE) != null)
-                        logger.info("Attack damage: " + atr.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).getBaseValue());
-                    if (atr.getAttribute(Attribute.GENERIC_ATTACK_SPEED) != null)
-                        logger.info("Attack speed: " + atr.getAttribute(Attribute.GENERIC_ATTACK_SPEED).getBaseValue());
-                    if (atr.getAttribute(Attribute.GENERIC_MAX_HEALTH) != null)
-                        logger.info("Max health: " + atr.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue());
-                    if (atr.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED) != null)
-                        logger.info("Walk speed" + atr.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).getBaseValue());
-                    logger.info("Health" + ((Mob)event.getRightClicked()).getHealth());
-                }
+                this.customMob = (Mob) event.getRightClicked();
             }
+        }
+    }
+
+    private void setMobAI(Location location) {
+        if (customMob != null) {
+            Goal<Mob> goal2 = new GoGoal(customMob, location);
+            Bukkit.getMobGoals().removeAllGoals(customMob);
+            Bukkit.getMobGoals().addGoal(customMob, 1, goal2);
+        }
+    }
+
+    private void checkAttrs(Entity entity) {
+        if (entity instanceof Attributable atr) {
+            if (atr.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE) != null)
+                logger.info("Attack damage: " + atr.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).getBaseValue());
+            if (atr.getAttribute(Attribute.GENERIC_ATTACK_SPEED) != null)
+                logger.info("Attack speed: " + atr.getAttribute(Attribute.GENERIC_ATTACK_SPEED).getBaseValue());
+            if (atr.getAttribute(Attribute.GENERIC_MAX_HEALTH) != null)
+                logger.info("Max health: " + atr.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue());
+            if (atr.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED) != null)
+                logger.info("Walk speed" + atr.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).getBaseValue());
+            logger.info("Health" + ((Mob)entity).getHealth());
         }
     }
 

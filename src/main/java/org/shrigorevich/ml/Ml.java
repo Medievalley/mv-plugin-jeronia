@@ -142,7 +142,7 @@ public final class Ml extends JavaPlugin implements MlPlugin {
         Objects.requireNonNull(getCommand("config"))
             .setExecutor(new ConfigExecutor(config));
         Objects.requireNonNull(getCommand("mob"))
-            .setExecutor(new MobExecutor(taskService, mobService));
+            .setExecutor(new MobExecutor(taskService, mobService, structService));
         Objects.requireNonNull(getCommand("test"))
             .setExecutor(new TestExecutor(config, this));
     }

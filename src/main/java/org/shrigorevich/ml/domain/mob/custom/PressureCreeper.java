@@ -1,11 +1,11 @@
 package org.shrigorevich.ml.domain.mob.custom;
 
-import org.bukkit.entity.Creeper;
+import org.bukkit.entity.Entity;
 
-public class PressureCreeper extends CustomMobImpl<Creeper> {
+public class PressureCreeper extends CustomMobImpl {
 
-    public PressureCreeper(Creeper mob, double power) {
-        super(mob, power);
+    public PressureCreeper(Entity mob, double power) {
+        super(mob, power, MobType.PRESSURE_CREEPER);
     }
 
     @Override
