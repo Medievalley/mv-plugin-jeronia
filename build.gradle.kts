@@ -1,10 +1,10 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+//import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     java
     `maven-publish`
     id("io.papermc.paperweight.userdev") version "1.5.1"
-    id("com.github.johnrengelman.shadow") version "8.0.0"
+//    id("com.github.johnrengelman.shadow") version "8.0.0"
 }
 
 repositories {
@@ -22,6 +22,17 @@ repositories {
     }
 }
 
+publishing {
+    publications.create<MavenPublication>("maven") {
+        from(components["java"])
+    }
+}
+
+group = "org.shrigorevich"
+version = "1.0-SNAPSHOT"
+description = "Ml"
+java.sourceCompatibility = JavaVersion.VERSION_17
+
 dependencies {
     paperweight.paperDevBundle("1.19.3-R0.1-SNAPSHOT")
     implementation("org.postgresql:postgresql:42.3.6")
@@ -31,25 +42,13 @@ dependencies {
     implementation("org.apache.maven.plugins:maven-resources-plugin:3.3.0")
 }
 
-publishing {
-    publications.create<MavenPublication>("maven") {
-        from(components["java"])
-    }
-}
-
 tasks.withType<JavaCompile>() {
     options.encoding = "UTF-8"
 }
 
-tasks.named<ShadowJar>("shadowJar") {
-    configurations {
-        archiveFileName.set("ml-shadow.jar")
-    }
-}
-
-tasks.register<Copy>("copyShadow") {
-    dependsOn(tasks.named("shadowJar").get())
-    from(tasks.named("shadowJar").get().outputs.files.first())
+tasks.register<Copy>("copyReobf") {
+    dependsOn(tasks.named("reobfJar").get())
+    from(tasks.named("reobfJar").get().outputs.files.first())
     into(layout.projectDirectory.dir("server/plugins"))
 }
 
@@ -58,7 +57,18 @@ tasks.register<Exec>("runServer") {
     setCommandLine("cmd", "/C", "start", "run.bat")
 }
 
-group = "org.shrigorevich"
-version = "1.0-SNAPSHOT"
-description = "Ml"
-java.sourceCompatibility = JavaVersion.VERSION_17
+//tasks.named<ShadowJar>("shadowJar") {
+//    configurations {
+//        archiveFileName.set("ml-shadow.jar")
+//    }
+//}
+
+//tasks.register<Copy>("copyShadow") {
+//    dependsOn(tasks.named("shadowJar").get())
+//    from(tasks.named("shadowJar").get().outputs.files.first())
+//    into(layout.projectDirectory.dir("server/plugins"))
+//}
+
+
+
+
