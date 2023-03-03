@@ -1,10 +1,10 @@
-//import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     java
     `maven-publish`
     id("io.papermc.paperweight.userdev") version "1.5.1"
-//    id("com.github.johnrengelman.shadow") version "8.0.0"
+    id("com.github.johnrengelman.shadow") version "8.0.0"
 }
 
 repositories {
@@ -46,22 +46,36 @@ tasks.withType<JavaCompile>() {
     options.encoding = "UTF-8"
 }
 
-tasks.register<Copy>("copyReobf") {
-    dependsOn(tasks.named("reobfJar").get())
-    from(tasks.named("reobfJar").get().outputs.files.first())
-    into(layout.projectDirectory.dir("server/plugins"))
+tasks {
+    assemble {
+        dependsOn(reobfJar)
+    }
+    shadowJar {
+//        fun reloc(pkg: String) = relocate(pkg, "org.shrigorevich.ml.dependency.$pkg")
+//        reloc("com.zaxxer:HikariCP:5.0.1")
+//        reloc("org.postgresql:postgresql:42.3.6")
+//        configurations {
+//            archiveFileName.set("ml-shadow.jar")
+//        }
+    }
 }
+
+//tasks.register<Copy>("copyReobf") {
+//    dependsOn(tasks.named("reobfJar").get())
+//    from(tasks.named("reobfJar").get().outputs.files.first())
+//    into(layout.projectDirectory.dir("server/plugins"))
+//}
 
 tasks.register<Exec>("runServer") {
     setWorkingDir(layout.projectDirectory.dir("server"))
     setCommandLine("cmd", "/C", "start", "run.bat")
 }
 
-//tasks.named<ShadowJar>("shadowJar") {
-//    configurations {
-//        archiveFileName.set("ml-shadow.jar")
-//    }
-//}
+tasks.register<Copy>("copyJar") {
+    dependsOn(tasks.named("reobfJar").get())
+    from(tasks.named("reobfJar").get().outputs.files.first())
+    into(layout.projectDirectory.dir("server/plugins"))
+}
 
 //tasks.register<Copy>("copyShadow") {
 //    dependsOn(tasks.named("shadowJar").get())
