@@ -209,6 +209,12 @@ public class StructureServiceImpl extends BaseService implements StructureServic
         }
     }
 
+    @Override
+    public Structure getNearest(int x, int y, int z) {
+        //TODO: not implemented
+        return null;
+    }
+
     private Structure createStructure(StructModel s, List<StructBlock> blocks) {
         StructureType type = StructureType.valueOf(s.getTypeId());
         if (type != null) {

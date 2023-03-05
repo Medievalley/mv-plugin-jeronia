@@ -1,12 +1,13 @@
 package org.shrigorevich.ml.domain.mob;
 
-import org.shrigorevich.ml.domain.ai.TaskHolder;
-import org.shrigorevich.ml.domain.mob.custom.MobType;
+import com.destroystokyo.paper.entity.Pathfinder;
+import org.bukkit.Location;
 
 import java.util.UUID;
 
-public interface CustomMob extends TaskHolder {
+public interface CustomMob extends MemoryHolder {
     UUID getId();
     double getPower();
     MobType getType();
+    Pathfinder getPathfinder();
 }

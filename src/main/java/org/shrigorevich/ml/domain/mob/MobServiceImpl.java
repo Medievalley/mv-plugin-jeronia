@@ -11,7 +11,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.Plugin;
 import org.shrigorevich.ml.common.BaseService;
-import org.shrigorevich.ml.domain.mob.custom.*;
 import org.shrigorevich.ml.domain.mob.models.SkullModel;
 import org.shrigorevich.ml.domain.mob.models.SkullModelImpl;
 
@@ -65,8 +64,8 @@ public class MobServiceImpl extends BaseService implements MobService {
     }
 
     @Override
-    public void addMob(Entity entity, MobType type, double power) {
-        mobs.put(entity.getUniqueId(), createMob(entity, type, power));
+    public void addMob(CustomMob mob) {
+        mobs.put(mob.getId(), mob);
     }
 
     @Override
@@ -94,7 +93,8 @@ public class MobServiceImpl extends BaseService implements MobService {
         return mobs.size();
     }
 
-    private CustomMob createMob(Entity entity, MobType type, double power) {
+    @Override
+    public CustomMob createMob(Mob entity, MobType type, double power) {
         switch (type) {
             case PRESSURE_ZOMBIE -> {
                 return new PressureZombie(entity, power);

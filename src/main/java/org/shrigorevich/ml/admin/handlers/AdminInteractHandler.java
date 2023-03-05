@@ -15,11 +15,11 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.plugin.Plugin;
 import org.shrigorevich.ml.admin.NpcAdminService;
 import org.shrigorevich.ml.admin.StructAdminService;
 import org.shrigorevich.ml.common.Utils;
 import org.shrigorevich.ml.domain.ai.goals.GoGoal;
-import org.shrigorevich.ml.domain.ai.goals.legacy.HoldGoal;
 import org.shrigorevich.ml.domain.npc.NpcService;
 import org.shrigorevich.ml.domain.structure.StructureService;
 import org.shrigorevich.ml.domain.structure.StructureType;
@@ -39,18 +39,20 @@ public class AdminInteractHandler implements Listener {
     private Villager villager;
     private final Logger logger;
     private Mob customMob;
+    private final Plugin plugin;
 
     public AdminInteractHandler(
             StructAdminService structAdminService,
             StructureService structService,
             NpcService npcService,
             NpcAdminService npcAdminService,
-            UserService userService) {
+            UserService userService, Plugin plugin) {
         this.structAdminService = structAdminService;
         this.structService = structService;
         this.npcService = npcService;
         this.userService = userService;
         this.npcAdminService = npcAdminService;
+        this.plugin = plugin;
         this.logger = LogManager.getLogger("AdminInteractHandler");
     }
 
@@ -67,7 +69,6 @@ public class AdminInteractHandler implements Listener {
                     case BONE -> draftNpc(event);
                     case FEATHER -> showStructInfo(event);
                     case STICK -> draftStructLocation(event);
-                    case COAL -> showBlockType(event);
                     case DIAMOND_AXE -> regSafeLocation(event.getClickedBlock().getLocation());
                     case GOLDEN_PICKAXE -> {
                         setMobAI(event.getClickedBlock().getLocation().add(0, 1, 0));
@@ -97,15 +98,18 @@ public class AdminInteractHandler implements Listener {
             Optional<User> user = userService.getOnline(p.getName());
             if (user.isEmpty() || user.get().getRole() != UserRole.ADMIN ) return;
 
-            if (p.getEquipment().getItemInMainHand().getType() == Material.DIAMOND_SWORD) {
-                this.customMob = (Mob) event.getRightClicked();
+            switch (p.getEquipment().getItemInMainHand().getType()) {
+                case DIAMOND_SWORD -> this.customMob = (Mob) event.getRightClicked();
+                case GOLDEN_SWORD -> {
+                    event.getRightClicked().addPassenger(customMob);
+                }
             }
         }
     }
 
     private void setMobAI(Location location) {
         if (customMob != null) {
-            Goal<Mob> goal2 = new GoGoal(customMob, location);
+            Goal<Mob> goal2 = new GoGoal(customMob, location, plugin);
             Bukkit.getMobGoals().removeAllGoals(customMob);
             Bukkit.getMobGoals().addGoal(customMob, 1, goal2);
         }

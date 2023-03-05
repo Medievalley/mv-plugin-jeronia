@@ -6,7 +6,7 @@ import org.shrigorevich.ml.common.Coordinates;
 
 import java.util.List;
 
-public interface Structure{
+public interface Structure {
 
     int getId();
     World getWorld();
@@ -23,4 +23,5 @@ public interface Structure{
     List<Block> getBlocks();
     boolean contains(Location l);
     boolean intersects(Coordinates lowest, Coordinates highest);
+    Location getCenter();
 }

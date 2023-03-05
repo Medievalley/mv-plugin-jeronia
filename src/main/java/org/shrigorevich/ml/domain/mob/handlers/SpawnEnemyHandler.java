@@ -1,7 +1,9 @@
 package org.shrigorevich.ml.domain.mob.handlers;
 
+import com.destroystokyo.paper.entity.ai.MobGoals;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.attribute.Attributable;
@@ -11,8 +13,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.shrigorevich.ml.MlPlugin;
 import org.shrigorevich.ml.config.MlConfiguration;
+import org.shrigorevich.ml.domain.mob.CustomMob;
 import org.shrigorevich.ml.domain.mob.MobService;
-import org.shrigorevich.ml.domain.mob.custom.MobType;
+import org.shrigorevich.ml.domain.mob.MobType;
+import org.shrigorevich.ml.domain.mob.PointMemoryUnitImpl;
 import org.shrigorevich.ml.domain.mob.events.SpawnPressureMobsEvent;
 import org.shrigorevich.ml.domain.mob.events.SpawnWaveEvent;
 import org.shrigorevich.ml.domain.structure.*;
@@ -89,21 +93,41 @@ public class SpawnEnemyHandler implements Listener {
             StructBlock b = regSpawns.poll();
             if (b != null) {
                 world.spawnEntity(
-                    new Location(world, b.getX()+1, b.getY()+1, b.getZ()+1),
+                    new Location(world, b.getX(), b.getY()+1, b.getZ()),
                     type, CreatureSpawnEvent.SpawnReason.CUSTOM,
-                    (e) -> {
-                        if (powerFactor > 1) {
-                            boostEntity(e, powerFactor);
-                            mobSvc.addMob(e, getMobType(type), getDefaultMobPower(type)  * powerFactor);
-                        } else {
-                            mobSvc.addMob(e, getMobType(type), getDefaultMobPower(type));
-
-                        }
-                    }
+                    (e -> setupCustomMob(e, powerFactor))
                 );
                 regSpawns.add(b);
             }
         }
+    }
+
+    private void setupCustomMob(Entity e, double powerFactor) {
+        Mob mob = (Mob) e;
+        removeAI(mob);
+        int defPower = getDefaultMobPower(e.getType());
+        CustomMob customMob = mobSvc.createMob(
+            (Mob) e,
+            getMobType(e.getType()),
+            Math.max(defPower, defPower * powerFactor));
+
+        if (powerFactor > 1) {
+            boostEntity(e, powerFactor);
+        }
+
+        Structure nearest = structSvc
+            .getNearest(e.getLocation().getBlockX(), e.getLocation().getBlockY(), e.getLocation().getBlockZ());
+
+        //TODO: It may not be possible to lay a route to the structure center
+        customMob.addMemory(new PointMemoryUnitImpl(nearest.getCenter()));
+        mobSvc.addMob(customMob);
+    }
+
+    private void removeAI(Mob mob) {
+        mob.getPathfinder().setCanOpenDoors(true);
+        mob.getPathfinder().setCanPassDoors(true);
+        MobGoals goals = Bukkit.getServer().getMobGoals();
+        goals.removeAllGoals(mob);
     }
 
     private void boostEntity(Entity entity, double powerFactor) {

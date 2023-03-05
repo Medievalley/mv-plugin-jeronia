@@ -70,7 +70,7 @@ public abstract class StructureImpl implements Structure {
     }
 
     /**
-     * Get the the centre of the Cuboid.
+     * Get the centre of the Cuboid.
      *
      * @return Location at the centre of the Cuboid
      */

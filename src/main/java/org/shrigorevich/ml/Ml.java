@@ -1,17 +1,15 @@
 package org.shrigorevich.ml;
 
-import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.platform.bukkit.BukkitAudiences;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.title.Title;
+//import net.kyori.adventure.audience.Audience;
+//import net.kyori.adventure.platform.bukkit.BukkitAudiences;
+//import net.kyori.adventure.text.Component;
+//import net.kyori.adventure.text.format.TextColor;
+//import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
-import org.bukkit.Color;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
-import org.jetbrains.annotations.NotNull;
 import org.shrigorevich.ml.admin.*;
 import org.shrigorevich.ml.admin.handlers.AdminInteractHandler;
 import org.shrigorevich.ml.commands.*;
@@ -57,15 +55,15 @@ public final class Ml extends JavaPlugin implements MlPlugin {
     private MobService mobService;
     private StructAdminService structAdminService;
     private NpcAdminService npcAdminService;
-    private BukkitAudiences adventure;
+//    private BukkitAudiences adventure;
     private MlConfiguration config;
 
-    public @NotNull BukkitAudiences adventure() {
-        if(this.adventure == null) {
-            throw new IllegalStateException("Tried to access Adventure when the plugin was disabled!");
-        }
-        return this.adventure;
-    }
+//    public @NotNull BukkitAudiences adventure() {
+//        if(this.adventure == null) {
+//            throw new IllegalStateException("Tried to access Adventure when the plugin was disabled!");
+//        }
+//        return this.adventure;
+//    }
 
     @Override
     public void onLoad() {
@@ -92,7 +90,7 @@ public final class Ml extends JavaPlugin implements MlPlugin {
 
     @Override
     public void onEnable() {
-        this.adventure = BukkitAudiences.create(this);
+//        this.adventure = BukkitAudiences.create(this);
         super.onEnable();
         setupListeners();
         setupExecutors();
@@ -101,10 +99,10 @@ public final class Ml extends JavaPlugin implements MlPlugin {
 
     @Override
     public void onDisable() {
-        if(this.adventure != null) {
-            this.adventure.close();
-            this.adventure = null;
-        }
+//        if(this.adventure != null) {
+//            this.adventure.close();
+//            this.adventure = null;
+//        }
         try {
             npcService.unload();
         } catch (IllegalArgumentException ex) {
@@ -126,7 +124,7 @@ public final class Ml extends JavaPlugin implements MlPlugin {
         pm.registerEvents(new EntityDeathHandler(npcService, projectService, taskService, structService, userService), this);
         pm.registerEvents(new BuildProjectHandler(projectService, scoreboardService, npcService, taskService, structService), this);
         pm.registerEvents(new SetupStateHandler(structService, projectService, npcService, mobService, scoreboardService), this);
-        pm.registerEvents(new AdminInteractHandler(structAdminService, structService, npcService, npcAdminService, userService), this);
+        pm.registerEvents(new AdminInteractHandler(structAdminService, structService, npcService, npcAdminService, userService, this), this);
         pm.registerEvents(new SpawnTimersHandler(config, this), this);
         pm.registerEvents(new SpawnEnemyHandler(structService, mobService, config, this), this);
         pm.registerEvents(new PlayerDeathHandler(userService), this);
@@ -148,25 +146,25 @@ public final class Ml extends JavaPlugin implements MlPlugin {
     }
 
     //TODO: move to separate class
-    @Override
-    public void showTitle(String title, String subTitle) {
-        showTitle(title, subTitle, Color.BLUE.asRGB());
-    }
-
-    @Override
-    public void showTitle(String title, String subTitle, int color) {
-        showTitle(title, subTitle, color, color);
-    }
-
-    @Override
-    public void showTitle(String title, String subTitle, int titleColor, int subTitleColor) {
-        Audience audience = this.adventure().players();
-        Title titleToShow = Title.title(
-                Component.text(title).color(TextColor.color(titleColor)),
-                Component.text(subTitle).color(TextColor.color(subTitleColor))
-        );
-        audience.showTitle(titleToShow);
-    }
+//    @Override
+//    public void showTitle(String title, String subTitle) {
+//        showTitle(title, subTitle, Color.BLUE.asRGB());
+//    }
+//
+//    @Override
+//    public void showTitle(String title, String subTitle, int color) {
+//        showTitle(title, subTitle, color, color);
+//    }
+//
+//    @Override
+//    public void showTitle(String title, String subTitle, int titleColor, int subTitleColor) {
+//        Audience audience = this.adventure().players();
+//        Title titleToShow = Title.title(
+//                Component.text(title).color(TextColor.color(titleColor)),
+//                Component.text(subTitle).color(TextColor.color(subTitleColor))
+//        );
+//        audience.showTitle(titleToShow);
+//    }
 
     private void setupState() {
         try {

@@ -8,7 +8,9 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.craftbukkit.v1_19_R2.entity.CraftCreeper;
 import org.bukkit.craftbukkit.v1_19_R2.entity.CraftMob;
+import org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_19_R2.entity.CraftZombie;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.CreatureSpawnEvent;
@@ -16,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import org.shrigorevich.ml.domain.ai.TaskService;
 import org.shrigorevich.ml.domain.ai.goals.GoGoal;
 import org.shrigorevich.ml.domain.mob.MobService;
+import org.shrigorevich.ml.domain.mob.MobType;
 import org.shrigorevich.ml.domain.mob.events.SpawnPressureMobsEvent;
 import org.shrigorevich.ml.domain.structure.StructureService;
 
@@ -39,17 +42,24 @@ public class MobExecutor implements CommandExecutor {
                 try {
                     switch (args[0].toLowerCase()) {
                         case "c", "create" -> {
-                            player.getWorld().spawnEntity(
-                                player.getLocation().clone().add(5, 0, 0),
+                            Entity entity = player.getWorld().spawnEntity(
+                                player.getLocation().clone().add(2, 5, 0),
                                 EntityType.valueOf(args[1]),
                                 CreatureSpawnEvent.SpawnReason.CUSTOM, (e) -> {
                                     if (e instanceof Mob mob) {
-//                                        ((CraftZombie) mob).getHandle();
+                                        removeAI(mob);
+                                        if (mob instanceof Zombie zombie) {
+//                                            mobService.addMob(zombie, MobType.PRESSURE_ZOMBIE, 1);
+//                                            ((CraftZombie)mob).getHandle();
+                                        }
+                                        if (mob instanceof Creeper creeper) {
+                                             creeper.setIgnited(true);
+                                        }
+
                                     }
                                 }
                             );
 
-//                            Bukkit.getServer().getMobGoals().addGoal(this.customMob, new GoGoal());
                         }
                         case "pressure" -> Bukkit.getPluginManager().callEvent(new SpawnPressureMobsEvent());
                         default ->
@@ -80,7 +90,7 @@ public class MobExecutor implements CommandExecutor {
         }
     }
 
-    private void setAI(Mob mob) {
+    private void removeAI(Mob mob) {
         mob.getPathfinder().setCanOpenDoors(true);
         mob.getPathfinder().setCanPassDoors(true);
         MobGoals goals = Bukkit.getServer().getMobGoals();

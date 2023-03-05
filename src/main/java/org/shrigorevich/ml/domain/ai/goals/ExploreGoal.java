@@ -6,37 +6,52 @@ import com.destroystokyo.paper.entity.ai.GoalKey;
 import com.destroystokyo.paper.entity.ai.GoalType;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_19_R2.entity.CraftMob;
 import org.bukkit.entity.Mob;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
+import org.shrigorevich.ml.domain.mob.CustomMob;
+import org.shrigorevich.ml.domain.mob.MemoryKey;
+import org.shrigorevich.ml.domain.mob.MemoryUnit;
+import org.shrigorevich.ml.domain.mob.PointMemoryUnit;
 
+import java.awt.*;
 import java.util.EnumSet;
+import java.util.List;
 
-public class GoGoal implements Goal<Mob> {
+public class ExploreGoal implements Goal<Mob> {
 
-    private final Location location;
     private Pathfinder.PathResult path;
-    private final Mob mob;
+    private final CustomMob mob;
     private int timer;
     private boolean isAchieved;
-    private final Plugin plugin;
-    public GoGoal(Mob mob, Location location, Plugin plugin) {
-        this.location = location;
+    private final List<MemoryUnit> points;
+    public ExploreGoal(CustomMob mob) {
         this.mob = mob;
-        this.isAchieved = false;
-        this.plugin = plugin;
+        this.points = mob.getMemory(MemoryKey.INTEREST_POINT);
     }
+
+    @Override
+    public boolean shouldActivate() {
+        return this.points.size() > 0;
+    }
+
     @Override
     public void start() {
-        System.out.println("Go goal started");
-        mob.getPathfinder().moveTo(path);
+        for (MemoryUnit point : points) {
+            path = mob.getPathfinder()
+                .findPath(((PointMemoryUnit)point).getLocation());
+            if (path != null) {
+                mob.getPathfinder().moveTo(path);
+                System.out.println("Go goal started");
+                break;
+            }
+        }
+
     }
 
     @Override
     public void stop() {
-
+        mob.getPathfinder().stopPathfinding();
     }
 
     @Override
@@ -55,12 +70,6 @@ public class GoGoal implements Goal<Mob> {
             System.out.println("Location reached");
             isAchieved = true;
         }
-    }
-
-    @Override
-    public boolean shouldActivate() {
-        this.path = mob.getPathfinder().findPath(location);
-        return this.path != null;
     }
 
     @Override

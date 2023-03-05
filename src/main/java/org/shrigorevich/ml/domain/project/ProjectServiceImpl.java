@@ -48,10 +48,10 @@ public class ProjectServiceImpl extends BaseService implements ProjectService {
             buildPlan.removeIf(p -> p.getId() == structId);
             //TODO: should be moved to higher logic lvl
             if (getPlugin() instanceof AdventurePlugin) {
-                ((AdventurePlugin) getPlugin()).showTitle(
-                    String.format("Project %s finalized", proj.getStruct().getName()),
-                    "Congratulations", Color.AQUA.asRGB()
-                );
+//                ((AdventurePlugin) getPlugin()).showTitle(
+//                    String.format("Project %s finalized", proj.getStruct().getName()),
+//                    "Congratulations", Color.AQUA.asRGB()
+//                );
             } else {
                 Bukkit.broadcast(Component.text(String.format("Project %s finalized", proj.getStruct().getName())));
             }

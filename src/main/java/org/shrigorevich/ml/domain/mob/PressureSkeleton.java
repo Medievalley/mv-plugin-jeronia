@@ -1,10 +1,10 @@
-package org.shrigorevich.ml.domain.mob.custom;
+package org.shrigorevich.ml.domain.mob;
 
-import org.bukkit.entity.Entity;
+import org.bukkit.entity.Mob;
 
 public class PressureSkeleton extends CustomMobImpl {
 
-    public PressureSkeleton(Entity mob, double power) {
+    public PressureSkeleton(Mob mob, double power) {
         super(mob, power, MobType.PRESSURE_SKELETON);
     }
 

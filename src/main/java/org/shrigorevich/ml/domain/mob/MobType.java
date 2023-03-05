@@ -1,4 +1,4 @@
-package org.shrigorevich.ml.domain.mob.custom;
+package org.shrigorevich.ml.domain.mob;
 
 public enum MobType {
     PRESSURE_ZOMBIE,
