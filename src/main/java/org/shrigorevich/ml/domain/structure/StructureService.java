@@ -44,5 +44,6 @@ public interface StructureService extends Service {
      */
     void applyVolume(@NotNull VolumeStruct struct, int volumeId) throws IllegalArgumentException;
     void updateResources(int structId, int amount);
+    Structure getNearest(Location location);
     Structure getNearest(int x, int y, int z);
 }

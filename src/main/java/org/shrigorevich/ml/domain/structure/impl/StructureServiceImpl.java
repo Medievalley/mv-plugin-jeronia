@@ -210,9 +210,32 @@ public class StructureServiceImpl extends BaseService implements StructureServic
     }
 
     @Override
+    public Structure getNearest(Location l) {
+        return getNearest(l.getBlockX(), l.getBlockY(), l.getBlockZ());
+    }
+
+    @Override
     public Structure getNearest(int x, int y, int z) {
-        //TODO: not implemented
-        return null;
+        if (structures.size() == 0) {
+            return null;
+        }
+        double lastDistance = 10000; //TODO: magic value
+        Structure nearest = null;
+        for (Structure struct : structures.values()) {
+            double distance = distance(struct, x, y, z);
+            if (lastDistance > distance) {
+                lastDistance = distance;
+                nearest = struct;
+            }
+        }
+        return nearest;
+    }
+
+    private double distance(Structure struct, int x, int y, int z) {
+        double a = Math.pow(x-struct.getX1(), 2);
+        double b = Math.pow(y-struct.getY1(), 2);
+        double c = Math.pow(z-struct.getZ1(), 2);
+        return Math.sqrt(a + b + c);
     }
 
     private Structure createStructure(StructModel s, List<StructBlock> blocks) {
