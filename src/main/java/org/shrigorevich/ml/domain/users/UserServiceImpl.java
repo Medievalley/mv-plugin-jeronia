@@ -4,7 +4,9 @@ import org.apache.logging.log4j.LogManager;
 import org.bukkit.entity.EntityType;
 import org.bukkit.plugin.Plugin;
 import org.shrigorevich.ml.common.BaseService;
+import org.shrigorevich.ml.config.MlConfiguration;
 import org.shrigorevich.ml.domain.callbacks.IAccessCheckCallback;
+import org.shrigorevich.ml.domain.callbacks.IResultCallback;
 import org.shrigorevich.ml.domain.users.contracts.UserService;
 import org.shrigorevich.ml.domain.users.contracts.User;
 import org.shrigorevich.ml.domain.users.contracts.UserContext;
@@ -16,11 +18,13 @@ import java.util.Optional;
 
 public class UserServiceImpl extends BaseService implements UserService {
 
+    private final MlConfiguration config;
     private final Map<String, User> onlineList;
     UserContext userContext;
-    public UserServiceImpl(UserContext userContext, Plugin plugin) {
+    public UserServiceImpl(UserContext userContext, Plugin plugin, MlConfiguration config) {
         super(plugin, LogManager.getLogger("UserServiceImpl"));
         this.userContext = userContext;
+        this.config = config;
         this.onlineList = new HashMap<>();
     }
 
@@ -106,6 +110,42 @@ public class UserServiceImpl extends BaseService implements UserService {
                 user.removeLive();
             } catch (Exception e) {
                 getLogger().error(e.getMessage());
+            }
+        }, () -> getLogger().error(String.format("User named %s is not in the online list", userName)));
+    }
+
+    public void addUserJob(String userName, Job job, IResultCallback cb) {
+        getOnline(userName).ifPresentOrElse(user -> {
+            try {
+                if(user.getJobs().size() >= config.getMaxJobsQty()) {
+                    cb.sendResult(false,"You already work at max jobs!");
+                    return;
+                }
+                else if (user.getJobs().containsKey(job)) {
+                    cb.sendResult(false,"You already work at this job!");
+                    return;
+                }
+                user.addJob(job);
+                cb.sendResult(true, String.format("You became a %s!", job.name().toLowerCase()));
+            } catch (Exception e) {
+                getLogger().error(e.getMessage());
+                cb.sendResult(false,"Something went wrong :( Please contact the admin.");
+            }
+        }, () -> getLogger().error(String.format("User named %s is not in the online list", userName)));
+    }
+
+    public void removeUserJob(String userName, Job job, IResultCallback cb) {
+        getOnline(userName).ifPresentOrElse(user -> {
+            try {
+                if (!user.getJobs().containsKey(job)) {
+                    cb.sendResult(false,"You don't work at this job anyway!");
+                    return;
+                }
+                user.removeJob(job);
+                cb.sendResult(true, String.format("You quit your job as a %s!", job.name().toLowerCase()));
+            } catch (Exception e) {
+                getLogger().error(e.getMessage());
+                cb.sendResult(false,"Something went wrong :( Please contact the admin.");
             }
         }, () -> getLogger().error(String.format("User named %s is not in the online list", userName)));
     }

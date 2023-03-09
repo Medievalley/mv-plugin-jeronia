@@ -113,6 +113,28 @@ CREATE TABLE IF NOT EXISTS death_stats (
     UNIQUE (user_id, reason)
 );
 
+CREATE TABLE IF NOT EXISTS profession_type (
+    id INTEGER PRIMARY KEY,
+	name VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS user_profession (
+	user_id VARCHAR(150) references users (id) ON DELETE CASCADE ON UPDATE CASCADE,
+	prof_id INTEGER references profession_type (id) ON DELETE CASCADE ON UPDATE CASCADE,
+	PRIMARY KEY (user_id, prof_id)
+);
+
+CREATE TABLE IF NOT EXISTS restricted_item (
+    id INTEGER PRIMARY KEY,
+	type INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS prof_permitted_item (
+    prof_id INTEGER references profession_type (id) ON DELETE CASCADE ON UPDATE CASCADE,
+	item_id INTEGER references restricted_item (id) ON DELETE CASCADE ON UPDATE CASCADE,
+	PRIMARY KEY (prof_id, item_id)
+);
+
 --CREATE UNIQUE INDEX vol_block_idx ON volume_block (volume_id, x, y, z);
 
 INSERT INTO role (id, name, description)
@@ -140,6 +162,11 @@ INSERT INTO struct_block_type (id, name, description) VALUES
 (1, 'Default', 'block without special behavior'),
 (2, 'Safe location', 'Safe location for npc'),
 (3, 'Abode spawn', 'Block where monsters spawn in the abode');
+
+INSERT INTO profession_type (id, name) VALUES
+(1, 'Warrior'),
+(2, 'Farmer'),
+(3, 'Wizard');
 
 -- MOCK SCRIPT
  with rows as (
