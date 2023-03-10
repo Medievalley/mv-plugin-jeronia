@@ -8,6 +8,7 @@ public class ConfigurationImpl implements MlConfiguration {
     private final Plugin plugin;
     private DatabaseConf database;
     private MobSpawn mobSpawn;
+    private UserConf user;
 
     public ConfigurationImpl(Plugin plugin) {
         this.plugin = plugin;
@@ -19,6 +20,8 @@ public class ConfigurationImpl implements MlConfiguration {
             plugin.getConfig().getConfigurationSection("database")).getValues(false));
         this.mobSpawn = new MobSpawn(Objects.requireNonNull(
             plugin.getConfig().getConfigurationSection("mob_spawn")).getValues(false));
+        this.user = new UserConf(Objects.requireNonNull(
+            plugin.getConfig().getConfigurationSection("user")).getValues(false));
     }
 
     @Override
@@ -60,4 +63,11 @@ public class ConfigurationImpl implements MlConfiguration {
         this.mobSpawn.setPressurePlayersFactor(value);
     }
     //MOB SPAWN END
+    //USER START
+    public int getMaxJobsQty() { return user.getMaxJobsQty(); }
+    public void setMaxJobsQty(int value) {
+        plugin.getConfig().set(ConfPath.USER_MAX_JOBS_QTY.getPath(), value);
+        this.user.setMaxJobsQty(value);
+    }
+    //USER END
 }

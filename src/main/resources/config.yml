@@ -12,3 +12,6 @@ mob_spawn:
   wave_interval: 600 # sec
   pressure_players_factor: 4.0 # PlayersCountMultiplier for spawned mobs power
   wave_players_factor: 4.0
+
+user:
+  max_jobs_qty: 2

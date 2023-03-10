@@ -77,7 +77,7 @@ public final class Ml extends JavaPlugin implements MlPlugin {
         NpcContext npcContext = new NpcContextImpl(dataSource);
         ProjectContext projectContext = new ProjectContextImpl(dataSource);
 
-        userService = new UserServiceImpl(userContext, this);
+        userService = new UserServiceImpl(userContext, this, config);
         structService = new StructureServiceImpl(structureContext, this);
         npcService = new NpcServiceImpl(npcContext, this);
         taskService = new TaskServiceImpl(this);
@@ -143,6 +143,8 @@ public final class Ml extends JavaPlugin implements MlPlugin {
             .setExecutor(new MobExecutor(taskService, mobService, structService));
         Objects.requireNonNull(getCommand("test"))
             .setExecutor(new TestExecutor(config, this));
+        Objects.requireNonNull(getCommand("job"))
+                .setExecutor(new JobExecutor(userService));
     }
 
     //TODO: move to separate class

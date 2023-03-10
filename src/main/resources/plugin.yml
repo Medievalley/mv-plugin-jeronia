@@ -25,3 +25,6 @@ commands:
     description: "Mob tests"
     usage: "/<command> [create] [EntityType]"
 
+  job:
+    description: "jobs command"
+
