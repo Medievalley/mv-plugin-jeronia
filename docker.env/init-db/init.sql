@@ -113,15 +113,16 @@ CREATE TABLE IF NOT EXISTS death_stats (
     UNIQUE (user_id, reason)
 );
 
-CREATE TABLE IF NOT EXISTS profession_type (
+CREATE TABLE IF NOT EXISTS job_type (
     id INTEGER PRIMARY KEY,
 	name VARCHAR(50) NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS user_profession (
+CREATE TABLE IF NOT EXISTS user_job (
 	user_id VARCHAR(150) references users (id) ON DELETE CASCADE ON UPDATE CASCADE,
-	prof_id INTEGER references profession_type (id) ON DELETE CASCADE ON UPDATE CASCADE,
-	PRIMARY KEY (user_id, prof_id)
+	job_id INTEGER references job_type (id) ON DELETE CASCADE ON UPDATE CASCADE,
+	level INTEGER DEFAULT 1,
+	PRIMARY KEY (user_id, job_id)
 );
 
 CREATE TABLE IF NOT EXISTS restricted_item (
@@ -129,10 +130,10 @@ CREATE TABLE IF NOT EXISTS restricted_item (
 	type INTEGER NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS prof_permitted_item (
-    prof_id INTEGER references profession_type (id) ON DELETE CASCADE ON UPDATE CASCADE,
+CREATE TABLE IF NOT EXISTS job_permitted_item (
+    job_id INTEGER references job_type (id) ON DELETE CASCADE ON UPDATE CASCADE,
 	item_id INTEGER references restricted_item (id) ON DELETE CASCADE ON UPDATE CASCADE,
-	PRIMARY KEY (prof_id, item_id)
+	PRIMARY KEY (job_id, item_id)
 );
 
 --CREATE UNIQUE INDEX vol_block_idx ON volume_block (volume_id, x, y, z);
@@ -163,7 +164,7 @@ INSERT INTO struct_block_type (id, name, description) VALUES
 (2, 'Safe location', 'Safe location for npc'),
 (3, 'Abode spawn', 'Block where monsters spawn in the abode');
 
-INSERT INTO profession_type (id, name) VALUES
+INSERT INTO job_type (id, name) VALUES
 (1, 'Warrior'),
 (2, 'Farmer'),
 (3, 'Wizard');

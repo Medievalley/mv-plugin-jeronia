@@ -6,15 +6,10 @@ import org.bukkit.plugin.Plugin;
 import org.shrigorevich.ml.common.callback.IAccessCheckCallback;
 import org.shrigorevich.ml.common.callback.IResultCallback;
 import org.shrigorevich.ml.common.config.MlConfiguration;
-import org.shrigorevich.ml.domain.users.Job;
-import org.shrigorevich.ml.domain.users.User;
-import org.shrigorevich.ml.domain.users.UserRole;
-import org.shrigorevich.ml.domain.users.UserService;
+import org.shrigorevich.ml.domain.users.*;
 import org.shrigorevich.ml.state.BaseService;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class UserServiceImpl extends BaseService implements UserService {
 
@@ -72,8 +67,13 @@ public class UserServiceImpl extends BaseService implements UserService {
     }
 
     private void online(UserModel model) {
-        onlineList.put(model.getName(),
-            new UserImpl(model.getId(), model.getName(), UserRole.valueOf(model.getRoleId()), model.getLives()));
+        try {
+            List<UserJobModel> userJobModelList = userContext.getUserJobsByUserId(model.getId());
+            onlineList.put(model.getName(),
+                    new UserImpl(model.getId(), model.getName(), UserRole.valueOf(model.getRoleId()), model.getLives(), userJobModelList));
+        } catch (Exception e) {
+            getLogger().error(e.getMessage());
+        }
     }
 
     @Override
@@ -127,6 +127,7 @@ public class UserServiceImpl extends BaseService implements UserService {
                     cb.sendResult(false,"You already work at this job!");
                     return;
                 }
+                userContext.addUserJob(user.getId(), job.getJobId());
                 user.addJob(job);
                 cb.sendResult(true, String.format("You became a %s!", job.name().toLowerCase()));
             } catch (Exception e) {
@@ -143,6 +144,7 @@ public class UserServiceImpl extends BaseService implements UserService {
                     cb.sendResult(false,"You don't work at this job anyway!");
                     return;
                 }
+                userContext.removeUserJob(user.getId(), job.getJobId());
                 user.removeJob(job);
                 cb.sendResult(true, String.format("You quit your job as a %s!", job.name().toLowerCase()));
             } catch (Exception e) {
