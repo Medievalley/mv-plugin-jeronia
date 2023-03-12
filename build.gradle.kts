@@ -40,6 +40,10 @@ dependencies {
     implementation("net.kyori:adventure-platform-bukkit:4.2.0")
     implementation("commons-dbutils:commons-dbutils:1.7")
     implementation("org.apache.maven.plugins:maven-resources-plugin:3.3.0")
+    implementation(project(":database"))
+    implementation(project(":state"))
+    implementation(project(":domain"))
+    implementation(project(":common"))
 }
 
 tasks.withType<JavaCompile>() {

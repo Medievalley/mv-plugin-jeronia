@@ -1,5 +1,7 @@
 package org.shrigorevich.ml.config;
 
+import org.shrigorevich.ml.common.config.DatabaseConf;
+
 import java.util.Map;
 
 class DatabaseConfImpl implements DatabaseConf {

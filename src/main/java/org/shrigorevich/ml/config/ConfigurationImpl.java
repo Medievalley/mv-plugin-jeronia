@@ -1,6 +1,9 @@
 package org.shrigorevich.ml.config;
 
 import org.bukkit.plugin.Plugin;
+import org.shrigorevich.ml.common.config.ConfPath;
+import org.shrigorevich.ml.common.config.DatabaseConf;
+import org.shrigorevich.ml.common.config.MlConfiguration;
 
 import java.util.Objects;
 

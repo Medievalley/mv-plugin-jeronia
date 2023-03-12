@@ -3,3 +3,7 @@
  */
 
 rootProject.name = "ml"
+include("database")
+include("state")
+include("common")
+include("domain")
