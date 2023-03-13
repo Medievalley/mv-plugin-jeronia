@@ -34,6 +34,7 @@ public class JobExecutor implements CommandExecutor {
                     switch (args[0].toLowerCase()) {
                         case "join", "j" -> addUserJob(player, args[1]);
                         case "quit", "q" -> removeUserJob(player, args[1]);
+                        case "me" -> getUserJobs(player);
                         default ->
                                 player.sendMessage(ChatColor.YELLOW + String.format("Command '%s' not found", args[0]));
                     }
@@ -74,5 +75,15 @@ public class JobExecutor implements CommandExecutor {
         catch (IllegalArgumentException ex){
             player.sendMessage(ChatColor.RED + String.format("There is no job '%s' :(", jobName));
         }
+    }
+
+    private void getUserJobs(Player player){
+        userService.getOnline(player.getName()).ifPresent(user -> {
+            String msg = "You work as a ";
+            for (Job job: user.getJobs().keySet()) {
+                msg += job.name() + ", ";
+            }
+            player.sendMessage(ChatColor.YELLOW + msg.substring(0, msg.length()-2));
+        });
     }
 }

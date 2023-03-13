@@ -24,4 +24,16 @@ public class UserQueryBuilder {
     public String decrementUserLives(String userId) {
         return String.format("UPDATE player_data SET lives = player_data.lives - 1 WHERE user_id = '%s'", userId);
     }
+
+    public String addUserJob(String userId, int jobId) {
+        return String.format("INSERT INTO user_job (user_id, job_id) VALUES ('%s', %d);", userId, jobId);
+    }
+
+    public String removeUserJob(String userId, int jobId) {
+        return String.format("DELETE FROM user_job WHERE user_id = '%s' AND job_id = %d;", userId, jobId);
+    }
+
+    public String getUserJobsByUserId(String userId) {
+        return String.format("SELECT job_id as jobId, level FROM user_job WHERE user_id = '%s'", userId);
+    }
 }

@@ -9,6 +9,10 @@ public class UserJobImpl implements UserJob {
         this.level = 1;
     }
 
+    public UserJobImpl(int level) {
+        this.level = level;
+    }
+
     @Override
     public int getLevel(){
         return level;

@@ -3,13 +3,16 @@ package org.shrigorevich.ml.database.users;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.BeanHandler;
+import org.apache.commons.dbutils.handlers.BeanListHandler;
 import org.apache.logging.log4j.LogManager;
 import org.shrigorevich.ml.database.BaseContext;
 import org.shrigorevich.ml.state.users.UserContext;
+import org.shrigorevich.ml.state.users.UserJobModel;
 import org.shrigorevich.ml.state.users.UserModel;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
 
 public class UserContextImpl extends BaseContext implements UserContext {
@@ -70,4 +73,36 @@ public class UserContextImpl extends BaseContext implements UserContext {
         }
     }
 
+    public void addUserJob(String userId, int jobId) throws Exception {
+        try {
+            QueryRunner run = new QueryRunner(getDataSource());
+            run.update(queryBuilder.addUserJob(userId, jobId));
+        } catch (SQLException ex) {
+            getLogger().error(ex.toString());
+            throw new Exception(String.format("Error while adding user job with userId: %s, jobId: %d",
+                    userId, jobId));
+        }
+    }
+
+    public void removeUserJob(String userId, int jobId) throws Exception {
+        try {
+            QueryRunner run = new QueryRunner(getDataSource());
+            run.update(queryBuilder.removeUserJob(userId, jobId));
+        } catch (SQLException ex) {
+            getLogger().error(ex.toString());
+            throw new Exception(String.format("Error while removing user job with userId: %s, jobId: %d",
+                    userId, jobId));
+        }
+    }
+
+    public List<UserJobModel> getUserJobsByUserId(String userId) throws Exception {
+        try {
+            QueryRunner run = new QueryRunner(getDataSource());
+            ResultSetHandler<List<UserJobModel>> h = new BeanListHandler<>(UserJobModelImpl.class);
+            return run.query(queryBuilder.getUserJobsByUserId(userId), h);
+        } catch (SQLException ex) {
+            getLogger().error(ex.toString());
+            throw new Exception(String.format("Error while getting user jobs userId: %s", userId));
+        }
+    }
 }
