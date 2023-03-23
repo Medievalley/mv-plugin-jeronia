@@ -1,22 +1,38 @@
 package org.shrigorevich.ml.state.mobs;
 
+import org.bukkit.Location;
 import org.shrigorevich.ml.domain.mobs.MemoryHolder;
 import org.shrigorevich.ml.domain.mobs.MemoryKey;
 import org.shrigorevich.ml.domain.mobs.MemoryUnit;
 
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.List;
+import java.util.*;
 
 public class MemoryHolderImpl implements MemoryHolder {
 
     private final EnumMap<MemoryKey, List<MemoryUnit>> memory;
+    private final Queue<Location> routePoints;
 
     public MemoryHolderImpl() {
         this.memory = new EnumMap<>(MemoryKey.class);
+        this.routePoints = new LinkedList<>();
         for (MemoryKey key : MemoryKey.values()) {
             memory.put(key, new ArrayList<>());
         }
+    }
+
+    @Override
+    public Queue<Location> getRoutePoints() {
+        return routePoints;
+    }
+
+    @Override
+    public void addRoutePoint(Location point) {
+        this.routePoints.add(point);
+    }
+
+    @Override
+    public void addRoutePoints(List<Location> points) {
+        this.routePoints.addAll(points);
     }
 
     @Override

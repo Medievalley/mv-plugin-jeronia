@@ -10,7 +10,7 @@ public class PressureSkeleton extends CustomMobImpl {
     }
 
     @Override
-    protected void setAI() {
+    public void setupAI() {
 
     }
 }

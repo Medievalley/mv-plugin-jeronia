@@ -231,6 +231,15 @@ public class StructureServiceImpl extends BaseService implements StructureServic
         return nearest;
     }
 
+    @Override
+    public List<Location> getCoordsOfAllStructs() {
+        List<Location> list = new ArrayList<>();
+        for (Structure s : structures.values()) {
+            list.add(s.getCenter());
+        }
+        return list;
+    }
+
     private double distance(Structure struct, int x, int y, int z) {
         double a = Math.pow(x-struct.getX1(), 2);
         double b = Math.pow(y-struct.getY1(), 2);

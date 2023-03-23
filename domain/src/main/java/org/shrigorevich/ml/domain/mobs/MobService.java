@@ -5,6 +5,7 @@ import org.bukkit.entity.Mob;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface MobService {
@@ -13,6 +14,7 @@ public interface MobService {
     void setup();
     CustomMob createMob(Mob entity, MobType type, double power) throws IllegalArgumentException;
     void addMob(CustomMob mob);
+    Optional<CustomMob> getMob(UUID id);
     void remove(UUID entityId);
     int getCurrentQuantity();
     int getCurrentPower();

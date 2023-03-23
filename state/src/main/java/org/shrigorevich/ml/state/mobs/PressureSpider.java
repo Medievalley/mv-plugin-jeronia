@@ -10,7 +10,7 @@ public class PressureSpider extends CustomMobImpl {
     }
 
     @Override
-    protected void setAI() {
+    public void setupAI() {
 
     }
 }

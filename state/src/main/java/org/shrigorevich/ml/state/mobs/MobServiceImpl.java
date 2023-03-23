@@ -73,6 +73,11 @@ public class MobServiceImpl extends BaseService implements MobService {
     }
 
     @Override
+    public Optional<CustomMob> getMob(UUID id) {
+        return mobs.containsKey(id) ? Optional.of(mobs.get(id)) : Optional.empty();
+    }
+
+    @Override
     public void remove(UUID entityId) {
         mobs.remove(entityId);
     }

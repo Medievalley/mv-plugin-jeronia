@@ -119,7 +119,7 @@ public final class Ml extends JavaPlugin implements MlPlugin {
         pm.registerEvents(new BlockBreak(structService), this);
         pm.registerEvents(new CustomSpawn(taskService, npcService, structService, mobService), this);
         pm.registerEvents(new EntityInventoryHandler(npcService, projectService), this);
-        pm.registerEvents(new EntitySpawnHandler(this), this);
+        pm.registerEvents(new EntitySpawnHandler(this, mobService), this);
         pm.registerEvents(new PlayerInteract(structService, npcService, taskService), this);
         pm.registerEvents(new ReachLocationHandler(this), this);
         pm.registerEvents(new DangerHandler(taskService, npcService), this);
