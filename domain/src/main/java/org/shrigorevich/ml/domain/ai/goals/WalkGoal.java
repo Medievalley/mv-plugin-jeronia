@@ -31,7 +31,7 @@ public class WalkGoal extends CustomGoal implements Goal<Mob> {
         this.mob = mob;
         this.points = mob.getRoutePoints();
         this.handle = ((CraftMob) mob.getHandle()).getHandle();
-        this.checkArrivalInterval = 20;
+        this.checkArrivalInterval = 45;
         this.key = GoalKey.of(Mob.class, new NamespacedKey("ml", "walkgoal"));
     }
 
@@ -58,7 +58,7 @@ public class WalkGoal extends CustomGoal implements Goal<Mob> {
 
     @Override
     public void tick() {
-        if (this.checkArrivalInterval > 0 && this.handle.getRandom().nextInt(this.checkArrivalInterval) != 0) { //TODO: adjust
+        if (this.checkArrivalInterval > 0 && this.handle.getRandom().nextInt(this.checkArrivalInterval) == 0) { //TODO: adjust
             if (path == null || locationReached(path.getFinalPoint())) {
                 defineTargetLocation();
                 if (path != null) {
@@ -86,14 +86,14 @@ public class WalkGoal extends CustomGoal implements Goal<Mob> {
     }
 
     private boolean locationReached(Location l) {
-        return mob.getLocation().distanceSquared(l) < 1;
+        return mob.getLocation().distance(l) < 1.5;
     }
 
     private void defineTargetLocation() {
         Location loc = points.peek();
         path = mob.getPathfinder().findPath(loc);
         if (path != null) {
-            mob.getPathfinder().moveTo(path);
+            mob.getPathfinder().moveTo(path, 0.8D);
             points.remove();
             points.add(loc);
             System.out.printf("Next point: %s. Locs: %d%n", locToString(loc), points.size());
