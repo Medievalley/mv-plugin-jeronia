@@ -72,7 +72,6 @@ public class AdminInteractHandler implements Listener {
                     case STICK -> draftStructLocation(event);
                     case DIAMOND_AXE -> regSafeLocation(event.getClickedBlock().getLocation());
                     case COAL -> {
-
                         event.getPlayer().sendMessage("Y+1: " + Bukkit.getWorld("world")
                             .getBlockAt(event.getClickedBlock().getLocation().clone().add(0,1,0))
                             .getLightFromBlocks());

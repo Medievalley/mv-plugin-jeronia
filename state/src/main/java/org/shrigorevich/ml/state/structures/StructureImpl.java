@@ -65,7 +65,7 @@ public abstract class StructureImpl implements Structure {
      */
     public List<Block> getBlocks() {
         Iterator<Block> blockI = this.iterator();
-        List<Block> copy = new ArrayList<Block>();
+        List<Block> copy = new ArrayList<>();
         while (blockI.hasNext())
             copy.add(blockI.next());
         return copy;
@@ -211,7 +211,7 @@ public abstract class StructureImpl implements Structure {
         return new CuboidIterator(this.getWorld(), this.x1, this.y1, this.z1, this.x2, this.y2, this.z2);
     }
 
-    public static class CuboidIterator implements Iterator<Block> {
+    protected static class CuboidIterator implements Iterator<Block> {
         private World w;
         private int baseX, baseY, baseZ;
         private int x, y, z;

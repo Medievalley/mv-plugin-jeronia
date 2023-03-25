@@ -7,6 +7,7 @@ import org.shrigorevich.ml.domain.users.UserRole;
 
 import java.util.EnumMap;
 import java.util.List;
+import java.util.Optional;
 
 public class UserImpl implements User {
 
@@ -61,6 +62,10 @@ public class UserImpl implements User {
     @Override
     public EnumMap<Job, UserJob> getJobs(){
         return jobs;
+    }
+
+    public Optional<UserJob> getJob(Job job) {
+        return jobs.containsKey(job) ? Optional.of(jobs.get(job)) : Optional.empty();
     }
 
     @Override

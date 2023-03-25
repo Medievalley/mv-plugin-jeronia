@@ -7,7 +7,6 @@ import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
 public class CustomSpawnEvent extends Event implements Cancellable {
-
     private static final HandlerList HANDLERS = new HandlerList();
     private boolean cancelled;
     private final Entity entity;

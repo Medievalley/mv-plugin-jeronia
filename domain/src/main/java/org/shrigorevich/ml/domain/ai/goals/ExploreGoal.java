@@ -1,24 +1,21 @@
 package org.shrigorevich.ml.domain.ai.goals;
 
 import com.destroystokyo.paper.entity.ai.Goal;
-import com.destroystokyo.paper.entity.ai.GoalKey;
-import com.destroystokyo.paper.entity.ai.GoalType;
-import org.bukkit.NamespacedKey;
+import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.v1_19_R2.entity.CraftMob;
 import org.bukkit.entity.Mob;
-import org.jetbrains.annotations.NotNull;
+import org.shrigorevich.ml.domain.events.ExploreEnvironmentEvent;
 import org.shrigorevich.ml.domain.mobs.CustomMob;
 
-import java.util.EnumSet;
-
 public abstract class ExploreGoal extends CustomGoal implements Goal<Mob> {
+
     private final CustomMob mob;
-    private int timer;
-    private final int tickInterval;
-    private final GoalKey<Mob> key;
-    public ExploreGoal(CustomMob mob, int tickInterval) {
+    private final int exploreInterval;
+    private final net.minecraft.world.entity.Mob handle;
+    public ExploreGoal(CustomMob mob, int exploreInterval) {
         this.mob = mob;
-        this.tickInterval = tickInterval;
-        this.key = GoalKey.of(Mob.class, new NamespacedKey("ml", "exploregoal"));
+        this.handle = ((CraftMob) mob.getHandle()).getHandle();
+        this.exploreInterval = exploreInterval;
     }
     @Override
     public void start() {
@@ -32,24 +29,8 @@ public abstract class ExploreGoal extends CustomGoal implements Goal<Mob> {
 
     @Override
     public void tick() {
-        timer++;
-        if (timer >= tickInterval) {
-            timer = 0;
+        if (this.exploreInterval > 0 && this.handle.getRandom().nextInt(this.exploreInterval) == 0) {
+            Bukkit.getServer().getPluginManager().callEvent(new ExploreEnvironmentEvent(this.mob));
         }
-    }
-
-    @Override
-    public boolean shouldActivate() {
-        return true;
-    }
-
-    @Override
-    public @NotNull GoalKey<Mob> getKey() {
-        return key;
-    }
-
-    @Override
-    public @NotNull EnumSet<GoalType> getTypes() {
-        return EnumSet.of(GoalType.UNKNOWN_BEHAVIOR);
     }
 }
