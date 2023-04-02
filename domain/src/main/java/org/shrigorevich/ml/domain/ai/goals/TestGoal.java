@@ -10,7 +10,6 @@ import org.jetbrains.annotations.NotNull;
 import org.shrigorevich.ml.domain.mobs.CustomMob;
 import org.shrigorevich.ml.domain.mobs.MemoryKey;
 import org.shrigorevich.ml.domain.mobs.MemoryUnit;
-import org.shrigorevich.ml.domain.mobs.PointMemoryUnit;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -22,7 +21,6 @@ public class TestGoal implements Goal<Mob> {
     private int timer;
     private int lifeTimer;
     private boolean isAchieved;
-    private final List<MemoryUnit> points;
     private final String name;
     private final int lifeTime;
     private boolean stopped;
@@ -33,7 +31,6 @@ public class TestGoal implements Goal<Mob> {
         this.lifeTime = lifeTime;
         this.name = name;
         this.mob = mob;
-        this.points = mob.getMemory(MemoryKey.INTEREST_POINT);
         this.stopped = false;
         this.key = GoalKey.of(Mob.class, new NamespacedKey("ml", name));
     }

@@ -12,7 +12,6 @@ import org.shrigorevich.ml.domain.ai.TaskService;
 import org.shrigorevich.ml.domain.ai.tasks.HoldSpawnTask;
 import org.shrigorevich.ml.domain.events.CustomSpawnEvent;
 import org.shrigorevich.ml.domain.mobs.MobService;
-import org.shrigorevich.ml.domain.npc.NpcRole;
 import org.shrigorevich.ml.domain.npc.NpcService;
 import org.shrigorevich.ml.domain.npc.StructNpc;
 import org.shrigorevich.ml.domain.structures.StructureService;

@@ -10,6 +10,7 @@ import org.bukkit.craftbukkit.v1_19_R2.entity.CraftMob;
 import org.bukkit.entity.Mob;
 import org.jetbrains.annotations.NotNull;
 import org.shrigorevich.ml.domain.mobs.CustomMob;
+import org.shrigorevich.ml.domain.mobs.MemoryKey;
 
 import java.util.EnumSet;
 import java.util.Queue;
@@ -19,24 +20,21 @@ public class WalkGoal extends ExploreGoal implements Goal<Mob> {
     private Pathfinder.PathResult path;
     private final CustomMob mob;
     private final net.minecraft.world.entity.Mob handle;
-    private Queue<Location> points;
     private final int checkArrivalInterval;
     private final GoalKey<Mob> key;
     private double speed;
     public WalkGoal(CustomMob mob) {
         super(mob, 30);
         this.mob = mob;
-        this.points = mob.getRoutePoints();
         this.handle = ((CraftMob) mob.getHandle()).getHandle();
         this.checkArrivalInterval = 30;
-        this.speed = 0.7D;
+        this.speed = 0.85D;
         this.key = GoalKey.of(Mob.class, new NamespacedKey("ml", "walkgoal"));
     }
 
     @Override
     public boolean shouldActivate() {
-//        this.points = mob.getRoutePoints();
-        return this.points.size() > 0;
+        return this.mob.getMemories(MemoryKey.ROUTE_POINT).size() > 0;
     }
 
     @Override
@@ -91,16 +89,20 @@ public class WalkGoal extends ExploreGoal implements Goal<Mob> {
     }
 
     private void defineTargetLocation() {
-        Location loc = points.peek();
+        Location loc = getRoute().peek();
         path = mob.getPathfinder().findPath(loc);
         if (path != null) {
-            points.remove();
-            points.add(loc);
-            System.out.printf("Next point: %s. Locs: %d%n", locToString(loc), points.size());
+            getRoute().remove();
+            getRoute().add(loc);
+            System.out.printf("Next point: %s. Locs: %d%n", locToString(loc), getRoute().size());
         }
     }
 
     private void move() {
         mob.getPathfinder().moveTo(path, speed);
+    }
+
+    private Queue<Location> getRoute() {
+        return this.mob.getMemories(MemoryKey.ROUTE_POINT);
     }
 }

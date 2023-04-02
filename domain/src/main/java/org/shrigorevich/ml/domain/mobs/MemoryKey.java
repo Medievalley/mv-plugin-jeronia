@@ -1,5 +1,5 @@
 package org.shrigorevich.ml.domain.mobs;
 
 public enum MemoryKey {
-    INTEREST_POINT, ENEMY_PLAYER,
+    DOOR_POINT, CROP_POINT, ROUTE_POINT, ENEMY_PLAYER,
 }

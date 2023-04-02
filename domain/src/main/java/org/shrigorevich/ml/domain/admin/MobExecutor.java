@@ -16,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import org.shrigorevich.ml.domain.ai.TaskService;
 import org.shrigorevich.ml.domain.events.SpawnPressureMobsEvent;
 import org.shrigorevich.ml.domain.mobs.CustomMob;
+import org.shrigorevich.ml.domain.mobs.MemoryKey;
 import org.shrigorevich.ml.domain.mobs.MobService;
 import org.shrigorevich.ml.domain.mobs.MobType;
 import org.shrigorevich.ml.domain.structures.StructureService;
@@ -77,7 +78,7 @@ public class MobExecutor implements CommandExecutor {
     private void setupCustomZombie(Zombie zombie) {
         CustomMob customMob = mobService.createMob(
                 zombie, MobType.PRESSURE_ZOMBIE, 1);
-        customMob.addRoutePoints(structureService.getCoordsOfAllStructs());
+        customMob.addMemories(MemoryKey.ROUTE_POINT, structureService.getCoordsOfAllStructs());
         customMob.removeVanillaAI();
         customMob.setupAI();
         mobService.addMob(customMob);

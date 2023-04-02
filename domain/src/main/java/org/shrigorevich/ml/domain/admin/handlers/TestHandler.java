@@ -36,9 +36,4 @@ public class TestHandler implements Listener {
         this.npcAdminService = npcAdminService;
         this.logger = LogManager.getLogger("TestHandler");
     }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void playerInteract(EntityTargetEvent event) {
-
-    }
 }

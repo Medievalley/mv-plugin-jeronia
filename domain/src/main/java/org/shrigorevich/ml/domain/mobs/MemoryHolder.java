@@ -7,11 +7,7 @@ import java.util.Queue;
 
 public interface MemoryHolder {
 
-    Queue<Location> getRoutePoints();
-    void addRoutePoint(Location point);
-    void addRoutePoints(List<Location> points);
-    List<MemoryUnit> getMemory(MemoryKey key);
-
-    void addMemory(MemoryUnit unit);
-
+    void addMemory(MemoryKey key, Location point);
+    void addMemories(MemoryKey key, List<Location> points);
+    Queue<Location> getMemories(MemoryKey key);
 }

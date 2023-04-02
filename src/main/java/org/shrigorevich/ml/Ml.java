@@ -130,7 +130,7 @@ public final class Ml extends JavaPlugin implements MlPlugin {
         pm.registerEvents(new SpawnTimersHandler(config, this), this);
         pm.registerEvents(new SpawnEnemyHandler(structService, mobService, config, this), this);
         pm.registerEvents(new PlayerDeathHandler(userService), this);
-        pm.registerEvents(new ExploreEnvironmentHandler(structService), this);
+        pm.registerEvents(new ExploreEnvironmentHandler(this, structService), this);
     }
 
     private void setupExecutors() {

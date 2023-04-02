@@ -15,10 +15,7 @@ import org.shrigorevich.ml.common.config.MlConfiguration;
 import org.shrigorevich.ml.domain.MlPlugin;
 import org.shrigorevich.ml.domain.events.SpawnPressureMobsEvent;
 import org.shrigorevich.ml.domain.events.SpawnWaveEvent;
-import org.shrigorevich.ml.domain.mobs.CustomMob;
-import org.shrigorevich.ml.domain.mobs.MobService;
-import org.shrigorevich.ml.domain.mobs.MobType;
-import org.shrigorevich.ml.domain.mobs.PointMemoryUnitImpl;
+import org.shrigorevich.ml.domain.mobs.*;
 import org.shrigorevich.ml.domain.structures.*;
 
 import java.util.*;
@@ -111,16 +108,13 @@ public class SpawnEnemyHandler implements Listener {
             getMobType(e.getType()),
             Math.max(defPower, defPower * powerFactor));
 
+        mobSvc.addMob(customMob);
         if (powerFactor > 1) {
             boostEntity(e, powerFactor);
         }
 
-        Structure nearest = structSvc
-            .getNearest(e.getLocation().getBlockX(), e.getLocation().getBlockY(), e.getLocation().getBlockZ());
-
         //TODO: It may not be possible to lay a route to the structure center
-        customMob.addMemory(new PointMemoryUnitImpl(nearest.getCenter()));
-        mobSvc.addMob(customMob);
+        customMob.addMemories(MemoryKey.ROUTE_POINT, structSvc.getCoordsOfAllStructs());
     }
 
     private void removeAI(Mob mob) {

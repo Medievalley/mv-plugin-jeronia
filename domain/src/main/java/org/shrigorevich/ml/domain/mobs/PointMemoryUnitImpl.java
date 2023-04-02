@@ -5,10 +5,9 @@ import org.bukkit.Location;
 public class PointMemoryUnitImpl extends BaseMemoryUnit implements PointMemoryUnit {
 
     private final Location location;
-    private boolean visited;
 
-    public PointMemoryUnitImpl(Location location) {
-        super(MemoryKey.INTEREST_POINT);
+    public PointMemoryUnitImpl(MemoryKey key, Location location) {
+        super(key);
         this.location = location;
     }
 
@@ -16,15 +15,5 @@ public class PointMemoryUnitImpl extends BaseMemoryUnit implements PointMemoryUn
     @Override
     public Location getLocation() {
         return location;
-    }
-
-    @Override
-    public boolean visited() {
-        return visited;
-    }
-
-    @Override
-    public void setVisited(boolean visited) {
-        this.visited = visited;
     }
 }

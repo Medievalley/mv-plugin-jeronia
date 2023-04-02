@@ -16,7 +16,6 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.shrigorevich.ml.domain.ai.*;
-import org.shrigorevich.ml.domain.npc.NpcRole;
 import org.shrigorevich.ml.domain.npc.NpcService;
 import org.shrigorevich.ml.domain.npc.StructNpc;
 import org.shrigorevich.ml.domain.project.BuildProject;
