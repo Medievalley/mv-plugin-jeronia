@@ -3,6 +3,7 @@ package org.shrigorevich.ml.domain.mobs;
 import com.destroystokyo.paper.entity.Pathfinder;
 import org.bukkit.Location;
 import org.bukkit.entity.Mob;
+import org.shrigorevich.ml.common.Coords;
 
 import java.util.UUID;
 
@@ -15,4 +16,6 @@ public interface CustomMob extends MemoryHolder {
     Location getLocation();
     void removeVanillaAI();
     void setupAI();
+    ScanBox getScanBox();
+    ScanBox getScanBox(int offsetY, int radiusX, int radiusY, int radiusZ);
 }

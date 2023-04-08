@@ -9,6 +9,7 @@ import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.shrigorevich.ml.common.Coords;
 import org.shrigorevich.ml.common.callback.MsgCallback;
+import org.shrigorevich.ml.domain.mobs.ScanBox;
 import org.shrigorevich.ml.domain.structures.*;
 import org.shrigorevich.ml.state.BaseService;
 import org.shrigorevich.ml.state.structures.models.*;
@@ -219,7 +220,7 @@ public class StructureServiceImpl extends BaseService implements StructureServic
         if (structures.size() == 0) {
             return null;
         }
-        double lastDistance = 10000; //TODO: magic value
+        double lastDistance = -1;
         Structure nearest = null;
         for (Structure struct : structures.values()) {
             double distance = distance(struct, x, y, z);
@@ -235,7 +236,17 @@ public class StructureServiceImpl extends BaseService implements StructureServic
     public List<Location> getCoordsOfAllStructs() {
         List<Location> list = new ArrayList<>();
         for (Structure s : structures.values()) {
-            list.add(s.getCenter());
+            list.add(s.getCenter()); //TODO: It may not be possible to lay a route to the structure center
+        }
+        return list;
+    }
+
+    @Override
+    public List<Structure> getIntersected(ScanBox box) {
+        List<Structure> list = new ArrayList<>();
+        for (Structure s : structures.values()) {
+            if (s.intersects(box.getMin(), box.getMax()))
+                list.add(s);
         }
         return list;
     }

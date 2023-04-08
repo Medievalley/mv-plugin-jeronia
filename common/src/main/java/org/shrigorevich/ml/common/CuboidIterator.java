@@ -6,6 +6,7 @@ import org.bukkit.block.Block;
 
 import java.util.Iterator;
 
+@Deprecated
 public class CuboidIterator implements Iterator<Block> {
     private final Location center;
     private final int baseX, baseY, baseZ;

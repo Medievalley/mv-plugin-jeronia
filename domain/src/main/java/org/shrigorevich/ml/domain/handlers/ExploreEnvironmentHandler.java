@@ -1,20 +1,24 @@
 package org.shrigorevich.ml.domain.handlers;
 
+import com.destroystokyo.paper.entity.Pathfinder;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.plugin.Plugin;
-import org.shrigorevich.ml.common.CuboidIterator;
+import org.shrigorevich.ml.domain.ai.goals.CustomGoal;
 import org.shrigorevich.ml.domain.events.ExploreEnvironmentEvent;
 import org.shrigorevich.ml.domain.mobs.CustomMob;
+import org.shrigorevich.ml.domain.mobs.MemoryKey;
+import org.shrigorevich.ml.domain.structures.Structure;
 import org.shrigorevich.ml.domain.structures.StructureService;
+import org.shrigorevich.ml.domain.structures.StructureType;
+import org.shrigorevich.ml.common.MaterialHelper;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+
 
 public class ExploreEnvironmentHandler implements Listener {
 
@@ -31,14 +35,27 @@ public class ExploreEnvironmentHandler implements Listener {
     }
 
     private void exploreEnvironment(CustomMob mob) {
-//      System.out.printf("Mob loc: %d %d %d%n", mob.getLocation().getBlockX(), mob.getLocation().getBlockY(), mob.getLocation().getBlockZ());
-//      mob.getHandle().rayTraceBlocks()
+//        System.out.printf("Mob loc: %d %d %d%n", mob.getLocation().getBlockX(), mob.getLocation().getBlockY(), mob.getLocation().getBlockZ());
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            Iterator<Block> iterator = new CuboidIterator(mob.getLocation(),3, 5, 3, 5);
-            List<Block> blocks = new ArrayList<>();
-            while (iterator.hasNext())
-                blocks.add(iterator.next());
+            List<Structure> structs = structService.getIntersected(
+                    mob.getScanBox(3, 3, 3, 3)); //TODO: move to right place
+
+//            System.out.println("Intersected structs: " + structs.size());
+            for (Structure struct : structs) {
+                if (struct.getType() == StructureType.AGRONOMIC)
+                    findCrops(mob, struct);
+            }
         });
-//      System.out.println("Size: " + copy.size());
+    }
+
+    private void findCrops(CustomMob mob, Structure struct) {
+        for (Block b : struct.getBlocks()) {
+            if (MaterialHelper.isCrop(b.getType())) {
+                Pathfinder.PathResult path = mob.getPathfinder().findPath(b.getLocation());
+                if (path != null && CustomGoal.isCropReachable(b.getLocation(), mob.getLocation()))
+                    mob.addMemory(MemoryKey.CROP_POINT, b.getLocation());
+            }
+        }
+//        System.out.println("Crop size: " + mob.getMemories(MemoryKey.CROP_POINT).size());
     }
 }

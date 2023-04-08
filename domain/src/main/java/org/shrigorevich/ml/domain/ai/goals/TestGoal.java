@@ -8,11 +8,8 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Mob;
 import org.jetbrains.annotations.NotNull;
 import org.shrigorevich.ml.domain.mobs.CustomMob;
-import org.shrigorevich.ml.domain.mobs.MemoryKey;
-import org.shrigorevich.ml.domain.mobs.MemoryUnit;
 
 import java.util.EnumSet;
-import java.util.List;
 
 public class TestGoal implements Goal<Mob> {
 

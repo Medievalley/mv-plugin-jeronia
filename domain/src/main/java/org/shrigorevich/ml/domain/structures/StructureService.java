@@ -2,8 +2,10 @@ package org.shrigorevich.ml.domain.structures;
 
 import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
+import org.shrigorevich.ml.common.Coords;
 import org.shrigorevich.ml.common.callback.MsgCallback;
 import org.shrigorevich.ml.domain.Service;
+import org.shrigorevich.ml.domain.mobs.ScanBox;
 
 import java.util.List;
 import java.util.Optional;
@@ -40,11 +42,12 @@ public interface StructureService extends Service {
      * @throws IllegalArgumentException -
      * 1. When the volume with provided ID does not exist.
      * 2. When struct and volume sizes do not match (x, y, z)
-     *
      */
     void applyVolume(@NotNull VolumeStruct struct, int volumeId) throws IllegalArgumentException;
     void updateResources(int structId, int amount);
     Structure getNearest(Location location);
+    @Deprecated
     Structure getNearest(int x, int y, int z);
     List<Location> getCoordsOfAllStructs();
+    List<Structure> getIntersected(ScanBox scanBox);
 }

@@ -9,11 +9,13 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.craftbukkit.v1_19_R2.entity.CraftMob;
 import org.bukkit.entity.Mob;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.shrigorevich.ml.domain.mobs.CustomMob;
 import org.shrigorevich.ml.domain.mobs.MemoryKey;
+import org.shrigorevich.ml.domain.mobs.LocationMemoryUnit;
 
 import java.util.EnumSet;
-import java.util.Queue;
+import java.util.List;
 
 public class WalkGoal extends ExploreGoal implements Goal<Mob> {
 
@@ -21,30 +23,28 @@ public class WalkGoal extends ExploreGoal implements Goal<Mob> {
     private final CustomMob mob;
     private final net.minecraft.world.entity.Mob handle;
     private final int checkArrivalInterval;
+    private final int recalculatePathInterval;
     private final GoalKey<Mob> key;
     private double speed;
+    private LocationMemoryUnit currentDestination;
     public WalkGoal(CustomMob mob) {
-        super(mob, 30);
+        super(mob, 25);
         this.mob = mob;
         this.handle = ((CraftMob) mob.getHandle()).getHandle();
         this.checkArrivalInterval = 30;
-        this.speed = 0.85D;
+        this.recalculatePathInterval = 25;
+        this.speed = 1.1D;
         this.key = GoalKey.of(Mob.class, new NamespacedKey("ml", "walkgoal"));
     }
 
     @Override
     public boolean shouldActivate() {
-        return this.mob.getMemories(MemoryKey.ROUTE_POINT).size() > 0;
+        return getRoute().size() > 0;
     }
 
     @Override
     public void start() {
-        defineTargetLocation();
-        if (path != null) {
-            System.out.println("Walk goal started with path");
-        } else {
-            System.out.println("Walk goal started without path");
-        }
+        defineNextDestination();
     }
 
     @Override
@@ -55,20 +55,20 @@ public class WalkGoal extends ExploreGoal implements Goal<Mob> {
     @Override
     public void tick() {
         super.tick();
-        if (this.checkArrivalInterval > 0 && this.handle.getRandom().nextInt(this.checkArrivalInterval) == 0) {
-            if (path == null || locationReached(path.getFinalPoint())) {
-                defineTargetLocation();
-                if (path != null) {
-                    move();
-                    System.out.println("Walk goal destination changed: " + locToString(path.getFinalPoint()));
-                } else {
-                    System.out.println("Walk goal destination not available");
-                }
-            } else {
-                move();
+        if (this.recalculatePathInterval > 0 && this.handle.getRandom().nextInt(this.recalculatePathInterval) == 0) {
+            if (currentDestination != null) {
+                path = mob.getPathfinder().findPath(currentDestination.getLocation());
             }
         }
-        
+        if (this.checkArrivalInterval > 0 && this.handle.getRandom().nextInt(this.checkArrivalInterval) == 0) {
+            if (path == null || locationReached(path.getFinalPoint())) {
+                if (currentDestination != null)
+                    currentDestination.setVisited(true);
+                defineNextDestination();
+            } else {
+                move(); //TODO: maybe unnecessary
+            }
+        }
 //        if (path.getNextPointIndex() == 0 && path.getPoints().size() == 1) {
 //            System.out.println("Location reached");
 //        }
@@ -88,13 +88,20 @@ public class WalkGoal extends ExploreGoal implements Goal<Mob> {
         return mob.getLocation().distance(l) < 1.5;
     }
 
-    private void defineTargetLocation() {
-        Location loc = getRoute().peek();
-        path = mob.getPathfinder().findPath(loc);
-        if (path != null) {
-            getRoute().remove();
-            getRoute().add(loc);
-            System.out.printf("Next point: %s. Locs: %d%n", locToString(loc), getRoute().size());
+    private void defineNextDestination() {
+        LocationMemoryUnit next = findClosest(mob.getLocation(), getRoute(), (unit) -> !unit.isVisited());
+        if (next != null) {
+            path = mob.getPathfinder().findPath(next.getLocation());
+            if (path != null) {
+                currentDestination = next;
+                move();
+//                System.out.printf("Next point: %s. Locs: %d%n", locToString(next.getLocation()), getRoute().size());
+                System.out.println("Walk goal destination changed: " + locToString(path.getFinalPoint()));
+            } else {
+                System.out.println("Walk goal destination not available");
+            }
+        } else {
+            resetRoute();
         }
     }
 
@@ -102,7 +109,14 @@ public class WalkGoal extends ExploreGoal implements Goal<Mob> {
         mob.getPathfinder().moveTo(path, speed);
     }
 
-    private Queue<Location> getRoute() {
+    private List<LocationMemoryUnit> getRoute() {
         return this.mob.getMemories(MemoryKey.ROUTE_POINT);
+    }
+
+    private void resetRoute() {
+        for (LocationMemoryUnit unit : getRoute()) {
+            unit.setVisited(false);
+        }
+        System.out.println("Walk goal: route reseted");
     }
 }

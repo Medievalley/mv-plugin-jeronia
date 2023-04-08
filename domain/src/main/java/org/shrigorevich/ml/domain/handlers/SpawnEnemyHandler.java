@@ -112,8 +112,6 @@ public class SpawnEnemyHandler implements Listener {
         if (powerFactor > 1) {
             boostEntity(e, powerFactor);
         }
-
-        //TODO: It may not be possible to lay a route to the structure center
         customMob.addMemories(MemoryKey.ROUTE_POINT, structSvc.getCoordsOfAllStructs());
     }
 

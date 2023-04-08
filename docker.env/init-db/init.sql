@@ -136,6 +136,71 @@ CREATE TABLE IF NOT EXISTS job_permitted_item (
 	PRIMARY KEY (job_id, item_id)
 );
 
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+CREATE TABLE IF NOT EXISTS departments
+(
+	id int PRIMARY KEY,
+	name text NOT NULL,
+	description text
+);
+
+CREATE TABLE IF NOT EXISTS product_types
+(
+	id int PRIMARY KEY,
+	name text NOT NULL,
+	department int references departments(id)
+);
+
+CREATE TABLE IF NOT EXISTS products
+(
+	id uuid PRIMARY KEY DEFAULT uuid_generate_v1 (),
+	name text NOT NULL,
+	description text NOT NULL,
+	type int references product_types(id),
+	price numeric NOT NULL DEFAULT 0,
+	availability bool NOT NULL DEFAULT TRUE
+);
+
+CREATE TABLE IF NOT EXISTS user_items
+(
+	id uuid PRIMARY KEY DEFAULT uuid_generate_v1 (),
+	user_id varchar(150) references users(id) ON DELETE CASCADE,
+	item_id uuid references products(id) NOT NULL,
+	received bool NOT NULL DEFAULT FALSE
+);
+
+CREATE TABLE IF NOT EXISTS user_perks
+(
+	id uuid PRIMARY KEY DEFAULT uuid_generate_v1 (),
+	user_id varchar(150) references users(id) ON DELETE CASCADE,
+	perk_id uuid references products(id) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS bundles
+(
+	id uuid PRIMARY KEY DEFAULT uuid_generate_v1 (),
+	name text NOT NULL,
+	discount numeric NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS bundle_products
+(
+	id uuid PRIMARY KEY DEFAULT uuid_generate_v1 (),
+	bundle_id uuid references bundles(id) ON DELETE CASCADE,
+	product_id uuid references products(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS transactions
+(
+	id uuid PRIMARY KEY DEFAULT uuid_generate_v1 (),
+	user_id varchar(150),
+	user_email text,
+	product_id uuid,
+	product_name text,
+	amount numeric
+);
+
 --CREATE UNIQUE INDEX vol_block_idx ON volume_block (volume_id, x, y, z);
 
 INSERT INTO role (id, name, description)

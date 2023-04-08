@@ -67,7 +67,7 @@ public class AdminInteractHandler implements Listener {
 
             if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
                 switch (event.getMaterial()) {
-                    case BONE -> draftNpc(event);
+                    case BONE -> showBlockType(event);//draftNpc(event);
                     case FEATHER -> showStructInfo(event);
                     case STICK -> draftStructLocation(event);
                     case DIAMOND_AXE -> regSafeLocation(event.getClickedBlock().getLocation());
@@ -136,9 +136,10 @@ public class AdminInteractHandler implements Listener {
     }
 
     private void showBlockType(PlayerInteractEvent event) {
-        Block b = event.getClickedBlock();
-        Block highest = b.getWorld().getHighestBlockAt(b.getLocation(), HeightMap.MOTION_BLOCKING_NO_LEAVES);
-        event.getPlayer().sendMessage(String.format("Highest block: %d %d %d", highest.getX(), highest.getY(), highest.getZ()));
+        event.getPlayer().sendMessage(event.getClickedBlock().getType().toString());
+//        Block b = event.getClickedBlock();
+//        Block highest = b.getWorld().getHighestBlockAt(b.getLocation(), HeightMap.MOTION_BLOCKING_NO_LEAVES);
+//        event.getPlayer().sendMessage(String.format("Highest block: %d %d %d", highest.getX(), highest.getY(), highest.getZ()));
     }
 
     //TODO: refactor y+1 logic
