@@ -16,6 +16,7 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
     implementation("org.apache.logging.log4j:log4j-api:2.20.0")
     implementation("org.apache.logging.log4j:log4j-core:2.20.0")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.13.3")
     implementation(project(":common"))
     implementation(project(":domain"))
 }

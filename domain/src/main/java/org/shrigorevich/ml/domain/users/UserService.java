@@ -16,4 +16,5 @@ public interface UserService extends Service {
     void decrementUserLives(String userName);
     void addUserJob(String userName, Job job, IResultCallback cb);
     void removeUserJob(String userName, Job job, IResultCallback cb);
+    void setup();
 }

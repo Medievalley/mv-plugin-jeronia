@@ -1,6 +1,7 @@
 package org.shrigorevich.ml.domain.users;
 
 import java.util.EnumMap;
+import java.util.List;
 
 public interface User {
     String getId();
@@ -9,7 +10,8 @@ public interface User {
     int getLives();
     void addLive();
     void removeLive();
-    EnumMap<Job, UserJob> getJobs();
+    List<UserJob> getJobsInfo();
+    List<Job> getJobs();
     void addJob (Job job);
     void removeJob (Job job);
 }

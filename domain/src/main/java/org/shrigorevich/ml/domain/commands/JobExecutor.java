@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.shrigorevich.ml.domain.users.Job;
 import org.shrigorevich.ml.domain.users.User;
+import org.shrigorevich.ml.domain.users.UserJob;
 import org.shrigorevich.ml.domain.users.UserService;
 
 import java.util.Optional;
@@ -80,7 +81,7 @@ public class JobExecutor implements CommandExecutor {
     private void getUserJobs(Player player){
         userService.getOnline(player.getName()).ifPresent(user -> {
             String msg = "You work as a ";
-            for (Job job: user.getJobs().keySet()) {
+            for (Job job: user.getJobs()) {
                 msg += job.name() + ", ";
             }
             player.sendMessage(ChatColor.YELLOW + msg.substring(0, msg.length()-2));

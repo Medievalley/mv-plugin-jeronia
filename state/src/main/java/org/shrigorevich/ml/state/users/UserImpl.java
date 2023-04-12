@@ -5,6 +5,7 @@ import org.shrigorevich.ml.domain.users.User;
 import org.shrigorevich.ml.domain.users.UserJob;
 import org.shrigorevich.ml.domain.users.UserRole;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Optional;
@@ -14,7 +15,7 @@ public class UserImpl implements User {
     private final String id;
     private final String name;
     private final UserRole role;
-    private final EnumMap<Job, UserJob> jobs;
+    private final EnumMap<Job, UserJobImpl> jobs;
     private int lives;
 
     public UserImpl(String id, String name, UserRole role, int lives, List<UserJobModel> jobs) {
@@ -25,7 +26,7 @@ public class UserImpl implements User {
         this.jobs = new EnumMap<>(Job.class);
         jobs.forEach(userJobModel -> {
             Job job = Job.valueOf(userJobModel.getJobId());
-            this.jobs.put(job, new UserJobImpl(userJobModel.getLevel()));
+            this.jobs.put(job, new UserJobImpl(job, userJobModel.getLevel()));
         });
     }
 
@@ -60,8 +61,15 @@ public class UserImpl implements User {
     }
 
     @Override
-    public EnumMap<Job, UserJob> getJobs(){
-        return jobs;
+    public List<UserJob> getJobsInfo(){
+        List<UserJob> jobsList = new ArrayList<>();
+        jobs.values().forEach(job -> jobsList.add(job));
+        return jobsList;
+    }
+
+    @Override
+    public List<Job> getJobs(){
+        return jobs.keySet().stream().toList();
     }
 
     public Optional<UserJob> getJob(Job job) {

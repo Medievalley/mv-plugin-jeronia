@@ -11,4 +11,5 @@ public interface UserContext {
     void addUserJob(String userId, int jobId) throws Exception;
     void removeUserJob(String userId, int jobId) throws Exception;
     List<UserJobModel> getUserJobsByUserId(String userId) throws Exception;
+    List<RestrictedItemModel> getRestrictedItems() throws Exception;
 }
