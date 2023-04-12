@@ -1,6 +1,9 @@
 package org.shrigorevich.ml.state.users;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
+import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.plugin.Plugin;
 import org.shrigorevich.ml.common.callback.IAccessCheckCallback;
@@ -15,12 +18,14 @@ public class UserServiceImpl extends BaseService implements UserService {
 
     private final MlConfiguration config;
     private final Map<String, User> onlineList;
+    private HashMap<Material, Restriction> restrictedItems;
     UserContext userContext;
     public UserServiceImpl(UserContext userContext, Plugin plugin, MlConfiguration config) {
         super(plugin, LogManager.getLogger("UserServiceImpl"));
         this.userContext = userContext;
         this.config = config;
         this.onlineList = new HashMap<>();
+        this.restrictedItems = new HashMap<>();
     }
 
     @Override
@@ -123,7 +128,7 @@ public class UserServiceImpl extends BaseService implements UserService {
                     cb.sendResult(false,"You already work at max jobs!");
                     return;
                 }
-                else if (user.getJobs().containsKey(job)) {
+                else if (user.getJobs().contains(job)) {
                     cb.sendResult(false,"You already work at this job!");
                     return;
                 }
@@ -140,7 +145,7 @@ public class UserServiceImpl extends BaseService implements UserService {
     public void removeUserJob(String userName, Job job, IResultCallback cb) {
         getOnline(userName).ifPresentOrElse(user -> {
             try {
-                if (!user.getJobs().containsKey(job)) {
+                if (!user.getJobs().contains(job)) {
                     cb.sendResult(false,"You don't work at this job anyway!");
                     return;
                 }
@@ -152,5 +157,42 @@ public class UserServiceImpl extends BaseService implements UserService {
                 cb.sendResult(false,"Something went wrong :( Please contact the admin.");
             }
         }, () -> getLogger().error(String.format("User named %s is not in the online list", userName)));
+    }
+
+    @Override
+    public void setup(){
+        try {
+            List<RestrictedItemModel> restrictedItemModels = userContext.getRestrictedItems();
+            setRestrictedItems(restrictedItemModels);
+        } catch (Exception e) {
+            getLogger().error(e.getMessage());
+        }
+    }
+
+    private void setRestrictedItems(List<RestrictedItemModel> restrictedItemModels) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            for (RestrictedItemModel restrictedItemModel: restrictedItemModels) {
+                List<JobAllowance> jobAllowances = new ArrayList<>();
+                List<RoleAllowance> roleAllowances = new ArrayList<>();
+                List<Allowance> allowances = new ArrayList<>();
+
+                if(restrictedItemModel.getJobAllowances() != "[]")
+                    jobAllowances = objectMapper.readValue(restrictedItemModel.getJobAllowances(), new TypeReference<List<JobAllowance>>(){});
+
+                if(restrictedItemModel.getRoleAllowances() != "[]")
+                    roleAllowances = objectMapper.readValue(restrictedItemModel.getRoleAllowances(), new TypeReference<List<RoleAllowance>>(){});
+
+                allowances.addAll(jobAllowances);
+                allowances.addAll(roleAllowances);
+
+                restrictedItems.put(
+                        Material.valueOf(restrictedItemModel.getType()),
+                        new RestrictionImpl(allowances));
+                getLogger().info("asd");
+            }
+        } catch (Exception e) {
+            getLogger().error(e.getMessage());
+        }
     }
 }

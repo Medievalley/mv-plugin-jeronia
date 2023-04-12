@@ -1,3 +1,5 @@
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
 CREATE TABLE IF NOT EXISTS users (
 	id VARCHAR(150) PRIMARY KEY,
 	login VARCHAR (20) UNIQUE NOT NULL,
@@ -127,16 +129,23 @@ CREATE TABLE IF NOT EXISTS user_job (
 
 CREATE TABLE IF NOT EXISTS restricted_item (
     id INTEGER PRIMARY KEY,
-	type INTEGER NOT NULL
+	type text NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS job_permitted_item (
+CREATE TABLE IF NOT EXISTS job_item_allowance (
+	id SERIAL PRIMARY KEY,
     job_id INTEGER references job_type (id) ON DELETE CASCADE ON UPDATE CASCADE,
 	item_id INTEGER references restricted_item (id) ON DELETE CASCADE ON UPDATE CASCADE,
-	PRIMARY KEY (job_id, item_id)
+	level INTEGER NOT NULL DEFAULT 1,
+	UNIQUE (job_id, item_id)
 );
 
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE TABLE IF NOT EXISTS role_item_allowance (
+	id SERIAL PRIMARY KEY,
+    role_id INTEGER references role (id) ON DELETE CASCADE ON UPDATE CASCADE,
+	item_id INTEGER references restricted_item (id) ON DELETE CASCADE ON UPDATE CASCADE,
+	UNIQUE (role_id, item_id)
+);
 
 CREATE TABLE IF NOT EXISTS departments
 (

@@ -6,6 +6,7 @@ import org.apache.commons.dbutils.handlers.BeanHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
 import org.apache.logging.log4j.LogManager;
 import org.shrigorevich.ml.database.BaseContext;
+import org.shrigorevich.ml.state.users.RestrictedItemModel;
 import org.shrigorevich.ml.state.users.UserContext;
 import org.shrigorevich.ml.state.users.UserJobModel;
 import org.shrigorevich.ml.state.users.UserModel;
@@ -103,6 +104,18 @@ public class UserContextImpl extends BaseContext implements UserContext {
         } catch (SQLException ex) {
             getLogger().error(ex.toString());
             throw new Exception(String.format("Error while getting user jobs userId: %s", userId));
+        }
+    }
+
+    @Override
+    public List<RestrictedItemModel> getRestrictedItems() throws Exception {
+        try {
+            QueryRunner run = new QueryRunner(getDataSource());
+            ResultSetHandler<List<RestrictedItemModel>> h = new BeanListHandler<>(RestrictedItemModelImpl.class);
+            return run.query(queryBuilder.getRestrictedItems(), h);
+        } catch (SQLException ex) {
+            getLogger().error(ex.toString());
+            throw new Exception("Error while getting restricted items");
         }
     }
 }

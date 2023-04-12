@@ -13,6 +13,7 @@ import org.shrigorevich.ml.domain.scoreboard.ScoreboardService;
 import org.shrigorevich.ml.domain.structures.Structure;
 import org.shrigorevich.ml.domain.structures.StructureService;
 import org.shrigorevich.ml.domain.structures.TownInfra;
+import org.shrigorevich.ml.domain.users.UserService;
 
 import java.util.List;
 
@@ -24,18 +25,20 @@ public class SetupStateHandler implements Listener {
     private final ScoreboardService scoreboardService;
     private final NpcService npcService;
     private final MobService mobService;
+    private final UserService userService;
 
     public SetupStateHandler(
             StructureService structureService,
             ProjectService projectService,
             NpcService npcService,
             MobService mobService,
-            ScoreboardService boardService) {
+            ScoreboardService boardService, UserService userService) {
         this.structureService = structureService;
         this.projectService = projectService;
         this.npcService = npcService;
         this.mobService = mobService;
         this.scoreboardService = boardService;
+        this.userService = userService;
         this.logger = LogManager.getLogger("SetupStateHandler");
     }
 
@@ -47,6 +50,7 @@ public class SetupStateHandler implements Listener {
             setupProjects();
             npcService.setup();
             mobService.setup();
+            userService.setup();
             logger.info("All services are loaded successfully");
         } catch (Exception ex) {
             logger.error(ex.getMessage());

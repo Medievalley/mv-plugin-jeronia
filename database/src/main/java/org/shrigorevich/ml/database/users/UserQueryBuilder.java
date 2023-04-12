@@ -36,4 +36,20 @@ public class UserQueryBuilder {
     public String getUserJobsByUserId(String userId) {
         return String.format("SELECT job_id as jobId, level FROM user_job WHERE user_id = '%s'", userId);
     }
+
+    public String getRestrictedItems() {
+        return "SELECT\n" +
+                "ri2.type,\n" +
+                "CAST(ri2.jobAllowances AS text),\n" +
+                "CAST(ri2.roleAllowances AS text)\n" +
+                "FROM\n" +
+                "(SELECT\n" +
+                "ri.type,\n" +
+                "COALESCE(json_agg(json_build_object('jobId', jia.job_id, 'level', jia.level)) FILTER (WHERE jia.job_id IS NOT NULL), '[]') AS jobAllowances,\n" +
+                "COALESCE(json_agg(json_build_object('roleId', ria.role_id)) FILTER (WHERE ria.role_id IS NOT NULL), '[]') AS roleAllowances\n" +
+                "FROM restricted_item as ri\n" +
+                "LEFT JOIN job_item_allowance as jia on ri.id = jia.item_id\n" +
+                "LEFT JOIN role_item_allowance as ria on ri.id = ria.item_id\n" +
+                "GROUP  BY ri.type) ri2;";
+    }
 }
