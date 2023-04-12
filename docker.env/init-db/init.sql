@@ -133,18 +133,18 @@ CREATE TABLE IF NOT EXISTS restricted_item (
 );
 
 CREATE TABLE IF NOT EXISTS job_item_allowance (
-	id SERIAL,
+	id SERIAL PRIMARY KEY,
     job_id INTEGER references job_type (id) ON DELETE CASCADE ON UPDATE CASCADE,
 	item_id INTEGER references restricted_item (id) ON DELETE CASCADE ON UPDATE CASCADE,
 	level INTEGER NOT NULL DEFAULT 1,
-	PRIMARY KEY (job_id, item_id)
+	UNIQUE (job_id, item_id)
 );
 
 CREATE TABLE IF NOT EXISTS role_item_allowance (
-	id SERIAL,
+	id SERIAL PRIMARY KEY,
     role_id INTEGER references role (id) ON DELETE CASCADE ON UPDATE CASCADE,
 	item_id INTEGER references restricted_item (id) ON DELETE CASCADE ON UPDATE CASCADE,
-	PRIMARY KEY (role_id, item_id)
+	UNIQUE (role_id, item_id)
 );
 
 CREATE TABLE IF NOT EXISTS departments
