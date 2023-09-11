@@ -1,8 +1,11 @@
 package org.shrigorevich.ml.domain.admin;
 
+import net.kyori.adventure.audience.Audience;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -34,15 +37,7 @@ public class TestExecutor implements CommandExecutor {
         if(args.length > 0){
             if(sender instanceof Player p){
                 try {
-                    Entity nearby = getNearbyEntity(p);
-                    if (nearby != null) {
-                        p.sendMessage(String.format("Distance: %s. x: %s, y: %s, z: %s",
-                            p.getLocation().distance(nearby.getLocation()),
-                            nearby.getLocation().getBlockX(),
-                            nearby.getLocation().getBlockY(),
-                            nearby.getLocation().getBlockZ()));
-                    }
-                    p.sendMessage("-------------");
+                    playSound(p.getLocation().clone(), args[1], Float.parseFloat(args[2]), Float.parseFloat(args[3]));
                 }
                 catch (Exception ex) {
                     p.sendMessage(ChatColor.RED + ex.getMessage());
@@ -52,6 +47,10 @@ public class TestExecutor implements CommandExecutor {
             }
         }
         return true;
+    }
+
+    private void playSound(Location l, String sound, float volume, float pitch) {
+        l.getWorld().playSound(l, Sound.valueOf(sound), volume, pitch);
     }
 
     private @Nullable Entity getNearbyEntity(Player p) {

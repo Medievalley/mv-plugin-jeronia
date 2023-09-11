@@ -60,7 +60,6 @@ public abstract class StructureImpl implements Structure {
 
     /**
      * Get the blocks in the Cuboid.
-     *
      * @return The blocks in the Cuboid
      */
     public List<Block> getBlocks() {

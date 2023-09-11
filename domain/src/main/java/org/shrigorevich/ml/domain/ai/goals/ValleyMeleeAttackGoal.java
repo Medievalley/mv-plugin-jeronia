@@ -1,7 +1,6 @@
 package org.shrigorevich.ml.domain.ai.goals;
 
 import com.destroystokyo.paper.entity.ai.Goal;
-import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.LivingEntity;
@@ -10,7 +9,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.pathfinder.Path;
 import org.bukkit.entity.Mob;
 
-public abstract class MeleeAttackGoalBase extends CustomGoal implements Goal<Mob> {
+public abstract class ValleyMeleeAttackGoal extends ValleyGoal implements Goal<Mob> {
 
     protected final PathfinderMob mob;
     private final double speedModifier;
@@ -24,7 +23,7 @@ public abstract class MeleeAttackGoalBase extends CustomGoal implements Goal<Mob
     private final int attackInterval = 10;
     private long lastCanUseCheck;
     private static final long COOLDOWN_BETWEEN_CAN_USE_CHECKS = 20L;
-    public MeleeAttackGoalBase(PathfinderMob mob, double speed) {
+    public ValleyMeleeAttackGoal(PathfinderMob mob, double speed) {
         this.mob = mob;
         this.speedModifier = speed;
         this.followingTargetEvenIfNotSeen = false;

@@ -1,21 +1,18 @@
 package org.shrigorevich.ml.domain.admin;
 
-import com.destroystokyo.paper.entity.ai.MobGoals;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.attribute.Attributable;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_19_R2.entity.CraftZombie;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.jetbrains.annotations.NotNull;
 import org.shrigorevich.ml.domain.ai.TaskService;
 import org.shrigorevich.ml.domain.events.SpawnPressureMobsEvent;
-import org.shrigorevich.ml.domain.mobs.CustomMob;
+import org.shrigorevich.ml.domain.mobs.ValleyMob;
 import org.shrigorevich.ml.domain.mobs.MemoryKey;
 import org.shrigorevich.ml.domain.mobs.MobService;
 import org.shrigorevich.ml.domain.mobs.MobType;
@@ -76,12 +73,12 @@ public class MobExecutor implements CommandExecutor {
     }
 
     private void setupCustomZombie(Zombie zombie) {
-        CustomMob customMob = mobService.createMob(
+        ValleyMob valleyMob = mobService.createMob(
                 zombie, MobType.PRESSURE_ZOMBIE, 1);
-        customMob.addMemories(MemoryKey.ROUTE_POINT, structureService.getCoordsOfAllStructs());
-        customMob.removeVanillaAI();
-        customMob.setupAI();
-        mobService.addMob(customMob);
+        valleyMob.addMemories(MemoryKey.ROUTE_POINT, structureService.getCoordsOfAllStructs());
+        valleyMob.removeVanillaAI();
+        valleyMob.setupAI();
+        mobService.addMob(valleyMob);
     }
     private void setAttributes(Entity e, String arg2) {
         if (e instanceof Attributable atr) {

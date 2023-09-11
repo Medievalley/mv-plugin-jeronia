@@ -5,13 +5,14 @@ import com.destroystokyo.paper.entity.ai.Goal;
 import com.destroystokyo.paper.entity.ai.GoalKey;
 import com.destroystokyo.paper.entity.ai.GoalType;
 import org.bukkit.Location;
+import org.bukkit.craftbukkit.v1_19_R2.entity.CraftMob;
 import org.bukkit.entity.Mob;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
 
-public class GoGoal implements Goal<Mob> {
+public class TestGoGoal implements Goal<Mob> {
 
     private final Location location;
     private Pathfinder.PathResult path;
@@ -19,7 +20,7 @@ public class GoGoal implements Goal<Mob> {
     private int timer;
     private boolean isAchieved;
     private final Plugin plugin;
-    public GoGoal(Mob mob, Location location, Plugin plugin) {
+    public TestGoGoal(Mob mob, Location location, Plugin plugin) {
         this.location = location;
         this.mob = mob;
         this.isAchieved = false;
@@ -43,7 +44,7 @@ public class GoGoal implements Goal<Mob> {
 //            System.out.println("Points size: " + path.getPoints().size());
 //            System.out.println("Next point index: " + path.getNextPointIndex());
             if (mob.getPathfinder().hasPath()) {
-//                System.out.println("Is done: " + ((CraftMob) mob).getHandle().getNavigation().getPath().isDone());
+                System.out.println("Is done: " + ((CraftMob) mob).getHandle().getNavigation().getPath().isDone());
             }
             timer = 0;
         }

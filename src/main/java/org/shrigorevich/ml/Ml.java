@@ -131,6 +131,7 @@ public final class Ml extends JavaPlugin implements MlPlugin {
         pm.registerEvents(new SpawnEnemyHandler(structService, mobService, config, this), this);
         pm.registerEvents(new PlayerDeathHandler(userService), this);
         pm.registerEvents(new ExploreEnvironmentHandler(this, structService), this);
+        pm.registerEvents(new KnockDoorHandler(), this);
     }
 
     private void setupExecutors() {

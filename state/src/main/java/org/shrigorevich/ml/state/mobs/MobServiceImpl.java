@@ -10,7 +10,7 @@ import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.Plugin;
-import org.shrigorevich.ml.domain.mobs.CustomMob;
+import org.shrigorevich.ml.domain.mobs.ValleyMob;
 import org.shrigorevich.ml.domain.mobs.MobService;
 import org.shrigorevich.ml.domain.mobs.MobType;
 import org.shrigorevich.ml.domain.mobs.PresetUnit;
@@ -24,7 +24,7 @@ import static org.bukkit.entity.EntityType.*;
 public class MobServiceImpl extends BaseService implements MobService {
 
     private final Map<EntityType, SkullModel> skulls;
-    private final Map<UUID, CustomMob> mobs;
+    private final Map<UUID, ValleyMob> mobs;
     private final List<EntityType> mobTypesForRegSpawn;
     private final PlayerProfile profile;
 
@@ -68,12 +68,12 @@ public class MobServiceImpl extends BaseService implements MobService {
     }
 
     @Override
-    public void addMob(CustomMob mob) {
+    public void addMob(ValleyMob mob) {
         mobs.put(mob.getId(), mob);
     }
 
     @Override
-    public Optional<CustomMob> getMob(UUID id) {
+    public Optional<ValleyMob> getMob(UUID id) {
         return mobs.containsKey(id) ? Optional.of(mobs.get(id)) : Optional.empty();
     }
 
@@ -85,7 +85,7 @@ public class MobServiceImpl extends BaseService implements MobService {
     @Override
     public int getCurrentPower() {
         int power = 0;
-        for (CustomMob m : mobs.values()) power += m.getPower();
+        for (ValleyMob m : mobs.values()) power += m.getPower();
         return power;
     }
 
@@ -103,7 +103,7 @@ public class MobServiceImpl extends BaseService implements MobService {
     }
 
     @Override
-    public CustomMob createMob(Mob entity, MobType type, double power) {
+    public ValleyMob createMob(Mob entity, MobType type, double power) {
         switch (type) {
             case PRESSURE_ZOMBIE -> {
                 return new PressureZombie(entity, power);

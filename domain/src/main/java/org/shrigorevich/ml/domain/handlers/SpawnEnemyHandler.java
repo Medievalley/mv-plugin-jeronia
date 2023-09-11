@@ -103,16 +103,16 @@ public class SpawnEnemyHandler implements Listener {
         Mob mob = (Mob) e;
         removeAI(mob);
         int defPower = getDefaultMobPower(e.getType());
-        CustomMob customMob = mobSvc.createMob(
+        ValleyMob valleyMob = mobSvc.createMob(
             (Mob) e,
             getMobType(e.getType()),
             Math.max(defPower, defPower * powerFactor));
 
-        mobSvc.addMob(customMob);
+        mobSvc.addMob(valleyMob);
         if (powerFactor > 1) {
             boostEntity(e, powerFactor);
         }
-        customMob.addMemories(MemoryKey.ROUTE_POINT, structSvc.getCoordsOfAllStructs());
+        valleyMob.addMemories(MemoryKey.ROUTE_POINT, structSvc.getCoordsOfAllStructs());
     }
 
     private void removeAI(Mob mob) {

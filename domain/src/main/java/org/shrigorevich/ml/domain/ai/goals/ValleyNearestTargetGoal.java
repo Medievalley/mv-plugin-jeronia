@@ -10,13 +10,13 @@ import org.bukkit.event.entity.EntityTargetEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class CustomNearestTargetGoal extends TargetGoalBase implements Goal<Mob> {
+public class ValleyNearestTargetGoal extends TargetGoalBase implements Goal<Mob> {
     protected final int randomInterval;
     @Nullable
     protected LivingEntity target;
     protected TargetingConditions targetConditions;
     private final GoalKey<Mob> key;
-    public CustomNearestTargetGoal(Mob mob) {
+    public ValleyNearestTargetGoal(Mob mob) {
         super(mob);
         this.randomInterval = reducedTickDelay(10);
         this.targetConditions = TargetingConditions.forCombat()

@@ -5,14 +5,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_19_R2.entity.CraftMob;
 import org.bukkit.entity.Mob;
 import org.shrigorevich.ml.domain.events.ExploreEnvironmentEvent;
-import org.shrigorevich.ml.domain.mobs.CustomMob;
+import org.shrigorevich.ml.domain.mobs.ValleyMob;
 
-public abstract class ExploreGoal extends CustomGoal implements Goal<Mob> {
+public abstract class ExploreGoal extends ValleyGoal implements Goal<Mob> {
 
-    private final CustomMob mob;
+    private final ValleyMob mob;
     private final int exploreInterval;
     private final net.minecraft.world.entity.Mob handle;
-    public ExploreGoal(CustomMob mob, int exploreInterval) {
+    public ExploreGoal(ValleyMob mob, int exploreInterval) {
         this.mob = mob;
         this.handle = ((CraftMob) mob.getHandle()).getHandle();
         this.exploreInterval = exploreInterval;

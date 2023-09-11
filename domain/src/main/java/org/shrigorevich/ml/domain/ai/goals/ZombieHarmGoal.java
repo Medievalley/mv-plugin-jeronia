@@ -9,26 +9,26 @@ import org.bukkit.craftbukkit.v1_19_R2.entity.CraftMob;
 import org.bukkit.entity.Mob;
 import org.jetbrains.annotations.NotNull;
 import org.shrigorevich.ml.common.MaterialHelper;
-import org.shrigorevich.ml.domain.mobs.CustomMob;
+import org.shrigorevich.ml.domain.mobs.ValleyMob;
 import org.shrigorevich.ml.domain.mobs.LocationMemoryUnit;
 import org.shrigorevich.ml.domain.mobs.MemoryKey;
 
 import java.util.EnumSet;
 import java.util.List;
 
-public class ZombieHarmGoal extends CustomGoal implements Goal<Mob> {
+public class ZombieHarmGoal extends ValleyGoal implements Goal<Mob> {
 
-    private final CustomMob mob;
+    private final ValleyMob mob;
     private final net.minecraft.world.entity.Mob handle;
     private final double speed;
     private int updateTargetInterval;
     private final GoalKey<Mob> key;
     private Pathfinder.PathResult path;
     private LocationMemoryUnit currentDestination;
-    public ZombieHarmGoal(CustomMob mob) {
+    public ZombieHarmGoal(ValleyMob mob) {
         this.mob = mob;
         this.handle = ((CraftMob) mob.getHandle()).getHandle();
-        this.updateTargetInterval = 15;
+        this.updateTargetInterval = 20;
         this.key = GoalKey.of(Mob.class, new NamespacedKey("mv", "zombieharmgoal"));
         this.speed = 0.85D;
     }
@@ -45,6 +45,7 @@ public class ZombieHarmGoal extends CustomGoal implements Goal<Mob> {
 
     @Override
     public void stop() {
+        mob.getPathfinder().stopPathfinding();
     }
 
     @Override

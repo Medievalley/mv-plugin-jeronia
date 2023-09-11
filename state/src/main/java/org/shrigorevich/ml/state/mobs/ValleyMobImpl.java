@@ -6,13 +6,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_19_R2.entity.CraftMob;
 import org.bukkit.entity.Mob;
-import org.shrigorevich.ml.domain.mobs.CustomMob;
+import org.shrigorevich.ml.domain.mobs.ValleyMob;
 import org.shrigorevich.ml.domain.mobs.MobType;
 import org.shrigorevich.ml.domain.mobs.ScanBox;
 
 import java.util.UUID;
 
-abstract class CustomMobImpl extends MemoryHolderImpl implements CustomMob {
+abstract class ValleyMobImpl extends MemoryHolderImpl implements ValleyMob {
 
     private final Mob entity;
     private final net.minecraft.world.entity.Mob handle;
@@ -23,7 +23,7 @@ abstract class CustomMobImpl extends MemoryHolderImpl implements CustomMob {
     private int scanRadiusY = 4;
     private int scanRadiusZ = 7;
 
-    public CustomMobImpl(Mob entity, double power, MobType type) {
+    public ValleyMobImpl(Mob entity, double power, MobType type) {
         super();
         this.entity = entity;
         this.power = power;
@@ -77,4 +77,19 @@ abstract class CustomMobImpl extends MemoryHolderImpl implements CustomMob {
         return new ScanBoxImpl(this.getLocation(), offsetY, rX, rY, rZ);
     }
 
+    @Override
+    public boolean isDoorReachable(Location door) {
+        return isDoorReachable(getPathfinder().findPath(door), door);
+    }
+
+    @Override
+    public boolean isDoorReachable(Pathfinder.PathResult path, Location door) {
+        return path != null && path.getFinalPoint() != null && isDoorReachable(path.getFinalPoint(), door);
+    }
+
+    private boolean isDoorReachable(Location l1, Location l2) {
+        return Math.abs(l1.getX() - l2.getX()) < 1.6D &&
+                Math.abs(l1.getZ() - l2.getZ()) < 1.6D &&
+                Math.abs(l1.getY() - l2.getY()) < 2;
+    }
 }

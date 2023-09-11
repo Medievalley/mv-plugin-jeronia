@@ -10,12 +10,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
 
-public class CustomZombieAttackGoal extends MeleeAttackGoalBase implements Goal<Mob> {
-
+public class ValleyZombieAttackGoal extends ValleyMeleeAttackGoal implements Goal<Mob> {
     private final Zombie zombie;
     private int raiseArmTicks;
     private final GoalKey<Mob> key;
-    public CustomZombieAttackGoal(Zombie zombie, double speed) {
+    public ValleyZombieAttackGoal(Zombie zombie, double speed) {
         super(zombie, speed);
         this.zombie = zombie;
         this.key = GoalKey.of(Mob.class, new NamespacedKey("ml", "customzombieattackgoal"));
@@ -23,6 +22,7 @@ public class CustomZombieAttackGoal extends MeleeAttackGoalBase implements Goal<
 
     @Override
     public void start() {
+        zombie.getNavigation().pathFinder.nodeEvaluator.setCanOpenDoors(true);
         super.start();
         this.raiseArmTicks = 0;
     }

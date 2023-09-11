@@ -7,14 +7,14 @@ import com.destroystokyo.paper.entity.ai.GoalType;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Mob;
 import org.jetbrains.annotations.NotNull;
-import org.shrigorevich.ml.domain.mobs.CustomMob;
+import org.shrigorevich.ml.domain.mobs.ValleyMob;
 
 import java.util.EnumSet;
 
 public class TestGoal implements Goal<Mob> {
 
     private Pathfinder.PathResult path;
-    private final CustomMob mob;
+    private final ValleyMob mob;
     private int timer;
     private int lifeTimer;
     private boolean isAchieved;
@@ -23,7 +23,7 @@ public class TestGoal implements Goal<Mob> {
     private boolean stopped;
     private final GoalKey<Mob> key;
     private final GoalType type;
-    public TestGoal(CustomMob mob, String name, int lifeTime, GoalType type) {
+    public TestGoal(ValleyMob mob, String name, int lifeTime, GoalType type) {
         this.type = type;
         this.lifeTime = lifeTime;
         this.name = name;

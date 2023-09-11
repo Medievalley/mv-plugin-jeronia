@@ -3,11 +3,10 @@ package org.shrigorevich.ml.domain.mobs;
 import com.destroystokyo.paper.entity.Pathfinder;
 import org.bukkit.Location;
 import org.bukkit.entity.Mob;
-import org.shrigorevich.ml.common.Coords;
 
 import java.util.UUID;
 
-public interface CustomMob extends MemoryHolder {
+public interface ValleyMob extends MemoryHolder {
     Mob getHandle();
     UUID getId();
     double getPower();
@@ -18,4 +17,6 @@ public interface CustomMob extends MemoryHolder {
     void setupAI();
     ScanBox getScanBox();
     ScanBox getScanBox(int offsetY, int radiusX, int radiusY, int radiusZ);
+    boolean isDoorReachable(Location door);
+    boolean isDoorReachable(Pathfinder.PathResult path, Location door);
 }

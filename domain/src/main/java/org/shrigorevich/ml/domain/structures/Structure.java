@@ -8,7 +8,6 @@ import org.shrigorevich.ml.common.Coords;
 import java.util.List;
 
 public interface Structure {
-
     int getId();
     World getWorld();
     StructureType getType();

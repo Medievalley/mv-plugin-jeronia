@@ -19,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import java.util.EnumSet;
 
-public abstract class TargetGoalBase extends CustomGoal implements Goal<Mob> {
+public abstract class TargetGoalBase extends ValleyGoal implements Goal<Mob> {
 
     protected final net.minecraft.world.entity.Mob mob;
     protected final boolean mustSee;

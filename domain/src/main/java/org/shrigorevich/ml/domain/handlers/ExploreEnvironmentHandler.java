@@ -2,15 +2,14 @@ package org.shrigorevich.ml.domain.handlers;
 
 import com.destroystokyo.paper.entity.Pathfinder;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
-import org.shrigorevich.ml.domain.ai.goals.CustomGoal;
+import org.shrigorevich.ml.domain.ai.goals.ValleyGoal;
 import org.shrigorevich.ml.domain.events.ExploreEnvironmentEvent;
-import org.shrigorevich.ml.domain.mobs.CustomMob;
+import org.shrigorevich.ml.domain.mobs.ValleyMob;
 import org.shrigorevich.ml.domain.mobs.MemoryKey;
 import org.shrigorevich.ml.domain.structures.Structure;
 import org.shrigorevich.ml.domain.structures.StructureService;
@@ -34,7 +33,7 @@ public class ExploreEnvironmentHandler implements Listener {
         exploreEnvironment(event.getMob());
     }
 
-    private void exploreEnvironment(CustomMob mob) {
+    private void exploreEnvironment(ValleyMob mob) {
 //        System.out.printf("Mob loc: %d %d %d%n", mob.getLocation().getBlockX(), mob.getLocation().getBlockY(), mob.getLocation().getBlockZ());
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             List<Structure> structs = structService.getIntersected(
@@ -42,17 +41,28 @@ public class ExploreEnvironmentHandler implements Listener {
 
 //            System.out.println("Intersected structs: " + structs.size());
             for (Structure struct : structs) {
-                if (struct.getType() == StructureType.AGRONOMIC)
+                if (struct.getType() == StructureType.AGRONOMIC) {
                     findCrops(mob, struct);
+                } else {
+                    analyzeStruct(mob, struct);
+                }
             }
         });
     }
 
-    private void findCrops(CustomMob mob, Structure struct) {
+    private void analyzeStruct(ValleyMob mob, Structure struct) {
+        for (Block b : struct.getBlocks()) {
+            if (MaterialHelper.isDoor(b)) { //TODO: isReachable
+                mob.addMemory(MemoryKey.DOOR_POINT, b.getLocation());
+            }
+        }
+    }
+
+    private void findCrops(ValleyMob mob, Structure struct) {
         for (Block b : struct.getBlocks()) {
             if (MaterialHelper.isCrop(b.getType())) {
                 Pathfinder.PathResult path = mob.getPathfinder().findPath(b.getLocation());
-                if (path != null && CustomGoal.isCropReachable(b.getLocation(), mob.getLocation()))
+                if (path != null && ValleyGoal.isCropReachable(b.getLocation(), mob.getLocation()))
                     mob.addMemory(MemoryKey.CROP_POINT, b.getLocation());
             }
         }

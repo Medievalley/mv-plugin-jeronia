@@ -1,14 +1,16 @@
 package org.shrigorevich.ml.domain.ai.goals;
 
 import net.minecraft.util.Mth;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.event.Event;
 import org.jetbrains.annotations.Nullable;
 import org.shrigorevich.ml.domain.mobs.LocationMemoryUnit;
 
 import java.util.List;
 import java.util.function.Predicate;
 
-public abstract class CustomGoal {
+public abstract class ValleyGoal {
     protected int reducedTickDelay(int serverTicks) {
         return Mth.positiveCeilDiv(serverTicks, 2);
     }
@@ -35,6 +37,11 @@ public abstract class CustomGoal {
         return closest;
     }
 
+    protected void callEvent(Event event) {
+        Bukkit.getServer().getPluginManager().callEvent(event);
+    }
+
+    //TODO: It must be somewhere else
     public static boolean isCropReachable(Location l1, Location l2) {
         return l1.getBlockX() == l2.getBlockX() &&
                 l1.getBlockZ() == l2.getBlockZ() &&

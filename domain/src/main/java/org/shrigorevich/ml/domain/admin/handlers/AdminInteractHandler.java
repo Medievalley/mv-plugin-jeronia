@@ -4,8 +4,8 @@ import com.destroystokyo.paper.entity.ai.Goal;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
-import org.bukkit.HeightMap;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.attribute.Attributable;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
@@ -20,7 +20,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.plugin.Plugin;
 import org.shrigorevich.ml.domain.admin.NpcAdminService;
 import org.shrigorevich.ml.domain.admin.StructAdminService;
-import org.shrigorevich.ml.domain.ai.goals.GoGoal;
+import org.shrigorevich.ml.domain.ai.goals.TestGoGoal;
 import org.shrigorevich.ml.domain.npc.NpcService;
 import org.shrigorevich.ml.domain.structures.StructureService;
 import org.shrigorevich.ml.domain.structures.StructureType;
@@ -76,7 +76,7 @@ public class AdminInteractHandler implements Listener {
                             .getBlockAt(event.getClickedBlock().getLocation().clone().add(0,1,0))
                             .getLightFromBlocks());
                     }
-                    case GOLDEN_PICKAXE -> {
+                    case DIAMOND_SWORD -> {
                         setMobAI(event.getClickedBlock().getLocation().add(0, 1, 0));
                     }
                     default -> {
@@ -115,8 +115,10 @@ public class AdminInteractHandler implements Listener {
 
     private void setMobAI(Location location) {
         if (customMob != null) {
-            Goal<Mob> goal2 = new GoGoal(customMob, location, plugin);
+            Goal<Mob> goal2 = new TestGoGoal(customMob, location, plugin);
             Bukkit.getMobGoals().removeAllGoals(customMob);
+            customMob.getPathfinder().setCanOpenDoors(true);
+            customMob.getPathfinder().setCanPassDoors(true);
             Bukkit.getMobGoals().addGoal(customMob, 1, goal2);
         }
     }

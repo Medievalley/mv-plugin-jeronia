@@ -9,8 +9,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.craftbukkit.v1_19_R2.entity.CraftMob;
 import org.bukkit.entity.Mob;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.shrigorevich.ml.domain.mobs.CustomMob;
+import org.shrigorevich.ml.domain.mobs.ValleyMob;
 import org.shrigorevich.ml.domain.mobs.MemoryKey;
 import org.shrigorevich.ml.domain.mobs.LocationMemoryUnit;
 
@@ -20,14 +19,14 @@ import java.util.List;
 public class WalkGoal extends ExploreGoal implements Goal<Mob> {
 
     private Pathfinder.PathResult path;
-    private final CustomMob mob;
+    private final ValleyMob mob;
     private final net.minecraft.world.entity.Mob handle;
     private final int checkArrivalInterval;
     private final int recalculatePathInterval;
     private final GoalKey<Mob> key;
     private double speed;
     private LocationMemoryUnit currentDestination;
-    public WalkGoal(CustomMob mob) {
+    public WalkGoal(ValleyMob mob) {
         super(mob, 25);
         this.mob = mob;
         this.handle = ((CraftMob) mob.getHandle()).getHandle();
@@ -44,6 +43,7 @@ public class WalkGoal extends ExploreGoal implements Goal<Mob> {
 
     @Override
     public void start() {
+        mob.getPathfinder().setCanOpenDoors(false); //TODO: Possibly zombies will smash doors while exploring structures
         defineNextDestination();
     }
 
