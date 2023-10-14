@@ -9,7 +9,8 @@ public enum StructureType {
     FARM_GUILD(6),
     CRAFT_GUILD(7),
     DEFENCE_GUILD(8),
-    WIZARD_GUILD(9);
+    WIZARD_GUILD(9),
+    UNKNOWN(100);
 
     private final int typeId;
 
@@ -27,6 +28,6 @@ public enum StructureType {
                 return st;
             }
         }
-        return null;
+        return UNKNOWN;
     }
 }

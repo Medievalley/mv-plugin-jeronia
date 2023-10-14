@@ -22,12 +22,11 @@ public abstract class StructureImpl implements Structure {
     private final int x1, y1, z1;
     private final int x2, y2, z2;
 
-    //TODO: refactor constructor
     public StructureImpl(StructModel m) throws IllegalArgumentException {
 
         this.type = StructureType.valueOf(m.getTypeId());
         if(type == null) throw new IllegalArgumentException(
-                String.format("Unable to parse struct type: %d. StructId: %d", 1, m.getId()));
+                String.format("Unable to parse struct type: %d. StructId: %d", m.getTypeId(), m.getId()));
 
         this.id = m.getId();
         this.world = m.getWorld();
